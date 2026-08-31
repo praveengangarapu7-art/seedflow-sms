@@ -1,0 +1,156 @@
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
+.subtitle { font-size: 12px; color: var(--color-text-muted); }
+
+.manageLink {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-family: var(--font-sans);
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 12px;
+  background-color: var(--color-accent-light);
+  border-radius: var(--radius-md);
+}
+
+.dayCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  background-color: var(--color-white);
+  border-radius: var(--radius-sm);
+}
+
+.dayLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.dayDate {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.dayDots {
+  display: flex;
+  gap: 3px;
+  height: 8px;
+  align-items: center;
+}
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.dotEmpty {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-border-light);
+}
+
+.dotDaily     { background-color: var(--color-info); }
+.dotWeekly    { background-color: var(--color-primary); }
+.dotMonthly   { background-color: var(--color-warning); }
+.dotQuarterly { background-color: var(--color-danger); }
+.dotAdHoc     { background-color: var(--color-secondary); }
+
+.recurringTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.recurringList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recurringRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-accent-light);
+}
+
+.recMain { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.recName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.recFreq {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.accuracyChip {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background-color: rgba(46, 139, 92, 0.18);
+  color: var(--color-success);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .calendar { grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .dayCell { padding: 6px 2px; }
+}

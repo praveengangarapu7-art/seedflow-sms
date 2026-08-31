@@ -1,0 +1,116 @@
+.root { padding: 0; }
+
+/* Match icon column */
+.matchIconCell { display: flex; align-items: center; gap: 4px; }
+.matchOk      { color: var(--color-success); }
+.matchVar     { color: var(--color-warning); }
+.matchPending { color: var(--color-text-muted); }
+
+.paymentBadge {
+  display: inline-block; padding: 2px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 600;
+}
+.payPending  { background: var(--color-border-light); color: var(--color-text-secondary); }
+.payApproved { background: rgba(45, 122, 143, 0.12); color: var(--color-info); }
+.payPaid     { background: rgba(46, 139, 92, 0.12); color: var(--color-success); }
+.payOverdue  { background: rgba(192, 57, 43, 0.12); color: var(--color-danger); }
+.payDisputed { background: rgba(230, 188, 66, 0.12); color: var(--color-warning); }
+
+.poLink { color: var(--color-primary); font-weight: 600; font-size: 12px; }
+
+.mobileCard { display: flex; flex-direction: column; gap: 6px; }
+.mobileRow { display: flex; justify-content: space-between; align-items: center; }
+.mobileId  { font-size: 12px; font-weight: 700; color: var(--color-primary); }
+.mobileMeta { font-size: 11px; color: var(--color-text-muted); }
+
+/* ── 3-way match modal ────────────────────────────── */
+.threeColumnGrid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;
+}
+.matchCard {
+  background: var(--color-white); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); padding: 14px;
+}
+.matchCardHeader {
+  border-bottom: 1px solid var(--color-border-light); padding-bottom: 10px; margin-bottom: 10px;
+}
+.matchCardType {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+.matchCardId { font-size: 13px; font-weight: 700; color: var(--color-primary); margin-top: 2px; }
+.matchCardSub { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+
+.matchRow {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 8px; border-radius: var(--radius-sm);
+  font-size: 12px; margin-bottom: 4px;
+}
+.matchRowVar  { background: rgba(230, 188, 66, 0.12); }
+.matchRowOk   { background: transparent; }
+.matchKey     { color: var(--color-text-muted); font-weight: 500; }
+.matchVal     { color: var(--color-text-primary); font-weight: 600; }
+.matchValDim  { color: var(--color-text-muted); }
+.matchIcon    { display: inline-flex; align-items: center; gap: 4px; }
+
+.matchSummary {
+  padding: 12px 16px; border-radius: var(--radius-md);
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.matchSumOk   { background: rgba(46, 139, 92, 0.12); color: var(--color-success); border: 1px solid rgba(46, 139, 92, 0.3); }
+.matchSumWarn { background: rgba(230, 188, 66, 0.12); color: var(--color-warning); border: 1px solid rgba(230, 188, 66, 0.3); }
+.matchSumText { font-size: 13px; font-weight: 600; }
+
+.varianceTable { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
+.varianceTable th, .varianceTable td {
+  padding: 8px 10px; border-bottom: 1px solid var(--color-border-light); text-align: left;
+}
+.varianceTable th { background: var(--color-accent-light); color: var(--color-text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 700; }
+.varOk  { color: var(--color-success); font-weight: 700; }
+.varBad { color: var(--color-danger); font-weight: 700; }
+
+.matchSidebar {
+  background: var(--color-accent-light);
+  border-radius: var(--radius-md); padding: 14px; margin-top: 16px;
+}
+.matchSidebarTitle {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--color-text-muted); margin-bottom: 8px;
+}
+.actionRow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ── Form modal sections ───────────────────────────── */
+.section { margin-bottom: 18px; }
+.sectionTitle {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--color-text-muted); margin-bottom: 10px;
+}
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.label { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); }
+.input, .select {
+  padding: 8px 12px; border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); font-size: 13px;
+  background: var(--color-white); outline: none; box-sizing: border-box;
+}
+.input:focus, .select:focus { border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(85,107,47,0.1); }
+
+.poList { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
+.poItem {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border: 2px solid var(--color-border-light); border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.15s;
+}
+.poItem:hover { background: var(--color-accent-light); }
+.poItemActive { border-color: var(--color-primary); background: var(--color-accent-light); }
+.poRadio {
+  width: 16px; height: 16px; border: 2px solid var(--color-border); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.poRadioActive { border-color: var(--color-primary); }
+.poRadioDot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary); }
+
+@media (max-width: 768px) {
+  .threeColumnGrid { grid-template-columns: 1fr; }
+  .grid2 { grid-template-columns: 1fr; }
+}

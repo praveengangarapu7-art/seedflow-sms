@@ -1,0 +1,81 @@
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.typePriority {
+  display: flex;
+  gap: 6px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+.assetName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.zone {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 8px 0;
+}
+
+.metaRow {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-bg-light);
+}
+
+.alertTrigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #dc2626;
+  font-style: italic;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}

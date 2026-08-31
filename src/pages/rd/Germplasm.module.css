@@ -1,0 +1,151 @@
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.pageTitle {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 4px 0;
+}
+
+.pageSubtitle {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-border-light);
+  margin-bottom: 24px;
+}
+
+.kpiStrip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.filtersSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.traitQuickFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.traitFilterChip {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.traitFilterChip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-accent-light);
+}
+
+.traitFilterChip.traitFilterActive {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
+.traitFilterChip.traitFilterActive:hover {
+  background-color: var(--color-primary-hover);
+  color: var(--color-white);
+  border-color: var(--color-primary-hover);
+}
+
+.contentArea {
+  flex: 1;
+  margin-bottom: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.emptyGrid {
+  grid-column: 1 / -1;
+  padding: 60px 20px;
+  text-align: center;
+  background-color: var(--color-background-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+
+.tableWrap {
+  /* Removed double border rules to allow DataTable card to handle border styling */
+}
+
+/* Table specific styles for the render functions */
+.tableName {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.tableId {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+
+.tableChip {
+  font-size: 11px;
+  padding: 2px 6px;
+  background-color: var(--color-accent-light);
+  color: var(--color-text-primary);
+  border-radius: 4px;
+}
+
+.tableBadge {
+  font-size: 11px;
+  padding: 2px 6px;
+  background-color: var(--color-background-subtle);
+  color: var(--color-text-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+}
+
+@media (max-width: 1024px) {
+  .kpiStrip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .kpiStrip {
+    grid-template-columns: 1fr;
+  }
+  
+  .headerActions {
+    flex-wrap: wrap;
+  }
+}

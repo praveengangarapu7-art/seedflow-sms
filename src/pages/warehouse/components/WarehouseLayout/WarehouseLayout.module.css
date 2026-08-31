@@ -1,0 +1,171 @@
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.scaleNote {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.svgWrap {
+  width: 100%;
+  background-color: var(--color-accent-light);
+  border-radius: var(--radius-md);
+  padding: 8px;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.floor {
+  fill: var(--color-white);
+  stroke: var(--color-border);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.zoneGroup {
+  cursor: pointer;
+  transition: filter 0.15s ease;
+  outline: none;
+}
+
+.zoneGroup:hover {
+  filter: drop-shadow(0 2px 4px rgba(14, 84, 103, 0.18));
+}
+
+.zoneGroup:focus-visible .zoneRect {
+  stroke: var(--color-primary);
+  stroke-width: 2;
+}
+
+.zoneRect {
+  stroke: var(--color-border);
+  stroke-width: 1;
+  transition: stroke 0.15s ease, stroke-width 0.15s ease;
+}
+
+.zoneSelected .zoneRect {
+  stroke: var(--color-primary);
+  stroke-width: 2.5;
+}
+
+.fillCold       { fill: #2D7A8F; }
+.fillAmbient    { fill: #C8D7DD; }
+.fillControlled { fill: #2D7A8F; }
+.fillStaging    { fill: #e6bc42; }
+.fillQuarantine { fill: #C0392B; }
+.fillDispatch   { fill: #0E5467; }
+
+.zoneName {
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--color-text-primary);
+  pointer-events: none;
+}
+
+.zoneStat {
+  font-size: 10px;
+  fill: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.zonePct {
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--color-text-primary);
+  pointer-events: none;
+}
+
+.truckIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exitLabel {
+  font-size: 10px;
+  fill: var(--color-text-muted);
+  font-style: italic;
+}
+
+.compassIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compassLabel {
+  font-size: 10px;
+  fill: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--color-border);
+}
+
+.swatchCold       { background-color: #2D7A8F; }
+.swatchAmbient    { background-color: #C8D7DD; }
+.swatchControlled { background-color: #2D7A8F; }
+.swatchStaging    { background-color: #e6bc42; }
+.swatchQuarantine { background-color: #C0392B; }
+.swatchDispatch   { background-color: #0E5467; }

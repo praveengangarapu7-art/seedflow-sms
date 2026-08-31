@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "packageManager": "npm",
+  "testRunner": "vitest",
+  "vitest": {
+    "configFile": "vitest.config.ts"
+  },
+  "reporters": ["clear-text", "progress", "html"],
+  "mutate": [
+    "src/modules/labTesting/labTesting.validation.ts",
+    "src/modules/cropPlanning/cropPlanning.validation.ts",
+    "src/modules/authenticity/hashChain.ts",
+    "src/modules/authenticity/signing.ts",
+    "src/modules/partners/partnerScoring.ts",
+    "src/modules/govPrograms/registrationEligibility.ts",
+    "src/modules/govPrograms/subsidyEligibility.ts",
+    "src/modules/marketIntelligence/demandScoring.ts",
+    "src/modules/breedingAnalytics/traitCorrelation.ts",
+    "src/modules/breedingAnalytics/germplasmScoring.ts",
+    "src/modules/breedingAnalytics/hybridVigorPrediction.ts",
+    "src/modules/climateSmartSelection/climateResilienceScoring.ts",
+    "src/modules/climateSmartSelection/cropRotation.ts",
+    "src/modules/financing/financingCalculations.ts",
+    "src/modules/farmerEducation/contentRelevance.ts",
+    "src/modules/seedLots/csvImport.ts",
+    "src/modules/allocations/batchConflictResolution.ts"
+  ],
+  "ignoreStatic": true,
+  "coverageAnalysis": "perTest",
+  "thresholds": {
+    "high": 90,
+    "low": 70,
+    "break": 60
+  },
+  "tempDirName": ".stryker-tmp"
+}

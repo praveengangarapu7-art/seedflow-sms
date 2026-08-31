@@ -1,0 +1,176 @@
+.tableCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.tableScroll { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table thead {
+  background-color: var(--color-accent-light);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+  padding: 12px 14px;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.row {
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+  border-left: 3px solid transparent;
+}
+
+.row:hover { background-color: var(--color-accent-light); }
+.rowSelected { background-color: var(--color-accent-light); }
+
+.impactMajor    { border-left-color: var(--color-danger); border-left-width: 4px; }
+.impactModerate { border-left-color: var(--color-warning); }
+.impactMinor    { border-left-color: transparent; }
+
+.checkCell { width: 40px; padding-left: 12px !important; padding-right: 4px !important; }
+.actionsCell { width: 80px; text-align: right; }
+
+.alignRight { text-align: right; }
+.bold { font-weight: 600; }
+
+.id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 600;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.itemName {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 12px;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemSku {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.varianceQty { font-size: 12px; font-weight: 600; }
+.varianceVal { font-size: 11px; }
+
+.negText { color: var(--color-warning); }
+.posText { color: var(--color-success); }
+
+.reasonChip {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background-color: var(--color-accent);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.sourceChip {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background-color: var(--color-accent-light);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.byCell { font-size: 11px; color: var(--color-text-secondary); max-width: 180px; }
+
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.stDraft    { background-color: var(--color-accent); color: var(--color-text-muted); }
+.stPending  { background-color: rgba(230, 188, 66, 0.2); color: var(--color-warning); }
+.stApproved { background-color: rgba(45, 122, 143, 0.2); color: var(--color-info); }
+.stPosted   { background-color: rgba(46, 139, 92, 0.18); color: var(--color-success); }
+.stRejected { background-color: rgba(192, 57, 43, 0.16); color: var(--color-danger); }
+
+.inlineActions {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.iconBtn {
+  background: none;
+  border: 1px solid transparent;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.iconBtn:hover { background-color: var(--color-accent); }
+
+.btnApprove {
+  background-color: rgba(46, 139, 92, 0.14);
+  color: var(--color-success);
+  border-color: rgba(46, 139, 92, 0.3);
+}
+
+.btnApprove:hover {
+  background-color: var(--color-success);
+  color: var(--color-white);
+}
+
+.btnReject {
+  background-color: rgba(192, 57, 43, 0.12);
+  color: var(--color-danger);
+  border-color: rgba(192, 57, 43, 0.3);
+}
+
+.btnReject:hover {
+  background-color: var(--color-danger);
+  color: var(--color-white);
+}
+
+.emptyRow {
+  text-align: center !important;
+  padding: 40px 20px !important;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}

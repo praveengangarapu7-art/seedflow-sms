@@ -1,0 +1,366 @@
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 4px 0 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border-light);
+  margin: 16px 0 24px;
+}
+
+.searchPanel {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.searchForm {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.searchFieldWrap {
+  position: relative;
+  flex-grow: 1;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 12px 12px 42px;
+  font-size: 15px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+}
+
+.suggestions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.suggestions button {
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.suggestions button:hover {
+  color: var(--color-secondary);
+}
+
+/* Trace Container */
+.traceContainer {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.traceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.traceSummary h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.queryHighlight {
+  color: var(--color-primary);
+}
+
+.traceSummary p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* Recall alert box */
+.recallAlert {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: #fce8e6;
+  border-left: 4px solid #ea4335;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.alertIcon {
+  color: #ea4335;
+  flex-shrink: 0;
+}
+
+.recallAlert h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #c5221f;
+}
+
+.recallAlert p {
+  margin: 0;
+  font-size: 13px;
+  color: #3c4043;
+}
+
+/* Viewport for tree flow */
+.treeViewport {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32px 16px;
+  background: #fafafa;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+}
+
+.treeNode {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 16px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+
+.activeNode {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(14, 84, 103, 0.1);
+}
+
+.nodeIconWrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.nodeContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nodeLabel {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.nodeTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.nodeMeta {
+  margin: 0;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.nodeBadge {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--color-accent-light);
+  color: var(--color-primary);
+  display: inline-block;
+}
+
+.recalledBadge {
+  background: #fce8e6 !important;
+  color: #ea4335 !important;
+  font-weight: 700;
+}
+
+.connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  min-width: 40px;
+}
+
+.connectorArrow {
+  color: var(--color-text-muted);
+}
+
+/* Associated log details */
+.detailsSection h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.gridDetails {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.detailCard {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.detailCard h4 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 6px;
+}
+
+.detailCard ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailCard li {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* Modal Box */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalBox {
+  background: var(--color-white);
+  border-radius: 12px;
+  width: 480px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 12px;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #c5221f;
+}
+
+.modalBody {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.modalLabel {
+  display: block;
+  font-weight: 500;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  color: var(--color-text-primary);
+}
+
+.modalTextarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
+}
+
+.modalTextarea:focus {
+  border-color: var(--color-primary);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

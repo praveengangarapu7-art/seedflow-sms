@@ -1,0 +1,362 @@
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #f7faf7;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+}
+
+.progressStep {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.progressActive {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.progressDivider {
+  height: 1px;
+  flex: 1;
+  background-color: var(--color-border-light);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stepContent {
+  animation: fadeIn 200ms ease;
+  min-height: 320px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.input:focus, .select:focus, .textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.input:disabled, .select:disabled {
+  background-color: #fafbfa;
+  color: var(--color-text-secondary);
+  border-style: dashed;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.methodHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f7faf7;
+  border: 1px solid var(--color-border-light);
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.methodTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.methodTitle h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.methodIcon {
+  color: var(--color-primary);
+  width: 16px;
+  height: 16px;
+}
+
+.plotMetaTag {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.measurementFields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chipsRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.scoreChip {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.scoreChip:hover {
+  border-color: var(--color-primary);
+  background-color: #fafbfa;
+}
+
+.activeScoreChip {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.methodDesc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0 0 10px 0;
+}
+
+/* AI vision scanner */
+.aiAnalyzingLoader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #f3f9f3;
+  border: 1px solid var(--color-primary);
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-accent);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.aiResultCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.05);
+}
+
+.aiResultTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed var(--color-border-light);
+  padding-bottom: 6px;
+}
+
+.aiResultGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.aiStat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aiLabel {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.aiVal {
+  font-size: 20px;
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.aiConfidence {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background-color: var(--color-accent-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: max-content;
+}
+
+.overrideSlider {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  border-top: 1px solid #f1f3f1;
+  padding-top: 8px;
+}
+
+.overrideSlider label {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+
+.overrideSlider input[type="range"] {
+  accent-color: var(--color-primary);
+  width: 100%;
+}
+
+/* File Upload & Drone */
+.fileSuccessCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* IoT sync structures */
+.syncRow {
+  margin-bottom: 12px;
+}
+
+.iotSyncLoader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #e8f0fe;
+  color: var(--color-info);
+  border: 1px solid #d2e3fc;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.boltIcon {
+  animation: pulse 1s ease infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); }
+}
+
+.telemetryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.telCard {
+  background-color: #fafbfa;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.telCard span {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.telCard strong {
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+/* Footer structure */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 16px;
+  margin-top: 20px;
+}
+
+.rightActions {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}

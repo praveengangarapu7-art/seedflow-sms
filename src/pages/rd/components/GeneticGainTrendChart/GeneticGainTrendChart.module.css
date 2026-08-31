@@ -1,0 +1,149 @@
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDotActual {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}
+
+.legendLineTarget {
+  width: 16px;
+  height: 2px;
+  background-color: #e6bc42;
+}
+
+.body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.chartContainer {
+  width: 100%;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: var(--color-accent);
+  stroke-width: 1px;
+  stroke-opacity: 0.2;
+}
+
+.axisLabel {
+  fill: var(--color-text-secondary);
+  font-size: 11px;
+}
+
+.targetLine {
+  fill: none;
+  stroke: #e6bc42;
+  stroke-width: 2px;
+  stroke-dasharray: 6 4;
+}
+
+.actualLine {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 2.5px;
+}
+
+.actualPoint {
+  fill: var(--color-primary);
+  stroke: white;
+  stroke-width: 1.5px;
+  transition: r 0.1s ease;
+}
+
+.crosshair {
+  stroke: var(--color-border-dark);
+  stroke-width: 1px;
+  stroke-dasharray: 4 4;
+}
+
+.kpiStrip {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px 24px;
+  background-color: var(--color-background-subtle);
+}
+
+.kpiItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kpiLabel {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.kpiValueRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kpiValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.divider {
+  width: 1px;
+  height: 32px;
+  background-color: var(--color-border);
+  margin: 0 24px;
+}

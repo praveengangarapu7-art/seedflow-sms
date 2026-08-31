@@ -1,0 +1,33 @@
+.kpiWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.kpiValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.ringsWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.svgDonut {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+  display: block;
+}

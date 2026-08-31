@@ -1,0 +1,439 @@
+.section {
+  padding: 30px 24px 120px 24px;
+  background-color: var(--color-accent-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Header style details */
+.header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 64px auto;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-warning);
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0 0 16px 0;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Stack of detailed horizontal cards */
+.cardsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.card {
+  display: flex;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light) !important;
+  border-left: 1px solid var(--color-border-light) !important;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  min-height: 290px;
+  overflow: hidden;
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 350ms ease, border-color 350ms ease;
+  position: relative;
+}
+
+/* Hover lifts */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(14, 84, 103, 0.2) !important;
+}
+
+
+
+
+/* Split columns */
+.visualColumn {
+  flex: 0.9;
+  width: 40%;
+  background: linear-gradient(135deg, rgba(14, 84, 103, 0.02) 0%, rgba(14, 84, 103, 0.05) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  border-right: 1px solid var(--color-border-light) !important;
+  border-left: none !important;
+  overflow: hidden;
+}
+
+.contentColumn {
+  flex: 1.1;
+  width: 60%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Alternating visual position */
+.cardEven {
+  flex-direction: row-reverse;
+}
+
+.cardEven .visualColumn {
+  border-right: none !important;
+  border-left: 1px solid var(--color-border-light) !important;
+}
+
+/* Responsive collapse to vertical columns on mobile */
+@media (max-width: 900px) {
+  .card {
+    flex-direction: column !important;
+    min-height: auto;
+  }
+  
+  .visualColumn {
+    width: 100%;
+    height: 220px;
+    border-right: none !important;
+    border-left: none !important;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+  
+  .contentColumn {
+    width: 100%;
+    padding: 32px 24px;
+  }
+}
+
+/* Content sub-elements */
+.iconHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.iconBox {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--color-accent-light);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+.card:hover .iconBox {
+  background-color: rgba(230, 188, 66, 0.15);
+  color: var(--color-warning);
+}
+
+.cardTitle {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.flagshipBadge {
+  background-color: var(--color-warning);
+  color: var(--color-text-primary);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 50px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.cardTagline {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 24px 0;
+}
+
+/* Bullet grid 2x2 */
+.bulletsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 599px) {
+  .bulletsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.bulletItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.checkmark {
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+/* Step bottom links */
+.exploreLink {
+  color: var(--color-warning);
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 200ms ease;
+}
+
+.exploreLink:hover {
+  transform: translateX(3px);
+}
+
+/* Custom illustration animations */
+.pulsingDot {
+  fill: var(--color-warning);
+  animation: pulseWarehouse 2s infinite ease-in-out;
+}
+
+@keyframes pulseWarehouse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+.spinningGear {
+  animation: spinGear 25s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes spinGear {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.flowingLine {
+  stroke-dasharray: 6 6;
+  animation: flowDashes 3s infinite linear;
+}
+
+@keyframes flowDashes {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+/* Carousel Redesign Styles */
+
+.carouselContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  gap: 20px;
+}
+
+.sliderViewport {
+  flex: 1;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  padding: 8px 0; /* prevents box-shadow vertical clipping */
+}
+
+.sliderTrack {
+  display: flex;
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  will-change: transform;
+}
+
+.slideWidthWrapper {
+  flex: 0 0 100%;
+  width: 100%;
+  padding: 0 8px; /* prevents box-shadow horizontal clipping */
+  box-sizing: border-box;
+}
+
+.navButton {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border-light);
+  box-shadow: 0 4px 12px rgba(14, 84, 103, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.navButton:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(14, 84, 103, 0.15);
+  border-color: rgba(14, 84, 103, 0.15);
+  color: var(--color-warning);
+}
+
+.navButton:active {
+  transform: scale(0.95);
+}
+
+/* Quick Navigation Strip below carousel */
+
+.navigationStripWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  width: 100%;
+}
+
+.navigationStrip {
+  display: flex;
+  background-color: rgba(14, 84, 103, 0.03);
+  border: 1px solid var(--color-border-light);
+  border-radius: 50px;
+  padding: 6px;
+  gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.navigationStrip::-webkit-scrollbar {
+  display: none; /* Safari & Chrome */
+}
+
+.navStripItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  transition: all 250ms ease;
+  white-space: nowrap;
+}
+
+.navStripItem:hover {
+  color: var(--color-primary);
+  background-color: rgba(14, 84, 103, 0.05);
+}
+
+.navStripActive {
+  color: var(--color-primary) !important;
+  background-color: var(--color-white) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.navStripUnderline {
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 3px;
+  background-color: var(--color-warning);
+  border-radius: 2px;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 900px) {
+  .carouselContainer {
+    gap: 8px;
+    padding: 0 4px;
+  }
+  
+  .navButton {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(14, 84, 103, 0.15);
+  }
+  
+  .navLeft {
+    left: 8px;
+  }
+  
+  .navRight {
+    right: 8px;
+  }
+  
+  .navigationStripWrapper {
+    margin-top: 24px;
+    padding: 0 16px;
+  }
+  
+  .navigationStrip {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 599px) {
+  .navStripText {
+    display: none; /* Icon-only on very small screens to fit cleanly */
+  }
+  
+  .navStripItem {
+    padding: 10px 14px;
+  }
+}
+

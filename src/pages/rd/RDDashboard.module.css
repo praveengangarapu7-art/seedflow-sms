@@ -1,0 +1,308 @@
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.pageTitle {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 4px 0;
+}
+
+.pageSubtitle {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-border-light);
+  margin-bottom: 24px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.seasonSelect {
+  height: 36px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background-color: var(--color-white);
+  font-family: var(--font-sans);
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6E5A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color 0.15s ease;
+}
+
+.seasonSelect:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(14, 84, 103, 0.1);
+}
+
+.kpiStrip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;  /* ← add this line */
+}
+
+.twoColumnGrid {
+  display: grid;
+  grid-template-columns: 6fr 4fr;
+  gap: 24px;
+  margin-bottom: 28px;  /* ← add this line */
+}
+
+.col60 {
+  display: flex;
+  flex-direction: column;
+}
+
+.col40 {
+  display: flex;
+  flex-direction: column;
+}
+
+.fullWidthRow {
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 1200px) {
+  .twoColumnGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .kpiStrip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .kpiStrip {
+    grid-template-columns: 1fr;
+  }
+  
+  .headerActions {
+    flex-wrap: wrap;
+  }
+}
+
+/* Detailed Modal Styles */
+.detailContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--color-text-primary);
+}
+
+.detailDesc {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.statsSummary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  background-color: var(--color-background-soft, #f7f9f6);
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.statVal {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.detailSectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 8px 0 4px 0;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detailList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.detailItem {
+  background-color: white;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+}
+
+.detailItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.itemName {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.itemStatus {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.active, .released, .completed {
+  background-color: #e6f4ea;
+  color: #137333;
+}
+
+.inProgress, .selectionPhase, .yieldChecks, .dataEntry, .midSeasonObs, .floweringObs, .approvedForMlt {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+}
+
+.quarantine, .pendingRelease {
+  background-color: #fef7e0;
+  color: #b06000;
+}
+
+.itemSub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.locationHeader {
+  display: flex;
+  align-items: center;
+}
+
+.stateLabel {
+  font-size: 12px;
+  font-weight: 600;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.achievementContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.achievementHighlight {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.achievementList {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.achievementList li {
+  line-height: 1.4;
+}
+
+.noData {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* Environmental Grid in Map Detail Modal */
+.environmentalGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  background-color: var(--color-background-soft, #f7f9f6);
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  margin-bottom: 8px;
+}
+
+@media (max-width: 560px) {
+  .environmentalGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.envItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.envLabel {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.envValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+

@@ -1,0 +1,289 @@
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f7fbf8 0%, #eef7ef 100%);
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 60ch;
+}
+
+.select,
+.textarea {
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  color: var(--color-text);
+  background: #fbfdfb;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.9rem;
+}
+
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 35px rgba(14, 84, 103, 0.06);
+  margin-bottom: 1.25rem;
+}
+
+.card:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.sectionSubtitle {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.88rem;
+}
+
+.hint {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.form {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.varietyRow {
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.6rem;
+  background: #f8fbf8;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.varietyRow:last-child {
+  margin-bottom: 0;
+}
+
+.varietyRowActive {
+  border-color: var(--color-primary);
+}
+
+.rowMeta {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.traitGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+}
+
+.traitLabel {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.deprecateBox {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e8efe8;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.diseaseRow {
+  display: grid;
+  grid-template-columns: 1fr 140px 28px;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.removeRowBtn {
+  border: none;
+  background: #fbe8e6;
+  color: #a3352b;
+  border-radius: 8px;
+  width: 28px;
+  height: 34px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.versionBlock {
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+  background: #f8fbf8;
+}
+
+.versionBlock:last-child {
+  margin-bottom: 0;
+}
+
+.versionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.2rem;
+}
+
+.reviewList {
+  margin-top: 0.5rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.reviewItem {
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.statusDraft {
+  background: #f0f0f0;
+  color: #6b6b6b;
+}
+
+.statusPendingReview {
+  background: #eef2fb;
+  color: #2f4b9e;
+}
+
+.statusApproved {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.statusRejected {
+  background: #fbe8e6;
+  color: #a3352b;
+}
+
+.statusDeprecated {
+  background: #f3e8fb;
+  color: #7a2ba3;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpiRow {
+    grid-template-columns: 1fr;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+}

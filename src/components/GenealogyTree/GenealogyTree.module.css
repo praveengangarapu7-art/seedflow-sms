@@ -1,0 +1,315 @@
+.grid {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 35px rgba(14, 84, 103, 0.06);
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+  margin: 0 0 1rem;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.legendSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.treeScroll {
+  overflow-x: auto;
+}
+
+.treeContainer {
+  position: relative;
+  min-width: 640px;
+  padding: 0.5rem 0;
+}
+
+.connectorSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.connectorPath {
+  fill: none;
+  stroke: var(--color-border-light);
+  stroke-width: 2;
+}
+
+.connectorPathHighlighted {
+  stroke: #e0a531;
+  stroke-width: 3;
+}
+
+.stageRow {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.stageRow:last-child {
+  margin-bottom: 0.5rem;
+}
+
+.node {
+  width: 200px;
+  border: 2px solid var(--color-border-light);
+  border-radius: 12px;
+  background: #fbfdfb;
+  padding: 0.75rem 0.85rem;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.node:hover {
+  box-shadow: 0 6px 18px rgba(14, 84, 103, 0.1);
+}
+
+.nodeSelected {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 22px rgba(14, 84, 103, 0.16);
+}
+
+.nodeOnTrace {
+  border-color: #e0a531;
+  box-shadow: 0 0 0 3px rgba(224, 165, 49, 0.22);
+}
+
+.nodeStageBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.stageBreeder {
+  background: rgba(42, 120, 214, 0.12);
+  color: #1c5aa3;
+}
+
+.stageFoundation {
+  background: rgba(235, 104, 52, 0.12);
+  color: #b34d22;
+}
+
+.stageCertified {
+  background: rgba(27, 175, 122, 0.14);
+  color: #127f57;
+}
+
+.nodeLotCode {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.3rem;
+}
+
+.nodeQty {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  display: grid;
+  gap: 0.15rem;
+}
+
+.nodeHarvest {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.nodeMetaRow {
+  margin-top: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.nodeAllocCount {
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.nodeSplitCount {
+  font-size: 0.75rem;
+  color: #6a3fb0;
+  font-weight: 600;
+}
+
+.testBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.testBadgeNotSubmitted {
+  background: #f0f0f0;
+  color: #6b6b6b;
+}
+
+.testBadgeTesting {
+  background: #eef2fb;
+  color: #2f4b9e;
+}
+
+.testBadgeCertified {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.testBadgeRejected {
+  background: #fbe8e6;
+  color: #a3352b;
+}
+
+.detailGrid {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.detailItem {
+  background: #f8fbf8;
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+}
+
+.detailLabel {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+
+.detailValue {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.allocationRow,
+.testSubmissionRow {
+  border-bottom: 1px solid #eef3ee;
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+}
+
+.allocationRow:last-child,
+.testSubmissionRow:last-child {
+  border-bottom: none;
+}
+
+.testResultChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-right: 0.5rem;
+  font-size: 0.78rem;
+}
+
+.traceList {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.traceStep {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+}
+
+.traceArrow {
+  color: var(--color-text-muted);
+}
+
+.transactionEntry {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #eef3ee;
+  font-size: 0.82rem;
+}
+
+.transactionEntry:last-child {
+  border-bottom: none;
+}
+
+.transactionMeta {
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  margin-top: 0.15rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.transactionList {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .stageRow {
+    gap: 0.75rem;
+  }
+
+  .node {
+    width: 160px;
+  }
+}

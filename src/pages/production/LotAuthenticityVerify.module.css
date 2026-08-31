@@ -1,0 +1,158 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f7fbf8 0%, #eef7ef 100%);
+  padding: 1.5rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 560px;
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 50px rgba(14, 84, 103, 0.1);
+}
+
+.brand {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 1.25rem;
+  text-align: center;
+}
+
+.banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.bannerAuthentic {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.bannerNotAuthentic {
+  background: #fdeaea;
+  color: #c0392b;
+}
+
+.bannerTitle {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.bannerSubtitle {
+  font-size: 0.85rem;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.detailItem {
+  padding: 0.8rem;
+  border-radius: 12px;
+  background: #f7f9f7;
+}
+
+.detailLabel {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.detailValue {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.checkList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.checkOk {
+  color: #187a43;
+}
+
+.checkBad {
+  color: #c0392b;
+}
+
+.reasonText {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  background: #f7f9f7;
+  border-radius: 10px;
+  padding: 0.7rem;
+  margin-bottom: 1.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.footer {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e8efe8;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.centerState {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 2rem 0;
+}
+
+.spinner {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.88rem;
+  text-align: center;
+}

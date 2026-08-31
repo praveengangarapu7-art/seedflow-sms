@@ -1,0 +1,78 @@
+.headerRow {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding-bottom: 12px; margin-bottom: 14px;
+  border-bottom: 1px solid var(--color-border-light);
+  flex-wrap: wrap;
+}
+
+.summaryStat { font-size: 13px; color: var(--color-text-secondary); }
+.summaryStat strong { color: var(--color-text-primary); font-weight: 700; }
+
+.dot { color: var(--color-text-muted); margin: 0 6px; }
+
+.confirmBar {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 10px 14px; background-color: var(--color-accent-light);
+  border: 1px dashed var(--color-primary); border-radius: var(--radius-md);
+  margin-bottom: 14px; font-size: 13px; color: var(--color-text-secondary);
+}
+
+.confirmActions { display: flex; gap: 8px; }
+
+.listWrap { display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
+
+.empty { text-align: center; padding: 32px; color: var(--color-text-muted); font-size: 13px; }
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+.rowMain { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.jobId {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px; font-weight: 600; color: var(--color-primary);
+}
+
+.jobMeta { font-size: 12px; color: var(--color-text-secondary); }
+.jobMeta strong { color: var(--color-text-primary); }
+
+.statusChip {
+  font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px;
+  text-transform: uppercase;
+}
+
+.stQueued    { background-color: var(--color-accent); color: var(--color-text-secondary); }
+.stPrinting  { background-color: rgba(230, 188, 66, 0.2);  color: var(--color-warning); }
+.stCompleted { background-color: rgba(46, 139, 92, 0.18); color: var(--color-success); }
+.stFailed    { background-color: rgba(192, 57, 43, 0.16);  color: var(--color-danger); }
+
+.rowActions { display: flex; gap: 6px; align-items: center; }
+
+.cancelBtn {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--color-border); background-color: var(--color-white);
+  color: var(--color-text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+
+.cancelBtn:hover { border-color: var(--color-danger); color: var(--color-danger); }
+
+.footer {
+  display: flex; justify-content: flex-end;
+  padding-top: 14px; border-top: 1px solid var(--color-border-light);
+}
+
+@media (max-width: 768px) {
+  .row { grid-template-columns: 1fr; }
+  .rowActions { justify-content: flex-end; }
+  .headerRow { flex-direction: column; align-items: stretch; }
+}

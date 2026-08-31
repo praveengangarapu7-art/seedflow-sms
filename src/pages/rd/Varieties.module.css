@@ -1,0 +1,179 @@
+/* Verbatim CSS Rules from BreedingPrograms.module.css */
+.pageHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.pageTitle { font-size: 26px; font-weight: 700; color: var(--color-text-primary); margin: 0 0 4px 0; }
+.pageSubtitle { font-size: 14px; color: var(--color-text-muted); margin: 0; }
+.headerActions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.divider { height: 1px; background-color: var(--color-border-light); margin-bottom: 24px; }
+.kpiGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; animation: fadeUp 400ms ease-out both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.filtersSection { margin-top: 16px; margin-bottom: 24px; }
+.contentArea { margin-bottom: 24px; }
+@media (max-width: 1024px) { .kpiGrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr !important; } }
+@media (max-width: 640px) { .pageHeader { flex-direction: column; align-items: stretch; } .headerActions { flex-wrap: wrap; } .kpiGrid { grid-template-columns: 1fr; } }
+
+/* Grid view */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+/* Page Custom Elements */
+.idLink {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-family: monospace;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.idLink:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+.tableName {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.tableCropBadge {
+  font-size: 11px;
+  margin-left: 8px;
+  background-color: var(--color-accent-light);
+  color: var(--color-primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.tableChip {
+  font-size: 12px;
+  padding: 2px 8px;
+  background-color: var(--color-border-light);
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+.mono {
+  font-family: monospace;
+}
+
+.miniChips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.miniChip {
+  font-size: 11px;
+  background-color: var(--color-accent-light);
+  color: var(--color-primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.miniChipCount {
+  font-size: 11px;
+  background-color: var(--color-border-light);
+  color: var(--color-text-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.ipBadge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  text-align: center;
+}
+
+.ipNone {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.ipPvp {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.ipPatent {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.ipSecret {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+}
+
+.tableCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  background-color: var(--color-white);
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.emptyIcon {
+  color: var(--color-text-muted);
+  margin-bottom: 16px;
+}
+
+.emptyState h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 6px 0;
+}
+
+.emptyState p {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Custom StatusBadge Overrides */
+.releasedBadge {
+  background-color: rgba(46, 139, 92, 0.12) !important;
+  color: var(--color-success) !important;
+}
+
+.prereleaseBadge {
+  background-color: rgba(230, 188, 66, 0.12) !important;
+  color: var(--color-warning) !important;
+}
+
+.candidateBadge {
+  background-color: var(--color-border-light) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.withdrawnBadge {
+  background-color: rgba(192, 57, 43, 0.1) !important;
+  color: var(--color-danger) !important;
+}
+

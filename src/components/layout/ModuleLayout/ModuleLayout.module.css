@@ -1,0 +1,23 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+}
+
+.content {
+  flex: 1;
+  padding: 32px;
+  background-color: var(--color-white);
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 20px 16px;
+  }
+}

@@ -1,0 +1,133 @@
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 4px 0;
+}
+
+.pageSubtitle {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-border-light);
+  margin-bottom: 24px;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.filtersSection {
+  margin: 16px 0 20px 0;
+}
+
+.contentArea {
+  margin-top: 12px;
+}
+
+.tableWrap {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.trialIdText {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.trialIdText:hover {
+  text-decoration: underline;
+}
+
+.tableName {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tableName:hover {
+  color: var(--color-primary);
+}
+
+.tableSubtitle {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.tableChip {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background-color: var(--color-accent-light);
+  border: 1px solid var(--color-border);
+  padding: 2px 8px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.locationsCount {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.scientistText {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  background-color: var(--color-white);
+}
+
+@media (max-width: 1024px) {
+  .kpiGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .kpiGrid {
+    grid-template-columns: 1fr;
+  }
+}

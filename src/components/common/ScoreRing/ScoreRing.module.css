@@ -1,0 +1,16 @@
+.root {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.svg {
+  display: block;
+}
+
+.label {
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.3;
+}

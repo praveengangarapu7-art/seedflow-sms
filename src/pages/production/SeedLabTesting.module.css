@@ -1,0 +1,283 @@
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f7fbf8 0%, #eef7ef 100%);
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 65ch;
+}
+
+.select,
+.textarea {
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  color: var(--color-text);
+  background: #fbfdfb;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 35px rgba(14, 84, 103, 0.06);
+  margin-bottom: 1.25rem;
+}
+
+.card:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.sectionSubtitle {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.88rem;
+}
+
+.hint {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.form {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.checkboxRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  cursor: pointer;
+  text-transform: capitalize;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.6rem 0.7rem;
+  background: #f7f9f7;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.table td {
+  padding: 0.6rem 0.7rem;
+  border-top: 1px solid #e8efe8;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+.overdueCell {
+  color: #a3352b;
+  font-weight: 700;
+}
+
+.submissionRow,
+.flagRow {
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.6rem;
+  background: #f8fbf8;
+}
+
+.submissionRow {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.submissionRow:last-child,
+.flagRow:last-child {
+  margin-bottom: 0;
+}
+
+.submissionRowActive {
+  border-color: var(--color-primary);
+}
+
+.flagRow {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.rowMeta {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+  text-transform: capitalize;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.inlineInput {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  font: inherit;
+  flex: 1;
+  min-width: 200px;
+}
+
+.certBox,
+.uploadBox {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e8efe8;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.statusSubmitted {
+  background: #f0f0f0;
+  color: #6b6b6b;
+}
+
+.statusInProgress {
+  background: #eef2fb;
+  color: #2f4b9e;
+}
+
+.statusCompleted {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.statusFailed {
+  background: #fbe8e6;
+  color: #a3352b;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpiRow {
+    grid-template-columns: 1fr;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+}

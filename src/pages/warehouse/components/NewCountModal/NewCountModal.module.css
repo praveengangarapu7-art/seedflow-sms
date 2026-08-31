@@ -1,0 +1,180 @@
+.stepperWrap {
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.section { margin-bottom: 18px; display: flex; flex-direction: column; gap: 12px; }
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+
+.field > span {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.toggleField {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.toggleField input { accent-color: var(--color-primary); }
+
+.input {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background-color: var(--color-white);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(14, 84, 103, 0.1);
+}
+
+.textarea { height: auto; padding: 10px 12px; resize: vertical; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.strategyList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.strategyCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.strategyCard input { accent-color: var(--color-primary); margin-top: 2px; }
+
+.strategyActive {
+  border-color: var(--color-primary);
+  background-color: var(--color-accent-light);
+}
+
+.strategyBody { display: flex; flex-direction: column; gap: 2px; }
+.strategyBody strong { font-size: 13px; color: var(--color-text-primary); }
+.strategyBody span { font-size: 11px; color: var(--color-text-muted); }
+
+.checkRow { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.checkCard {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+
+.checkCard input { accent-color: var(--color-primary); }
+
+.checkActive {
+  border-color: var(--color-primary);
+  background-color: var(--color-accent-light);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.zoneChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-text-primary);
+}
+
+.chip input { accent-color: var(--color-primary); margin: 0; }
+
+.chipActive {
+  border-color: var(--color-primary);
+  background-color: var(--color-accent-light);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.preview {
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+}
+
+.preview strong { font-weight: 700; font-size: 13px; }
+
+.summaryGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: var(--color-accent-light);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--color-border-light);
+  gap: 12px;
+}
+
+.summaryRow:last-child { border-bottom: none; }
+.summaryRow span { color: var(--color-text-muted); }
+.summaryRow strong { color: var(--color-text-primary); font-weight: 600; text-align: right; }
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.footerRight { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@media (max-width: 768px) {
+  .grid2 { grid-template-columns: 1fr; }
+  .strategyList { grid-template-columns: 1fr; }
+  .footer { flex-direction: column; align-items: stretch; }
+  .footerRight { flex-direction: column; }
+}

@@ -1,0 +1,556 @@
+.root {
+  --node-size: 44px;
+  --node-half: 22px;
+  --line-thickness: 3px;
+  --done-color: var(--color-primary);
+  --current-color: var(--color-secondary);
+  --idle-color: var(--color-border);
+
+  display: grid;
+  gap: 1.15rem;
+  width: 100%;
+}
+
+/* ------------------------------------------------------------------ header */
+
+.header {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.headerTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.currentChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid var(--color-border-light);
+  white-space: nowrap;
+}
+
+.currentChipDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(45, 122, 143, 0.22);
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.progressTrack {
+  position: relative;
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-border-light);
+  overflow: hidden;
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  transition: width 400ms ease;
+}
+
+.progressValue {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 3.2rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------- rails */
+
+.stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stage {
+  position: relative;
+}
+
+.stageButton {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+  width: 100%;
+  display: block;
+}
+
+.stageInteractive .stageButton {
+  cursor: pointer;
+}
+
+.stageInteractive .stageButton:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 3px;
+  border-radius: var(--radius-md);
+}
+
+.node {
+  position: relative;
+  z-index: 1;
+  width: var(--node-size);
+  height: var(--node-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-white);
+  border: var(--line-thickness) solid var(--idle-color);
+  color: var(--color-text-muted);
+  flex: 0 0 auto;
+  transition: background 200ms ease, border-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
+}
+
+.nodeIndex {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+}
+
+.stageLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.stageMeta {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.stageDates {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.35;
+}
+
+.stageDuration {
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+}
+
+.stageDescription {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* --------------------------------------------------------- status variants */
+
+.completed .node {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.completed .nodeIndex {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.current .node {
+  background: var(--color-white);
+  border-color: var(--color-secondary);
+  color: var(--color-secondary);
+  box-shadow: 0 0 0 6px rgba(45, 122, 143, 0.16);
+}
+
+.current .nodeIndex {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.current .stageLabel {
+  color: var(--color-primary);
+}
+
+.current .stageMeta {
+  color: var(--color-secondary);
+}
+
+.skipped .node {
+  border-style: dashed;
+  color: var(--color-text-muted);
+}
+
+.skipped .stageLabel,
+.skipped .stageDates {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.upcoming .stageLabel {
+  color: var(--color-text-secondary);
+}
+
+/* ---------------------------------------------------------------- selected */
+
+.selected .body {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 1px var(--color-secondary) inset;
+}
+
+/* ------------------------------------------------------------------- chips */
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.chipHealthGood {
+  background: #e6f7ec;
+  color: #187a43;
+  border-color: #c6ead4;
+}
+
+.chipHealthModerate {
+  background: #fef6e0;
+  color: #91650a;
+  border-color: #f2e2b4;
+}
+
+.chipHealthPoor {
+  background: #fbe8e6;
+  color: #a3352b;
+  border-color: #f2cdc8;
+}
+
+.chipDisease {
+  background: #fbe8e6;
+  color: #a3352b;
+  border-color: #f2cdc8;
+}
+
+.chipCount {
+  background: var(--color-accent-light);
+  color: var(--color-primary);
+  border-color: var(--color-border-light);
+}
+
+.chipMuted {
+  background: var(--color-white);
+  color: var(--color-text-muted);
+  border-color: var(--color-border-light);
+}
+
+/* ------------------------------------------------------- inspection blocks */
+
+.inspectionList {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.inspectionItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-border-light);
+  font-size: 0.76rem;
+  color: var(--color-text-secondary);
+  line-height: 1.35;
+}
+
+.inspectionCode {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.inspectionMain {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.inspectionNote {
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.noInspection {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* -------------------------------------------------------------- horizontal */
+
+.horizontal .stages {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.horizontal .stage {
+  flex: 1 1 0;
+  min-width: 112px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.35rem;
+}
+
+/* connector line between nodes */
+.horizontal .stage::before,
+.horizontal .stage::after {
+  content: '';
+  position: absolute;
+  top: var(--node-half);
+  height: var(--line-thickness);
+  background: var(--idle-color);
+  transform: translateY(calc(var(--line-thickness) / -2));
+}
+
+.horizontal .stage::before {
+  left: 0;
+  right: 50%;
+}
+
+.horizontal .stage::after {
+  left: 50%;
+  right: 0;
+}
+
+.horizontal .stage:first-child::before,
+.horizontal .stage:last-child::after {
+  display: none;
+}
+
+/* a completed stage means the segment leading into it is done */
+.horizontal .completed::before,
+.horizontal .current::before {
+  background: var(--done-color);
+}
+
+.horizontal .completed::after {
+  background: var(--done-color);
+}
+
+.horizontal .stageButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.horizontal .body {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: center;
+  text-align: center;
+  width: 100%;
+  padding: 0.55rem 0.4rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+}
+
+.horizontal .current .body {
+  background: var(--color-accent-light);
+  border-color: var(--color-border-light);
+}
+
+.horizontal .headRow {
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  width: 100%;
+}
+
+.horizontal .stageDates {
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.74rem;
+}
+
+.horizontal .stageLabel {
+  font-size: 0.84rem;
+}
+
+.horizontal .stageDescription,
+.horizontal .inspectionList {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- vertical */
+
+.vertical .stages {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.vertical .stage {
+  display: block;
+}
+
+.vertical .stage:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: var(--node-half);
+  top: var(--node-size);
+  bottom: -0.35rem;
+  width: var(--line-thickness);
+  background: var(--idle-color);
+  transform: translateX(calc(var(--line-thickness) / -2));
+}
+
+.vertical .completed:not(:last-child)::after {
+  background: var(--done-color);
+}
+
+.vertical .stageButton {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 0 0 1.1rem;
+}
+
+.vertical .body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  background: var(--color-white);
+}
+
+.vertical .current .body {
+  background: var(--color-accent-light);
+  border-color: var(--color-secondary);
+}
+
+.vertical .upcoming .body,
+.vertical .skipped .body {
+  background: #fbfdfd;
+}
+
+.vertical .headRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------------ states */
+
+.empty {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  border: 1px dashed var(--color-border-light);
+  border-radius: var(--radius-lg);
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-md);
+  background: #fef6e0;
+  border: 1px solid #f2e2b4;
+  color: #91650a;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .root {
+    --node-size: 38px;
+    --node-half: 19px;
+  }
+
+  .horizontal .stage {
+    min-width: 118px;
+  }
+
+  .vertical .stageButton {
+    gap: 0.65rem;
+  }
+}

@@ -1,0 +1,88 @@
+.wrapper {
+  background-color: var(--color-white);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sensorId {
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.typeCol {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusCol {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.currentValue {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.batteryCol {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+}
+
+.batteryLow {
+  color: #dc2626;
+}
+
+.signalCol {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signalBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.bar {
+  width: 3px;
+  background-color: var(--color-bg-light);
+  border-radius: 1px;
+}
+
+.barActive {
+  background-color: var(--color-primary);
+}
+
+.bar:nth-child(1) { height: 4px; }
+.bar:nth-child(2) { height: 6px; }
+.bar:nth-child(3) { height: 8px; }
+.bar:nth-child(4) { height: 10px; }
+.bar:nth-child(5) { height: 12px; }
+
+.lastReading {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.moreBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.moreBtn:hover {
+  background-color: var(--color-bg-light);
+  color: var(--color-text-primary);
+}

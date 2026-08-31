@@ -1,0 +1,185 @@
+.diagramContainer {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  user-select: none;
+}
+
+.svgElement {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Center Dashboard Float */
+.centerGroup {
+  animation: floatCenter 4s infinite ease-in-out;
+  transform-origin: 300px 300px;
+}
+
+@keyframes floatCenter {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Decorative Outer Orbit Ring */
+.orbitRing {
+  transform-origin: 300px 300px;
+  animation: rotateOrbit 90s infinite linear;
+}
+
+@keyframes rotateOrbit {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Node groups */
+.nodeGroup {
+  cursor: pointer;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: var(--cx) var(--cy);
+}
+
+.nodeCircle {
+  fill: var(--color-white);
+  stroke: var(--color-primary);
+  stroke-width: 2px;
+  filter: drop-shadow(0 4px 8px rgba(14, 84, 103, 0.08));
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nodeLabel {
+  fill: var(--color-text-primary);
+  font-weight: 700;
+  font-size: 13px;
+  text-anchor: middle;
+  transition: fill 200ms ease;
+}
+
+/* Connecting Line */
+.connectingLine {
+  stroke: rgba(14, 84, 103, 0.12);
+  stroke-width: 1.5px;
+  stroke-dasharray: 4 4;
+  transition: all 300ms ease;
+}
+
+.connectingLineActive {
+  stroke: var(--color-warning) !important;
+  stroke-width: 3px !important;
+  stroke-dasharray: none !important;
+}
+
+/* Pulse Rings */
+.pulseRing {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 1px;
+  opacity: 0;
+  transform-origin: var(--cx) var(--cy);
+  transform-box: fill-box;
+  animation: pulse 3s infinite cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* Flow particles */
+.particle {
+  fill: var(--color-warning);
+  filter: drop-shadow(0 0 2px var(--color-warning));
+}
+
+/* Interactive Hover States */
+.nodeGroup:hover {
+  transform: scale(1.1);
+}
+
+.nodeGroup:hover .nodeCircle {
+  stroke-width: 3px;
+  stroke: var(--color-warning);
+  filter: drop-shadow(0 6px 16px rgba(245, 175, 18, 0.25));
+}
+
+.nodeGroup:hover .nodeLabel {
+  fill: var(--color-primary);
+}
+
+/* Floating HTML Metric Cards */
+.floatingCard {
+  position: absolute;
+  background-color: var(--color-white);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+}
+
+.card1 {
+  top: 15%;
+  right: 5%;
+  animation: floatCard1 5s infinite ease-in-out;
+}
+
+.card2 {
+  bottom: 22%;
+  right: -2%;
+  animation: floatCard2 6s infinite ease-in-out;
+}
+
+.card3 {
+  bottom: 24%;
+  left: -2%;
+  animation: floatCard3 5.5s infinite ease-in-out;
+}
+
+@keyframes floatCard1 {
+  0%, 100% { transform: translateY(0) rotate(1deg); }
+  50% { transform: translateY(-8px) rotate(-1deg); }
+}
+
+@keyframes floatCard2 {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@keyframes floatCard3 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-7px) rotate(-1.5deg); }
+}

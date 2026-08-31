@@ -1,0 +1,56 @@
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.desc {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputGroup label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.textarea {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  min-height: 100px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.select {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  font-size: 14px;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-bg-light);
+}

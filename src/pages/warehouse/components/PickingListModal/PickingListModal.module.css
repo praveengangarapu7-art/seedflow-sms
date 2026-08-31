@@ -1,0 +1,166 @@
+.headerCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.consigneeName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
+.headerMeta { font-size: 12px; color: var(--color-text-muted); }
+
+.statusChip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background-color: rgba(230, 188, 66, 0.2);
+  color: var(--color-warning);
+}
+
+.strategyBanner {
+  background-color: var(--color-accent-light);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 14px;
+  border-left: 3px solid var(--color-primary);
+}
+
+.strategyBanner strong { color: var(--color-primary); }
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 12px;
+  background-color: var(--color-accent-light);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.row { transition: background-color 0.12s ease; }
+.row:hover { background-color: var(--color-accent-light); }
+
+.rowDone { background-color: rgba(46, 139, 92, 0.06); }
+
+.seqCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.seqDone {
+  background-color: var(--color-success);
+  color: var(--color-white);
+}
+
+.itemName {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--color-text-primary);
+}
+
+.itemSku {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.batchCell { display: flex; flex-direction: column; gap: 2px; }
+
+.batchValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--color-text-primary);
+}
+
+.batchHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  color: var(--color-info);
+  font-style: italic;
+}
+
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.alignRight { text-align: right; }
+.bold { font-weight: 600; }
+
+.qtyInput {
+  height: 30px;
+  width: 80px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: var(--font-sans);
+  background-color: var(--color-white);
+}
+
+.qtyInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(14, 84, 103, 0.1);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border-light);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.progress {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.progress strong {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.footerActions { display: flex; gap: 8px; }

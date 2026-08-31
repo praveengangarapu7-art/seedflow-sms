@@ -1,0 +1,233 @@
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f7fbf8 0%, #eef7ef 100%);
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.select,
+.input,
+.textarea {
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  color: var(--color-text);
+  background: #fbfdfb;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 35px rgba(14, 84, 103, 0.06);
+  margin-bottom: 1.25rem;
+}
+
+.card:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.sectionSubtitle {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.88rem;
+}
+
+.form {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.computedBox {
+  background: #f0f7f2;
+  border: 1px dashed var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.6rem 0.7rem;
+  background: #f7f9f7;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.table td {
+  padding: 0.6rem 0.7rem;
+  border-top: 1px solid #e8efe8;
+  font-size: 0.9rem;
+}
+
+.tableRow {
+  cursor: pointer;
+}
+
+.tableRowSelected {
+  background: #f0f7f2;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.statusActive,
+.statusPackaged {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.statusRecalled,
+.statusDamaged {
+  background: #fbe8e6;
+  color: #a3352b;
+}
+
+.statusDistributed {
+  background: #eef2fb;
+  color: #2f4b9e;
+}
+
+.statusSold {
+  background: #f0f0f0;
+  color: #6b6b6b;
+}
+
+.labelSheet {
+  border: 2px dashed var(--color-border-light);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.labelQr {
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+}
+
+.labelField {
+  margin-bottom: 0.5rem;
+}
+
+.labelFieldLabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.labelFieldValue {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.labelActions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .labelSheet {
+    grid-template-columns: 1fr;
+  }
+}

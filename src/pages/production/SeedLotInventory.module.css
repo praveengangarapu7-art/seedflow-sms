@@ -1,0 +1,315 @@
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f7fbf8 0%, #eef7ef 100%);
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.connectionBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #f8fbf8;
+  border: 1px solid var(--color-border-light);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dotConnected {
+  background: #1f9d55;
+  box-shadow: 0 0 0 3px rgba(31, 157, 85, 0.18);
+}
+
+.dotConnecting {
+  background: #e0a531;
+  box-shadow: 0 0 0 3px rgba(224, 165, 49, 0.18);
+}
+
+.dotDisconnected {
+  background: #d64545;
+  box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.18);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.select,
+.input {
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  color: var(--color-text);
+  background: #fbfdfb;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 35px rgba(14, 84, 103, 0.06);
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+  margin: 0 0 1rem;
+}
+
+.summaryRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.summaryTile {
+  flex: 1;
+  min-width: 140px;
+  background: #f8fbf8;
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+.summaryLabel {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
+}
+
+.summaryValue {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  background: #f7f9f7;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.table td {
+  padding: 0.65rem 0.75rem;
+  border-top: 1px solid #e8efe8;
+}
+
+.tableRow {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.tableRow:hover {
+  background: #f4f9f4;
+}
+
+.tableRowSelected {
+  background: #eaf5ec;
+}
+
+.availabilityBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.5rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.availabilityGood {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.availabilityWatch {
+  background: #fef6e0;
+  color: #91650a;
+}
+
+.availabilityLow {
+  background: #fbe8e6;
+  color: #a3352b;
+}
+
+.pulse {
+  animation: pulseHighlight 1.4s ease;
+}
+
+@keyframes pulseHighlight {
+  0% { background-color: #dff3e4; }
+  100% { background-color: transparent; }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.alertList,
+.activityList {
+  display: grid;
+  gap: 0.6rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.alertItem {
+  background: #fbeeee;
+  border: 1px solid #f3cccc;
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+
+.alertTitle {
+  font-weight: 700;
+  color: #a3352b;
+  margin: 0 0 0.2rem;
+  font-size: 0.9rem;
+}
+
+.alertMeta {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.activityItem {
+  background: #f8fbf8;
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.88rem;
+}
+
+.activityMeta {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  margin-top: 0.2rem;
+}
+
+.tagAllocate {
+  color: #187a43;
+  font-weight: 700;
+}
+
+.tagRelease {
+  color: #0f6d95;
+  font-weight: 700;
+}
+
+.form {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--color-text);
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.9rem;
+}
+
+.historyPanel {
+  margin-top: 1.25rem;
+  border-top: 1px dashed var(--color-border-light);
+  padding-top: 1rem;
+}
+
+.historyEntry {
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #eef3ee;
+  font-size: 0.85rem;
+}
+
+.historyEntry:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryRow {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,216 @@
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  animation: fadeUp 0.4s ease-out both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cropBadge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-accent-light);
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.titleInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accNumber {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background-color: var(--color-background-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.statCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.statLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.02em;
+}
+
+.statValue {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statValueItalic {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.originRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  color: var(--color-text-secondary);
+}
+
+.originIcon {
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.originText {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.traitsArea {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.traitChip {
+  font-size: 11px;
+  padding: 4px 8px;
+  background-color: var(--color-accent-light);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.traitChipHidden {
+  font-size: 11px;
+  padding: 4px 8px;
+  background-color: var(--color-background-subtle);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.noTraits {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.footerIcons {
+  display: flex;
+  gap: 12px;
+}
+
+.iconTooltip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: help;
+}
+
+.featureIcon {
+  color: var(--color-primary);
+}
+
+.tooltipText {
+  visibility: hidden;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background-color: var(--color-text-primary);
+  color: white;
+  font-size: 11px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.iconTooltip:hover .tooltipText {
+  visibility: visible;
+  opacity: 1;
+}
+
+.viewLink {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-primary);
+}

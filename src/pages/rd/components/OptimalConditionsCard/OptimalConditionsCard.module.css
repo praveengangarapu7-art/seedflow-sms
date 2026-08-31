@@ -1,0 +1,168 @@
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.headerTitle {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 2px 0 0 0;
+}
+
+.cropBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background-color: var(--color-accent-light);
+  border: 1px solid var(--color-border);
+  padding: 3px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.rangesColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.parameterRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.paramMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.paramLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.paramVal {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.trackContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.track {
+  height: 8px;
+  background-color: #f1f3f1;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+}
+
+.optimalZone {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background-color: var(--color-primary);
+  opacity: 0.85;
+  border-radius: 4px;
+}
+
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+.optimalTick {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.detailsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.detailIcon {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.detailText {
+  display: flex;
+  flex-direction: column;
+}
+
+.detailLabel {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detailValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 2px 0 0 0;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}

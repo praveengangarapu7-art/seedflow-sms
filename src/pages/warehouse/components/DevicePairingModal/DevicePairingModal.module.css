@@ -1,0 +1,66 @@
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+
+.field > span {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.hint { color: var(--color-text-muted); font-style: italic; font-size: 11px; }
+
+.radioRow { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.radioCard {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-text-primary);
+}
+
+.radioCard input { accent-color: var(--color-primary); }
+
+.radioActive {
+  border-color: var(--color-primary);
+  background-color: var(--color-accent-light);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.input {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background-color: var(--color-white);
+}
+
+.input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(14, 84, 103, 0.1); }
+
+.codeInput {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 18px;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+@media (max-width: 600px) {
+  .grid2 { grid-template-columns: 1fr; }
+}

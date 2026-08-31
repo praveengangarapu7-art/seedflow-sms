@@ -1,0 +1,129 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--color-white);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.colorDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.chartWrapper {
+  position: relative;
+  height: 300px;
+  margin: 0 40px;
+  display: flex;
+}
+
+.yAxis {
+  position: absolute;
+  left: -40px;
+  top: 0;
+  bottom: 0;
+  width: 35px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+.svg {
+  flex: 1;
+  height: 100%;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: var(--color-bg-light);
+  stroke-width: 0.5;
+}
+
+.thresholdMax {
+  stroke: #dc2626;
+  stroke-width: 0.5;
+  opacity: 0.4;
+}
+
+.thresholdMin {
+  stroke: #d97706;
+  stroke-width: 0.5;
+  opacity: 0.4;
+}
+
+.line {
+  transition: stroke-dashoffset 2s ease-in-out;
+}
+
+.crosshair {
+  stroke: var(--color-border);
+  stroke-width: 0.5;
+}
+
+.tooltip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  pointer-events: none;
+  min-width: 140px;
+}
+
+.tooltipTime {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--color-bg-light);
+  padding-bottom: 4px;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  gap: 12px;
+}
+
+.tooltipLabel {
+  color: var(--color-text-secondary);
+}
+
+.tooltipValue {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.xAxis {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 40px;
+  font-size: 10px;
+  color: var(--color-text-muted);
+}

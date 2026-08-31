@@ -1,0 +1,109 @@
+.root {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.stepWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+
+.stepWrapper:last-child {
+  flex: 0 0 auto;
+}
+
+.stepCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.connector {
+  flex: 1;
+  height: 2px;
+  margin: 0 4px;
+  margin-bottom: 22px; /* align with circle center */
+}
+
+.connectorDone {
+  background-color: var(--color-primary);
+}
+
+.connectorFuture {
+  background-color: var(--color-border);
+}
+
+/* Circle */
+.circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.circleDone {
+  background-color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  color: var(--color-white, #ffffff);
+  cursor: pointer;
+}
+
+.circleDone:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.circleCurrent {
+  background-color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  color: var(--color-white, #ffffff);
+  cursor: default;
+}
+
+.circleFuture {
+  background-color: var(--color-white, #ffffff);
+  border: 2px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.stepNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Labels */
+.label {
+  font-size: 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.labelDone {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.labelCurrent {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.labelFuture {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}

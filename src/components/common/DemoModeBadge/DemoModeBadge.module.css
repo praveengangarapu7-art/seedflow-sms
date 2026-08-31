@@ -1,0 +1,27 @@
+.badge {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 880;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: #fdf2e3;
+  border: 1px solid #f0dcb8;
+  color: #8a6316;
+  font-size: 0.76rem;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(14, 84, 103, 0.1);
+  cursor: default;
+}
+
+@media (max-width: 600px) {
+  .badge {
+    left: 0.75rem;
+    bottom: 0.75rem;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.7rem;
+  }
+}

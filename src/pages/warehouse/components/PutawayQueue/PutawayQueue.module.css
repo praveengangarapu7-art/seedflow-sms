@@ -1,0 +1,197 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.topLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.priorityDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.prioUrgent { background-color: var(--color-danger); color: var(--color-danger); }
+.prioHigh   { background-color: var(--color-warning); color: var(--color-warning); }
+.prioMedium { background-color: var(--color-primary); color: var(--color-primary); }
+.prioLow    { background-color: var(--color-secondary); color: var(--color-secondary); }
+
+.taskId {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.statusChip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.statusPending    { background-color: var(--color-accent); color: var(--color-text-secondary); }
+.statusInProgress { background-color: rgba(230, 188, 66, 0.18); color: var(--color-warning); }
+.statusCompleted  { background-color: rgba(46, 139, 92, 0.16); color: var(--color-success); }
+
+.priorityLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  background: transparent;
+}
+
+.itemName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.itemMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  flex-wrap: wrap;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.qty { font-weight: 600; color: var(--color-text-primary); }
+
+.metaSep { opacity: 0.5; }
+
+.routeBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background-color: var(--color-accent-light);
+  border-radius: var(--radius-md);
+}
+
+.routeCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.routeArrow {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.routeLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.routeValue {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.routeSuggested {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.reasoning {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 99px;
+  background-color: rgba(45, 122, 143, 0.12);
+  color: var(--color-info);
+  font-size: 12px;
+  width: fit-content;
+}
+
+.reasoning em { font-style: italic; }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border-light);
+  flex-wrap: wrap;
+}
+
+.footerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.assignee {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.timestamp { color: var(--color-text-muted); }
+
+.completedNote {
+  font-size: 12px;
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  background-color: var(--color-white);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 600px) {
+  .routeBox { flex-direction: column; align-items: stretch; }
+  .routeArrow { transform: rotate(90deg); align-self: center; }
+}

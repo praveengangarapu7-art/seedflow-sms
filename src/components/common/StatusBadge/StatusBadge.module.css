@@ -1,0 +1,55 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* PR statuses */
+.draft       { background-color: var(--color-border-light); color: var(--color-text-secondary); }
+.pending     { background-color: rgba(230, 188, 66, 0.12);  color: var(--color-warning); }
+.approved    { background-color: rgba(46, 139, 92, 0.12);  color: var(--color-success); }
+.rejected    { background-color: rgba(192, 57, 43, 0.1);   color: var(--color-danger); }
+.converted   { background-color: rgba(45, 122, 143, 0.12);  color: var(--color-info); }
+
+/* PO statuses */
+.sent            { background-color: rgba(45, 122, 143, 0.12); color: var(--color-info); }
+.acknowledged    { background-color: rgba(230, 188, 66, 0.12); color: var(--color-warning); }
+.partialReceived { background-color: rgba(230, 188, 66, 0.12); color: var(--color-warning); }
+.received        { background-color: rgba(46, 139, 92, 0.12); color: var(--color-success); }
+.closed          { background-color: var(--color-border-light); color: var(--color-text-muted); }
+
+/* Priority */
+.low    { background-color: var(--color-border-light);      color: var(--color-text-muted); }
+.medium { background-color: rgba(45, 122, 143, 0.12);       color: var(--color-info); }
+.high   { background-color: rgba(230, 188, 66, 0.12);       color: var(--color-warning); }
+.urgent { background-color: rgba(192, 57, 43, 0.1);        color: var(--color-danger); }
+
+/* Supplier classification */
+.preferred   { background-color: rgba(14, 84, 103, 0.14);  color: var(--color-primary); }
+.supApproved { background-color: rgba(46, 139, 92, 0.12); color: var(--color-success); }
+.registered  { background-color: rgba(45, 122, 143, 0.12); color: var(--color-info); }
+.blacklisted { background-color: rgba(192, 57, 43, 0.12);  color: var(--color-danger); }
+
+/* RFQ status */
+.rfqDraft     { background-color: var(--color-border-light);       color: var(--color-text-muted); }
+.rfqSent      { background-color: rgba(45, 122, 143, 0.12);        color: var(--color-info); }
+.rfqResponses { background-color: rgba(230, 188, 66, 0.12);        color: var(--color-warning); }
+.rfqAwarded   { background-color: rgba(14, 84, 103, 0.14);         color: var(--color-primary); }
+.rfqClosed    { background-color: var(--color-border-light);        color: var(--color-text-secondary); }
+
+/* GRN status */
+.grnPending  { background-color: rgba(230, 188, 66, 0.12); color: var(--color-warning); }
+.grnInspected { background-color: rgba(45, 122, 143, 0.12); color: var(--color-info); }
+.grnAccepted { background-color: rgba(46, 139, 92, 0.12);  color: var(--color-success); }
+.grnRejected { background-color: rgba(192, 57, 43, 0.12);   color: var(--color-danger); }
+.grnPartial  { background-color: rgba(230, 188, 66, 0.12);  color: var(--color-warning); }
+
+/* Movement statuses */
+.inbound    { background-color: rgba(46, 139, 92, 0.12); color: var(--color-success); }
+.outbound   { background-color: rgba(45, 122, 143, 0.12); color: var(--color-info); }
+.transfer   { background-color: rgba(14, 84, 103, 0.1);  color: var(--color-primary); }
+.adjustment { background-color: rgba(230, 188, 66, 0.12); color: var(--color-warning); }

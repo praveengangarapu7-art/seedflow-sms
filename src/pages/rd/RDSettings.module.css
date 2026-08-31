@@ -1,0 +1,847 @@
+/* Verbatim CSS Rules from BreedingPrograms.module.css */
+.pageHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.pageTitle { font-size: 26px; font-weight: 700; color: var(--color-text-primary); margin: 0 0 4px 0; }
+.pageSubtitle { font-size: 14px; color: var(--color-text-muted); margin: 0; }
+.headerActions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.divider { display: none; }
+.filtersSection { margin-top: 16px; margin-bottom: 24px; }
+.contentArea { margin-bottom: 24px; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 640px) { .pageHeader { flex-direction: column; align-items: stretch; } .headerActions { flex-wrap: wrap; } }
+
+/* Split Sidebar Layout */
+.pageLayout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  gap: 0;
+  border-top: 1px solid var(--color-border);
+  margin-top: 0;
+}
+
+.sidebar {
+  background-color: var(--color-white);
+  border-right: 1px solid var(--color-border);
+  padding: 16px 0;
+  height: 100%;
+  min-height: calc(100vh - 180px);
+}
+
+.tabsStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  width: 100%;
+  border-left: 3px solid transparent;
+}
+
+.tabBtn:hover {
+  background-color: var(--color-accent-light);
+  color: var(--color-text-primary);
+}
+
+.activeTabBtn {
+  background-color: var(--color-accent-light);
+  color: var(--color-primary);
+  border-left-color: var(--color-warning);
+  font-weight: 500;
+  border-radius: 0;
+  padding-left: 24px;
+}
+
+.mainContent {
+  min-width: 0; /* Prevents flex blowout */
+  padding: 32px;
+  background-color: var(--color-surface);
+}
+
+/* Tab Header and Filtering Toolbars */
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeUp 350ms ease-out both;
+}
+
+.tabHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.headerFilters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.searchWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: var(--color-text-muted);
+}
+
+.searchInput {
+  height: 34px;
+  padding: 0 12px 0 34px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  color: var(--color-text-primary);
+  width: 260px;
+  background-color: var(--color-white);
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+}
+
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filterChip {
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background-color: var(--color-white);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterChip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.activeChip {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.activeChip:hover {
+  color: var(--color-white);
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.linkButton:hover {
+  text-decoration: underline;
+  color: var(--color-primary-hover);
+}
+
+/* Tab 1: Template Cards Grid */
+.templatesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.templateCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.templateCard:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+
+.cardInfoRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.infoLabel {
+  font-weight: 500;
+}
+
+.infoVal {
+  font-weight: 600;
+}
+
+.cardStatsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.statBox {
+  background-color: var(--color-accent-light);
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabel {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.statVal {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.cardFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 12px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.useLink {
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.useLink:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+/* Tab 2/5/8 DataTables and Cards */
+.tableCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.mono {
+  font-family: monospace;
+}
+
+.code {
+  font-family: monospace;
+  background-color: var(--color-accent-light);
+  color: var(--color-primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.truncatedText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  display: block;
+}
+
+.cropsList {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+/* Toggles styling */
+.toggleSwitch {
+  width: 38px;
+  height: 20px;
+  background-color: var(--color-border);
+  border-radius: 10px;
+  padding: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.smallToggle {
+  width: 32px;
+  height: 18px;
+  border-radius: 9px;
+  padding: 1px;
+}
+
+.activeSwitch {
+  background-color: var(--color-primary);
+}
+
+.toggleHandle {
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-white);
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.smallToggle .toggleHandle {
+  width: 16px;
+  height: 16px;
+}
+
+.activeSwitch .toggleHandle {
+  transform: translateX(18px);
+}
+
+.smallToggle.activeSwitch .toggleHandle {
+  transform: translateX(14px);
+}
+
+/* Tab 3: Split layout */
+.splitLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.splitPane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.paneTitleHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 38px;
+}
+
+.paneTitleHeaderRow h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.headerRowFilters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  outline: none;
+}
+
+/* Tab 4: Workflows vertical stack */
+.rulesStack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ruleCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.ruleCard:hover {
+  border-color: var(--color-primary);
+}
+
+.ruleCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.ruleTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ruleTitleGroup h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.ruleHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ruleDesc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0 0 16px 0;
+}
+
+.ruleLogicFlow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--color-accent-light);
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.flowRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.flowConnector {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.flowStatement {
+  color: var(--color-text-secondary);
+}
+
+.ruleCardFooter {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 12px;
+}
+
+/* Tab 5: Users cells and permission definitions */
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.bold {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.muted {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.roleDefinitionsBox {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.roleDefinitionsBox h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.definitionsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.defCard {
+  background-color: var(--color-accent-light);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.defCard strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.defCard p {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Tab 6: Notifications lists preferences */
+.notificationsLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.notifBlockCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.notifBlockCard h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: var(--color-text-primary);
+}
+
+.notifBlockDesc {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin: 0 0 20px 0;
+}
+
+.notifPreferencesList {
+  display: flex;
+  flex-direction: column;
+}
+
+.preferenceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.preferenceRow:last-child {
+  border-bottom: none;
+}
+
+.preferenceMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.preferenceMeta strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.preferenceMeta span {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.preferenceToggles {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notifToggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.channelLabel {
+  color: var(--color-text-secondary);
+}
+
+.preferencesSaveRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.smtpForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 500px;
+}
+
+.smtpRow {
+  display: flex;
+  gap: 12px;
+}
+
+/* Tab 7: Integrations cards grid */
+.integrationsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.integrationCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  min-height: 160px;
+}
+
+.integrationCard:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.integrationIconTitleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.intIconPlaceholder {
+  width: 38px;
+  height: 38px;
+  background-color: var(--color-accent-light);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.intIcon {
+  color: var(--color-primary);
+}
+
+.intTitleMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.intTitleMeta h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.intDesc {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  margin: 0 0 16px 0;
+  flex-grow: 1;
+}
+
+.intFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 12px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.intSyncLabel {
+  font-weight: 500;
+}
+
+/* Tab 8 Datepickers inline spacing */
+.datePickerWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.datePickerWrap .filterLabel {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.5px;
+}
+
+/* Responsive sidebars grids */
+@media (max-width: 1024px) {
+  .pageLayout {
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--color-border);
+  }
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0;
+    min-height: auto;
+  }
+  .tabsStrip {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 0;
+  }
+  .tabBtn {
+    width: auto;
+    white-space: nowrap;
+    padding: 16px;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+  .activeTabBtn {
+    border-left-color: transparent;
+    border-bottom-color: var(--color-warning);
+    padding-left: 16px;
+  }
+  .definitionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .definitionsGrid {
+    grid-template-columns: 1fr;
+  }
+  .tabHeaderRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .headerFilters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .searchInput {
+    width: 100%;
+  }
+  .preferenceRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

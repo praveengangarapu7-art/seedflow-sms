@@ -1,0 +1,229 @@
+/* ── Page top ─────────────────────────────────────────────────── */
+.pageTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+.pageTopLeft {
+  min-width: 0;
+}
+.pageTopTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+.pageTopSub {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+.divider {
+  height: 1px;
+  background: var(--color-border-light);
+  margin: 16px 0;
+}
+.pageTopActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Grid ─────────────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1200px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ── Supplier card ────────────────────────────────────────────── */
+.supplierCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.supplierCard:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 16px rgba(14, 84, 103, 0.1);
+  transform: translateY(-2px);
+}
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+.cardName {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+.cardCat {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+.scoresRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.scoreCol {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+.scoreKey {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+.scoreVal {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.scoreBar {
+  height: 4px;
+  background: var(--color-border-light);
+  border-radius: 2px;
+  margin-top: 2px;
+}
+.scoreBarFill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 2px;
+}
+.cardFooter {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 10px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cardLink {
+  font-size: 12px;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── Form ─────────────────────────────────────────────────────── */
+.formGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.formGrid3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.formLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.formInput,
+.formSelect,
+.formTextarea {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background: var(--color-white);
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(14, 84, 103, 0.1);
+}
+.formTextarea {
+  resize: vertical;
+  min-height: 72px;
+  font-family: inherit;
+}
+.formSection {
+  margin-bottom: 20px;
+}
+.formSectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+.chipRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.chip {
+  padding: 6px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  font-size: 12px;
+  cursor: pointer;
+  background: var(--color-white);
+  color: var(--color-text-secondary);
+  transition: all 0.15s;
+}
+.chipActive {
+  border-color: var(--color-primary);
+  background: rgba(14, 84, 103, 0.08);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+.footerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footerRight {
+  display: flex;
+  gap: 8px;
+}

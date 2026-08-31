@@ -1,0 +1,452 @@
+/* ------------------------------------------------------------ status pills */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.hsPendingApproval {
+  background: #fef6e0;
+  color: #91650a;
+  border-color: #f2e2b4;
+}
+
+.hsChangesRequested {
+  background: #fdf0e3;
+  color: #9a5b16;
+  border-color: #f3d9bd;
+}
+
+.hsApproved {
+  background: #e6f7ec;
+  color: #187a43;
+  border-color: #c6ead4;
+}
+
+.hsRejected {
+  background: #fbe8e6;
+  color: #a3352b;
+  border-color: #f2cdc8;
+}
+
+.hsHarvested {
+  background: #e5f4fb;
+  color: #0f6d95;
+  border-color: #c4e4f2;
+}
+
+.hsTransportAuthorized {
+  background: #e8eefb;
+  color: #2f4b9e;
+  border-color: #cbd8f3;
+}
+
+.hsDeliveredToProcessing {
+  background: #dcebe4;
+  color: #15603c;
+  border-color: #bcdbcb;
+}
+
+/* -------------------------------------------------------------------- KPIs */
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.kpi {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 12px 35px rgba(14, 84, 103, 0.05);
+  display: grid;
+  gap: 0.25rem;
+}
+
+.kpiLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.73rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.kpiValue {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1.2;
+}
+
+.kpiHint {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+/* ---------------------------------------------------------------- lot chip */
+
+.lotChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-border-light);
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.lotChipEmpty {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.copyButton {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: var(--color-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.copyButton:hover {
+  color: var(--color-primary);
+}
+
+.lotBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-border-light);
+  margin-bottom: 1rem;
+}
+
+.lotBannerLabel {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.lotBannerValue {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ----------------------------------------------------------- row actions */
+
+.rowActions {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.rowActionsTight {
+  flex-wrap: nowrap;
+}
+
+.iconAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-light);
+  background: var(--color-white);
+  color: var(--color-text-secondary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.iconAction:hover:not(:disabled) {
+  border-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.iconAction:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.approveAction:hover:not(:disabled) {
+  border-color: #2E8B5C;
+  color: #187a43;
+  background: #f2fbf6;
+}
+
+.rejectAction:hover:not(:disabled) {
+  border-color: #C0392B;
+  color: #a3352b;
+  background: #fdf4f3;
+}
+
+/* ------------------------------------------------------------- timeline */
+
+.timeline {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timelineItem {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+}
+
+.timelineItem:last-child {
+  padding-bottom: 0;
+}
+
+.timelineItem:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 26px;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-border-light);
+}
+
+.timelineDot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-white);
+  border: 2px solid var(--color-border);
+  color: var(--color-text-muted);
+  z-index: 1;
+}
+
+.timelineDotDone {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.timelineDotDanger {
+  background: #C0392B;
+  border-color: #C0392B;
+  color: var(--color-white);
+}
+
+.timelineBody {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.timelineTop {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.timelineStatus {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-size: 0.88rem;
+}
+
+.timelineMeta {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+.timelineNote {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------- success panel */
+
+.successPanel {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background: #f2fbf6;
+  border: 1px solid #c6ead4;
+}
+
+.successTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #187a43;
+}
+
+.successMeta {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ------------------------------------------------------------ misc bits */
+
+.readOnlyValue {
+  border: 1px dashed var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  background: #f0f7f2;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  min-height: 46px;
+}
+
+.readOnlyHint {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.modalForm {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.modalSummary {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.75rem;
+  line-height: 1.5;
+}
+
+.inlineList {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.inlineRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+}
+
+.inlineRowMain {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.inlineRowTitle {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 0.88rem;
+}
+
+.inlineRowMeta {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.tableLink {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.tableLink:hover {
+  text-decoration: underline;
+}
+
+.quantityCell {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.mutedCell {
+  color: var(--color-text-muted);
+}
+
+.transportGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.workflowActions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding-top: 0.25rem;
+}
+
+@media (max-width: 700px) {
+  .lotBanner {
+    align-items: flex-start;
+  }
+
+  .rowActions {
+    gap: 0.3rem;
+  }
+}

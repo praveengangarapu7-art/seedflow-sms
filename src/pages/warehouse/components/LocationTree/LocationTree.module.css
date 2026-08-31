@@ -1,0 +1,119 @@
+.treeContainer {
+  height: 100%;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+}
+
+.treeNodeContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.nodeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  user-select: none;
+}
+
+.nodeRow:hover {
+  background-color: #f1f5f1; /* Pale olive */
+}
+
+.nodeRow.selected {
+  background-color: #f1f5f1;
+  border-left-color: #3e4c3e;
+}
+
+.nodeMain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  transition: transform 0.2s ease;
+}
+
+.chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.chevron.hidden {
+  visibility: hidden;
+}
+
+.nodeIcon {
+  color: #6b7280;
+}
+
+.nodeRow.selected .nodeIcon {
+  color: #3e4c3e;
+}
+
+.nodeLabel {
+  font-size: 14px;
+  color: #374151;
+}
+
+.nodeRow.selected .nodeLabel {
+  font-weight: 500;
+  color: #111827;
+}
+
+.nodeInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.occupancy {
+  font-size: 12px;
+  color: #6b7280;
+  width: 32px;
+  text-align: right;
+}
+
+.miniBar {
+  width: 40px;
+  height: 4px;
+  background: #f3f4f6;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.miniFill {
+  height: 100%;
+  background: #3e4c3e;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+}
+
+.actionBtn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.children {
+  display: flex;
+  flex-direction: column;
+}

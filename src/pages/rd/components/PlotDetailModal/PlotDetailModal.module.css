@@ -1,0 +1,205 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.panel {
+  background-color: #f7faf7;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.sectionTitle {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detailsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.label {
+  color: var(--color-text-muted);
+}
+
+.val {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.mono {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--color-primary);
+  background-color: var(--color-accent-light);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.chip {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background-color: var(--color-accent-light);
+  border: 1px solid var(--color-border);
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+
+.noData {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 16px 0;
+}
+
+.observationsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.observationsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.obsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.obsCard {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.obsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.obsMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.obsIcon {
+  color: var(--color-primary);
+}
+
+.obsDate {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.obsStage {
+  background-color: #f0f4f0;
+  color: var(--color-text-secondary);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.obsId {
+  font-family: monospace;
+  color: var(--color-text-muted);
+}
+
+.obsBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.measurements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.measurementBadge {
+  font-size: 11px;
+  background-color: var(--color-accent-light);
+  color: var(--color-text-primary);
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.obsFooter {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  border-top: 1px solid #f9f9f9;
+  padding-top: 6px;
+}
+
+.obsMethod {
+  font-style: italic;
+}
+
+.emptyState {
+  padding: 24px;
+  text-align: center;
+  background-color: #fafafa;
+  border: 1px dashed var(--color-border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.emptyIcon {
+  color: var(--color-text-muted);
+}
+
+.emptyText {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

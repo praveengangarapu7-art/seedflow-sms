@@ -1,0 +1,64 @@
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconWrapper.success { background-color: rgba(64, 81, 59, 0.1); color: var(--color-success); }
+.iconWrapper.warning { background-color: rgba(217, 119, 6, 0.1); color: #d97706; }
+.iconWrapper.danger { background-color: rgba(220, 38, 38, 0.1); color: #dc2626; }
+.iconWrapper.neutral { background-color: var(--color-bg-light); color: var(--color-text-secondary); }
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.sublabel {
+  font-size: 12px;
+}
+
+.successText { color: var(--color-success); }
+.warningText { color: #d97706; }
+.dangerText { color: #dc2626; }
+.neutralText { color: var(--color-text-secondary); }

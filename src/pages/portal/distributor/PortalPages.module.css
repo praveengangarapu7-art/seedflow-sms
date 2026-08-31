@@ -1,0 +1,262 @@
+.tabContent {
+  margin-top: 24px;
+  width: 100%;
+}
+
+.dashboardGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.kpiCard {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.kpiIcon {
+  width: 32px;
+  height: 32px;
+  color: #0e5467;
+  flex-shrink: 0;
+}
+
+.kpiLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #718096;
+  margin-bottom: 4px;
+}
+
+.kpiValue {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: #2d3748;
+}
+
+.splitGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .splitGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mainCard {
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.sideCard {
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 20px 0;
+  border-bottom: 1px dashed #e2e8f0;
+  padding-bottom: 12px;
+}
+
+.scoreRow {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-top: 12px;
+}
+
+.scoreDial {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 60%, #edfcf7 100%);
+  border: 4px solid #00a86b; /* Success green */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 168, 107, 0.1);
+}
+
+.scoreNumber {
+  font-size: 28px;
+  font-weight: 800;
+  color: #00a86b;
+}
+
+.scoreLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: #718096;
+  text-transform: uppercase;
+}
+
+.scoresList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scoreLine {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #4a5568;
+}
+
+.scoreLine strong {
+  color: #2d3748;
+  font-weight: 700;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  padding-left: 16px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background-color: #e2e8f0;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 16px;
+  position: relative;
+}
+
+.timelineTime {
+  color: #e0b63f;
+  background-color: #ffffff;
+  z-index: 2;
+}
+
+.timelineBody {
+  font-size: 13px;
+}
+
+.timelineBody strong {
+  display: block;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 4px;
+}
+
+.timelineBody p {
+  margin: 0;
+  color: #718096;
+  line-height: 1.4;
+}
+
+.portalRowItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.portalRowItem:hover {
+  border-color: #cbd5e1;
+  background-color: #f1f5f9;
+}
+
+.rowId {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0e5467;
+  background-color: rgba(14, 84, 103, 0.08);
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.statusBadgeActive {
+  font-size: 11px;
+  font-weight: 700;
+  color: #00a86b;
+  background-color: #edfcf7;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.statusBadgePending {
+  font-size: 11px;
+  font-weight: 700;
+  color: #dd6b20;
+  background-color: #fffaf0;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.profileRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed #e2e8f0;
+  font-size: 14px;
+}
+
+.profileRow:last-child {
+  border-bottom: none;
+}
+
+.profileRow span {
+  color: #718096;
+  font-weight: 500;
+}
+
+.profileRow strong {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.buildingIcon {
+  width: 48px;
+  height: 48px;
+  color: #0e5467;
+  margin: 24px auto 0;
+  display: block;
+}

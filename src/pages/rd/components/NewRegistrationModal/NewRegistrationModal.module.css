@@ -1,0 +1,459 @@
+.modalContent {
+  padding: 4px;
+}
+
+.stepperWrapper {
+  margin-bottom: 28px;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.stepContent {
+  animation: fadeUp 300ms ease-out both;
+  min-height: 320px;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stepTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 6px 0;
+}
+
+.stepDescription {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0 0 20px 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.input,
+.select {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.input:focus,
+.select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(128, 128, 0, 0.1);
+}
+
+/* Variety Brief Card */
+.varietyBriefCard {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background-color: #fafaf9;
+  overflow: hidden;
+  margin-top: 18px;
+}
+
+.briefHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background-color: var(--color-accent-light);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.briefName {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 2px 0;
+}
+
+.briefId {
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--color-text-muted);
+}
+
+.briefCrop {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.briefGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 16px;
+}
+
+.briefItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.briefLabel {
+  font-size: 10.5px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.briefVal {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.briefTraits {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+/* Form Sections */
+.formSection {
+  margin-bottom: 20px;
+}
+
+.formSection .label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.radioGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.radioItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-white);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.radioInput {
+  accent-color: var(--color-primary);
+  margin-top: 3px;
+}
+
+.radioContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.radioLabelText {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.radioDesc {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.radioItem:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-accent-light);
+}
+
+.radioInput:checked + .radioContent strong {
+  color: var(--color-primary);
+}
+
+/* Stepper inputs */
+.inputWithUnit {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+.inputWithUnit .input {
+  padding-right: 50px;
+}
+
+.unit {
+  position: absolute;
+  right: 12px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.rupeePrefix {
+  position: absolute;
+  left: 10px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.helperText {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* Chip Grid */
+.chipGrid {
+  display: flex;
+  gap: 10px;
+}
+
+.selectionBtn {
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  border-radius: 6px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.selectionBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.selectionBtn.active {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
+/* Toggle Grid */
+.toggleGrid {
+  display: flex;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+  width: max-content;
+}
+
+.toggleBtn {
+  padding: 8px 20px;
+  border: none;
+  background-color: var(--color-white);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.toggleBtn.activePaid {
+  background-color: var(--color-success);
+  color: var(--color-white);
+}
+
+.toggleBtn.activeUnpaid {
+  background-color: var(--color-warning);
+  color: var(--color-white);
+}
+
+/* Upload Area */
+.uploadArea {
+  border: 2px dashed var(--color-border);
+  border-radius: 6px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafaf9;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.uploadArea:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-accent-light);
+}
+
+.uploadIcon {
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.uploadText {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0 0 4px 0;
+}
+
+.uploadHelper {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* Review details */
+.reviewCard {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background-color: #fafaf9;
+  overflow: hidden;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  background-color: var(--color-accent-light);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.reviewVariety {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 2px 0;
+}
+
+.reviewMeta {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.reviewStatus {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text-secondary);
+}
+
+.reviewGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 16px;
+}
+
+.reviewItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reviewLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.reviewVal {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.reviewAlert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-accent-light);
+  border: 1px solid rgba(128, 128, 0, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.reviewAlert svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* Actions */
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 20px;
+  margin-top: 12px;
+}
+
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.submitRow {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  .briefGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .reviewGrid {
+    grid-template-columns: 1fr;
+  }
+}

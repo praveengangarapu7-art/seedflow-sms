@@ -1,0 +1,140 @@
+.container {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  overflow: hidden;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table th, .table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.stickyCol {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 10;
+  width: 300px;
+  border-right: 1px solid #f3f4f6;
+}
+
+.roleHeader {
+  min-width: 150px;
+  background: #f9fafb;
+}
+
+.roleName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.roleSub {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.categoryRow td {
+  background: #f3f4f6;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 16px;
+}
+
+.permCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.permName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.permDesc {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.checkboxCell {
+  text-align: center;
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.checkboxLabel input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  height: 20px;
+  width: 20px;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.checkboxLabel:hover input ~ .checkmark {
+  background-color: #e5e7eb;
+}
+
+.checkboxLabel input:checked ~ .checkmark {
+  background-color: #3e4c3e;
+  border-color: #3e4c3e;
+}
+
+.checkboxLabel input:disabled ~ .checkmark {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkboxLabel input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkboxLabel .checkmark:after {
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}

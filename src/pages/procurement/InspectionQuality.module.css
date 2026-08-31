@@ -1,0 +1,135 @@
+.root { padding: 0; }
+
+.tabs { margin-bottom: 16px; }
+
+.queue { display: flex; flex-direction: column; gap: 12px; }
+
+.card {
+  background: var(--color-white); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); padding: 18px 20px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(14, 84, 103, 0.08);
+}
+
+.cardHeader { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.cardId { font-size: 13px; font-weight: 700; color: var(--color-primary); }
+.cardItem { font-size: 14px; color: var(--color-text-primary); font-weight: 600; }
+
+.cardGrid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px;
+  margin-bottom: 12px; font-size: 13px;
+}
+.cardGridItem { display: flex; gap: 6px; }
+.cardGridKey { color: var(--color-text-muted); font-weight: 500; }
+.cardGridVal { color: var(--color-text-primary); font-weight: 600; }
+
+.aiBanner {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 12px; background: var(--color-accent-light);
+  border-radius: var(--radius-sm); margin-bottom: 12px;
+}
+.aiTag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--color-primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+.aiInfo { font-size: 12px; color: var(--color-text-secondary); }
+.aiInfo strong { color: var(--color-text-primary); font-weight: 700; }
+
+.cardActions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.priorityBadge {
+  display: inline-block; padding: 2px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+}
+.priorityUrgent { background: rgba(192, 57, 43, 0.12); color: var(--color-danger); }
+.priorityHigh   { background: rgba(230, 188, 66, 0.12); color: var(--color-warning); }
+.priorityMedium { background: rgba(45, 122, 143, 0.12); color: var(--color-info); }
+.priorityLow    { background: var(--color-border-light); color: var(--color-text-muted); }
+
+/* Workflow modal */
+.section { margin-bottom: 20px; }
+.sectionTitle {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--color-text-muted); margin-bottom: 10px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--color-border-light);
+}
+
+.itemDetailGrid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 20px;
+  background: var(--color-accent-light); padding: 12px 16px;
+  border-radius: var(--radius-sm); font-size: 13px;
+}
+.itemDetailRow { display: flex; flex-direction: column; gap: 2px; }
+.itemDetailKey { font-size: 11px; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.itemDetailVal { color: var(--color-text-primary); font-weight: 500; }
+
+.aiPanel {
+  background: var(--color-accent-light); border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 16px;
+}
+.aiPanelHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.aiPanelTitle { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--color-primary); }
+.aiPanelGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.aiPanelStat { background: var(--color-white); padding: 10px; border-radius: var(--radius-sm); }
+.aiPanelStatKey { font-size: 11px; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.aiPanelStatVal { font-size: 14px; color: var(--color-text-primary); font-weight: 700; margin-top: 2px; }
+
+.checklist { width: 100%; border-collapse: collapse; font-size: 13px; }
+.checklist th, .checklist td {
+  padding: 8px 10px; border-bottom: 1px solid var(--color-border-light); text-align: left;
+}
+.checklist th {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+  color: var(--color-text-muted); background: var(--color-accent-light);
+}
+.checklistInput {
+  padding: 5px 8px; border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); font-size: 12px;
+  width: 100%; box-sizing: border-box;
+}
+.checklistSelect {
+  padding: 5px 8px; border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); font-size: 12px;
+  background: var(--color-white); width: 100%; box-sizing: border-box;
+}
+.passBadge {
+  display: inline-block; padding: 2px 8px; border-radius: 99px;
+  font-size: 10px; font-weight: 700;
+  background: rgba(46, 139, 92, 0.12); color: var(--color-success);
+}
+.failBadge {
+  display: inline-block; padding: 2px 8px; border-radius: 99px;
+  font-size: 10px; font-weight: 700;
+  background: rgba(192, 57, 43, 0.12); color: var(--color-danger);
+}
+.pendingBadge {
+  display: inline-block; padding: 2px 8px; border-radius: 99px;
+  font-size: 10px; font-weight: 600;
+  background: var(--color-border-light); color: var(--color-text-muted);
+}
+
+.decisionRow { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.decisionOption {
+  flex: 1; min-width: 130px; padding: 12px;
+  border: 2px solid var(--color-border); border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.15s; background: var(--color-white);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.decisionOption:hover { border-color: var(--color-primary); }
+.decisionOptionActive { border-color: var(--color-primary); background: var(--color-accent-light); }
+.decisionLabel { font-size: 13px; font-weight: 700; color: var(--color-text-primary); }
+.decisionDesc  { font-size: 11px; color: var(--color-text-muted); }
+
+.textarea {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); font-size: 13px; font-family: inherit;
+  min-height: 60px; resize: vertical; box-sizing: border-box;
+}
+
+.signoffBox {
+  background: var(--color-accent-light); border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm); padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.signoffCheck { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; }
+.signoffCheck input { margin-top: 3px; }

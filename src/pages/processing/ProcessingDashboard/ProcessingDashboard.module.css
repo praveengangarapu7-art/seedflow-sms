@@ -1,0 +1,273 @@
+.dashboardContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 4px 0 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border-light);
+  margin: 16px 0 24px;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.chartCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.chartTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 16px;
+}
+
+.layoutGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.panel {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.panelTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 16px;
+}
+
+.linesStack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plantLineCard {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.plantLineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.plantNameGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plantName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.activeBadge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.plantStatusRow {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--color-border-light);
+}
+
+.batchProgressList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.batchProgressItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.batchMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.batchName {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.batchStage {
+  color: var(--color-secondary);
+}
+
+.progressContainer {
+  height: 6px;
+  background: var(--color-accent-light);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.alertsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alertItem {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-light);
+  font-size: 13px;
+}
+
+.alertInfo {
+  border-left: 3px solid var(--color-secondary);
+  background: var(--color-accent-light);
+}
+
+.alertWarning {
+  border-left: 3px solid var(--color-warning);
+  background: #fffdf5;
+}
+
+.alertSuccess {
+  border-left: 3px solid var(--color-success);
+  background: #f4faf6;
+}
+
+.alertIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alertText {
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.alertTime {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.aiInsightCard {
+  position: relative;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-left: 4px solid var(--color-warning);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.aiIconWrap {
+  background: #fffbe6;
+  color: var(--color-warning);
+  padding: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.aiContent {
+  flex-grow: 1;
+}
+
+.aiTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aiBody {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}

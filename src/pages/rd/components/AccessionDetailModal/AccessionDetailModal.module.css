@@ -1,0 +1,305 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0 0 24px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.accNumber {
+  font-family: monospace;
+  font-size: 14px;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.headerBadges {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tabsWrap {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 24px;
+}
+
+.overviewGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.infoCard {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+}
+
+.infoCard h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.field span, .field i {
+  font-size: 14px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.custodyList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.custodyList li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.custodyList b {
+  color: var(--color-text-primary);
+}
+
+.bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}
+
+.pedigreeMini {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.parentsRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.parentBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-background-subtle);
+  min-width: 150px;
+}
+
+.gender {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.parentBox b {
+  font-size: 14px;
+  color: var(--color-primary-dark);
+}
+
+.crossSymbol {
+  font-size: 20px;
+  color: var(--color-text-tertiary);
+}
+
+.mutedText {
+  color: var(--color-text-tertiary);
+  font-size: 14px;
+  font-style: italic;
+  margin: 0;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.tableHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.traitsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.traitsTable th, .traitsTable td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-light);
+  font-size: 14px;
+}
+
+.traitsTable th {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  background-color: var(--color-background-subtle);
+}
+
+.fw500 {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.genomicCard {
+  background-color: var(--color-background-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.genomicHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.genomicIcon {
+  color: var(--color-primary);
+}
+
+.genomicHeader h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.genomicHeader p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.genomicActions {
+  display: flex;
+  gap: 12px;
+}
+
+.trialsTab, .docsTab, .traitsTab, .genomicTab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.photosGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.photoPlaceholder {
+  aspect-ratio: 4/3;
+  background-color: var(--color-background-subtle);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-text-tertiary);
+}
+
+.docsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.docItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-background);
+}
+
+.docIcon {
+  color: var(--color-text-secondary);
+}
+
+.docName {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}

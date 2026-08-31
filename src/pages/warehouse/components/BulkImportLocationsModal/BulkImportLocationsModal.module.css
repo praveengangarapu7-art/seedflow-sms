@@ -1,0 +1,146 @@
+.container {
+  padding: 12px 0;
+}
+
+.stepper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 1;
+}
+
+.stepLine {
+  width: 100px;
+  height: 2px;
+  background: #e5e7eb;
+}
+
+.stepIndicator:last-child .stepLine {
+  display: none;
+}
+
+.activeStep .stepCircle {
+  background: #f1f5f1;
+  border-color: #3e4c3e;
+  color: #3e4c3e;
+}
+
+.completedStep .stepCircle {
+  background: #3e4c3e;
+  border-color: #3e4c3e;
+  color: white;
+}
+
+.completedStep .stepLine {
+  background: #3e4c3e;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+}
+
+.stepInfo {
+  margin-bottom: 24px;
+}
+
+.stepInfo h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.stepInfo p {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.actionBox {
+  padding: 32px;
+  border: 2px dashed #e5e7eb;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  background: #f9fafb;
+}
+
+.previewContainer {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  background: #f9fafb;
+  padding: 10px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #4b5563;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table td {
+  padding: 10px 16px;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.footer {
+  margin-top: 32px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.successIcon {
+  color: #10b981;
+  margin-bottom: 16px;
+}
+
+.success h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.success p {
+  color: #6b7280;
+}

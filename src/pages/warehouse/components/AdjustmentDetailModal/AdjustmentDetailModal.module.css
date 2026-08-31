@@ -1,0 +1,263 @@
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: 16px;
+}
+
+.headerRow > div { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+
+.statusChip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+}
+
+.stDraft    { background-color: var(--color-accent); color: var(--color-text-muted); }
+.stPending  { background-color: rgba(230, 188, 66, 0.2); color: var(--color-warning); }
+.stApproved { background-color: rgba(45, 122, 143, 0.2); color: var(--color-info); }
+.stPosted   { background-color: rgba(46, 139, 92, 0.18); color: var(--color-success); }
+.stRejected { background-color: rgba(192, 57, 43, 0.16); color: var(--color-danger); }
+
+.impactChip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+}
+
+.impactMajor    { background-color: rgba(192, 57, 43, 0.16); color: var(--color-danger); }
+.impactModerate { background-color: rgba(230, 188, 66, 0.18); color: var(--color-warning); }
+.impactMinor    { background-color: var(--color-accent); color: var(--color-text-muted); }
+
+.sourceChip {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background-color: var(--color-accent-light);
+  color: var(--color-text-secondary);
+}
+
+.timestamp { font-size: 11px; color: var(--color-text-muted); }
+
+.grid {
+  display: grid;
+  grid-template-columns: 60fr 40fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.left, .right { display: flex; flex-direction: column; gap: 12px; }
+
+.card {
+  background-color: var(--color-accent-light);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.cardTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.dl { display: flex; flex-direction: column; gap: 6px; }
+
+.dRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--color-border-light);
+}
+
+.dRow:last-child { border-bottom: none; }
+
+.dRow dt { color: var(--color-text-muted); }
+.dRow dd { color: var(--color-text-primary); font-weight: 500; text-align: right; }
+
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+
+.varianceGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+
+.varBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--color-border-light);
+}
+
+.varBlockSpan { grid-column: 1 / -1; border-bottom: none; padding-top: 8px; }
+
+.varLabel {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.varBlock strong {
+  font-size: 14px;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.varValueBig { font-size: 18px; font-weight: 700; }
+
+.negText { color: var(--color-warning); }
+.posText { color: var(--color-success); }
+
+.reasonChipRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.reasonChip {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+.linkChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background-color: var(--color-white);
+  color: var(--color-info);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  border: 1px solid var(--color-border);
+}
+
+.notes {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.photoTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  aspect-ratio: 1 / 1;
+  background-color: var(--color-white);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: 10px;
+  cursor: pointer;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+
+.photoTile:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+.approvalList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.approvalStep { display: flex; gap: 10px; }
+
+.stepBadge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stepApproved .stepBadge { background-color: var(--color-success); color: var(--color-white); }
+.stepRejected .stepBadge { background-color: var(--color-danger); color: var(--color-white); }
+.stepPending  .stepBadge { background-color: var(--color-accent); color: var(--color-text-muted); }
+
+.stepBody { flex: 1; min-width: 0; }
+.stepName { font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
+.stepRole { font-size: 11px; color: var(--color-text-muted); }
+.stepTime { font-size: 11px; color: var(--color-text-muted); margin-top: 2px; }
+.stepComment {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+  font-style: italic;
+  background-color: var(--color-white);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.activityList { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+
+.activityRow {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--color-border-light);
+}
+
+.activityRow:last-child { border-bottom: none; }
+.activityRow strong { color: var(--color-text-primary); }
+.activityTime {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  width: 110px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.footerRight { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@media (max-width: 1024px) {
+  .grid { grid-template-columns: 1fr; }
+  .photoGrid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .varianceGrid { grid-template-columns: 1fr; }
+  .photoGrid { grid-template-columns: repeat(3, 1fr); }
+}

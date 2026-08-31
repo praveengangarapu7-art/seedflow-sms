@@ -1,0 +1,337 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.filterBar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.filterSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.filterLabel {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.chipGroup {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filterChip {
+  padding: 6px 14px;
+  background-color: var(--color-accent-light);
+  border: 1px solid var(--color-border-light);
+  border-radius: 100px;
+  font-size: 13px;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterChip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.activeChip {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.activeChip:hover {
+  color: white;
+}
+
+.warehouseSelect {
+  width: 200px;
+}
+
+.select {
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.content {
+  min-height: 400px;
+}
+
+/* Library Tab */
+.libraryGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.categorySection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  letter-spacing: 0.05em;
+}
+
+.reportGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Scheduled Tab */
+.scheduledView {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.viewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.viewTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.tableCard {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.scheduleTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scheduleTable th {
+  text-align: left;
+  padding: 12px 16px;
+  background-color: var(--color-accent-light);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.scheduleTable td {
+  padding: 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.reportNameCell {
+  display: flex;
+  flex-direction: column;
+}
+
+.reportTitle {
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.reportId {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.recipientAvatars {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  border: 2px solid white;
+  margin-left: -8px;
+}
+
+.avatar:first-child {
+  margin-left: 0;
+}
+
+.avatarMore {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--color-accent-light);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  border: 2px solid white;
+  margin-left: -8px;
+}
+
+.statusToggle {
+  display: flex;
+  align-items: center;
+}
+
+.toggle {
+  width: 36px;
+  height: 20px;
+  border-radius: 20px;
+  background-color: #e5e7eb;
+  position: relative;
+  cursor: pointer;
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.active {
+  background-color: var(--color-primary);
+}
+
+.active::after {
+  left: 18px;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+/* AI Insights Tab */
+.insightsView {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.insightsHeader {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.insightKpis {
+  display: flex;
+  gap: 40px;
+}
+
+.insightKpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.insightKpi .kpiLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.insightKpi .kpiValue {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.refreshBtn {
+  position: absolute;
+  top: 0;
+  right: -24px;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.insightFilters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.insightList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  background-color: var(--color-accent-light);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}

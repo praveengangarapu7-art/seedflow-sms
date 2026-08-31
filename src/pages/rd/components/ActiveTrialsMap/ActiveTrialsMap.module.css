@@ -1,0 +1,150 @@
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.body {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mapContainer {
+  width: 100%;
+  max-width: 380px; /* Slightly wider to accommodate full high-fidelity details */
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.03));
+}
+
+/* Individual interactive state paths styling */
+.indiaState {
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 0.6;
+  fill: #F5AF12; /* Golden Orange */
+  fill-opacity: 0.48; /* Slightly increased soft opacity */
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: fill 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+              fill-opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+              stroke-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.indiaState:hover {
+  fill: #E09A0F; /* Darker Golden Orange */
+  fill-opacity: 0.78; /* Slightly increased hover opacity */
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 1.0;
+}
+
+/* State outline overrides for visual prominence */
+.statesGroup {
+  stroke-opacity: 0.8;
+}
+
+.markerGroup {
+  cursor: pointer;
+}
+
+/* Primary interactive location dots styling */
+.marker {
+  fill: var(--color-primary);
+  stroke: var(--color-bg-primary);
+  stroke-width: 2px;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              fill 0.25s ease;
+}
+
+/* Pulse/ripple ring behind the marker */
+.markerRipple {
+  fill: var(--color-primary);
+  fill-opacity: 0.12;
+  stroke: var(--color-primary);
+  stroke-opacity: 0.2;
+  stroke-width: 1px;
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              fill-opacity 0.25s ease;
+}
+
+/* Zoom animations and color shift on group hover */
+.markerGroup:hover .marker {
+  fill: var(--color-primary-hover); /* Primary theme color hover state */
+  transform: scale(1.2);
+}
+
+.markerGroup:hover .markerRipple {
+  fill-opacity: 0.25;
+  transform: scale(1.35);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(0, 168, 89, 0.4);
+}
+
+.legendText {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.markerLabel {
+  font-size: 10px; /* Highly readable */
+  fill: var(--color-text-primary);
+  font-weight: 500;
+  pointer-events: none;
+  opacity: 0.9;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9), 0 0 2px rgba(255, 255, 255, 0.9);
+  transition: opacity 0.25s ease, font-weight 0.25s ease, fill 0.25s ease;
+}
+
+.markerGroup:hover .markerLabel {
+  opacity: 1;
+  font-weight: 700;
+  fill: var(--color-primary);
+}

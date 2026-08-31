@@ -1,0 +1,33 @@
+.root { padding: 0; }
+
+.mobileCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mobileCardRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobileCardId {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.mobileCardTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.mobileCardMeta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

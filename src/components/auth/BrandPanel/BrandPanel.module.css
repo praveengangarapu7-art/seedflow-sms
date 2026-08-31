@@ -1,0 +1,57 @@
+.panel {
+  height: 100%;
+  min-height: 100vh;
+  background-color: var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  padding: 48px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.top {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.brandImage {
+  height: 48px;
+  width: auto;
+  display: block;
+}
+
+.tagline {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.6;
+  max-width: 280px;
+  margin-bottom: 48px;
+}
+
+.illustration {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.illustrationSvg {
+  width: 100%;
+  max-width: 260px;
+  opacity: 0.18;
+}
+
+.footer {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 20px;
+}

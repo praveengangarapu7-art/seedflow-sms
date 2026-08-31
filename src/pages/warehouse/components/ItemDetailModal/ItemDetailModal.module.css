@@ -1,0 +1,220 @@
+.headerCard {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: 16px;
+}
+
+.headerIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.headerBody { flex: 1; min-width: 0; }
+
+.headerSku {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.headerName {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.headerChips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.statusAvailable  { background-color: rgba(46, 139, 92, 0.14); color: var(--color-success); }
+.statusQuarantine { background-color: rgba(230, 188, 66, 0.16); color: var(--color-warning); }
+.statusReserved   { background-color: rgba(45, 122, 143, 0.16); color: var(--color-info); }
+.statusDamaged    { background-color: rgba(192, 57, 43, 0.14); color: var(--color-danger); }
+.statusSold       { background-color: var(--color-accent); color: var(--color-text-secondary); }
+
+.abcChip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.abc_A { background-color: var(--color-primary); color: var(--color-white); }
+.abc_B { background-color: var(--color-secondary); color: var(--color-white); }
+.abc_C { background-color: var(--color-accent); color: var(--color-primary); }
+
+.categoryChip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  position: relative;
+  font-family: var(--font-sans);
+  transition: color 0.12s ease;
+  white-space: nowrap;
+}
+
+.tab:hover { color: var(--color-text-primary); }
+
+.tabActive {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.detailCard {
+  background-color: var(--color-accent-light);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.detailTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border-light);
+  width: 100%;
+}
+
+.dl {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--color-border-light);
+  font-size: 12px;
+}
+
+.dRow:last-child { border-bottom: none; }
+
+.dRow dt {
+  color: var(--color-text-muted);
+}
+
+.dRow dd {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  text-align: right;
+}
+
+.bigValue {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+
+.link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover { text-decoration: underline; }
+
+.expiryNote {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.expiryExpired { color: var(--color-danger); }
+.expiryWarning { color: var(--color-warning); }
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.emptyIcon {
+  color: var(--color-text-muted);
+  opacity: 0.5;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+}

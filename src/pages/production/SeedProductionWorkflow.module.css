@@ -1,0 +1,265 @@
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f7fbf8 0%, #eef7ef 100%);
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.select,
+.input,
+.textarea {
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  color: var(--color-text);
+  background: #fbfdfb;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 35px rgba(14, 84, 103, 0.06);
+  margin-bottom: 1.25rem;
+}
+
+.card:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.sectionSubtitle {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.88rem;
+}
+
+.pipeline {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.stageCard {
+  flex: 1;
+  min-width: 190px;
+  border: 2px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 1rem;
+  position: relative;
+  background: #fbfdfb;
+}
+
+.stageCard + .stageCard {
+  margin-left: 1.75rem;
+}
+
+.stageCard + .stageCard::before {
+  content: '';
+  position: absolute;
+  left: -1.75rem;
+  top: 50%;
+  width: 1.75rem;
+  height: 2px;
+  background: var(--color-border-light);
+}
+
+.stageApproved {
+  border-color: #187a43;
+  background: #f2fbf5;
+}
+
+.stageReady {
+  border-color: #2f4b9e;
+  background: #f4f7fd;
+}
+
+.stagePending {
+  opacity: 0.55;
+}
+
+.stageRejected {
+  border-color: #a3352b;
+  background: #fdf2f1;
+}
+
+.stageDepartment {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.stageLabel {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.statusApproved {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.statusReady {
+  background: #eef2fb;
+  color: #2f4b9e;
+}
+
+.statusPending {
+  background: #f0f0f0;
+  color: #6b6b6b;
+}
+
+.statusRejected {
+  background: #fbe8e6;
+  color: #a3352b;
+}
+
+.statusInProgress {
+  background: #eef2fb;
+  color: #2f4b9e;
+}
+
+.statusCompleted {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.statusCancelled {
+  background: #f0f0f0;
+  color: #6b6b6b;
+}
+
+.stageMeta {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.overdue {
+  color: #a3352b;
+  font-weight: 700;
+}
+
+.stageActions {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.workflowRow {
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.6rem;
+  background: #f8fbf8;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.workflowRow:last-child {
+  margin-bottom: 0;
+}
+
+.workflowRowActive {
+  border-color: var(--color-primary);
+}
+
+.form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.notificationBanner {
+  background: #eef7ef;
+  border: 1px solid #bfe3c6;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 1rem;
+  font-size: 0.88rem;
+  color: var(--color-text);
+}
+
+@media (max-width: 900px) {
+  .pipeline {
+    flex-direction: column;
+  }
+
+  .stageCard + .stageCard {
+    margin-left: 0;
+    margin-top: 1.25rem;
+  }
+
+  .stageCard + .stageCard::before {
+    left: 50%;
+    top: -1.25rem;
+    width: 2px;
+    height: 1.25rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+}

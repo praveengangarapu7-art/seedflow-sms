@@ -1,0 +1,171 @@
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.swatchLow      { background-color: var(--color-accent); }
+.swatchModerate { background-color: var(--color-secondary); }
+.swatchHigh     { background-color: var(--color-primary); }
+.swatchCritical { background-color: var(--color-warning); }
+
+.gridWrap {
+  position: relative;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.cell {
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid transparent;
+  outline: none;
+  min-height: 70px;
+}
+
+.cell:hover,
+.cell:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-primary);
+}
+
+.cell_low      { background-color: var(--color-accent); }
+.cell_moderate { background-color: var(--color-secondary); color: var(--color-white); }
+.cell_high     { background-color: var(--color-primary); color: var(--color-white); }
+.cell_critical { background-color: var(--color-warning); color: var(--color-white); }
+
+.cellName {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.cellPct {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tooltip {
+  position: absolute;
+  top: -8px;
+  right: 0;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-md);
+  min-width: 180px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+  animation: fadeIn 120ms ease-out both;
+}
+
+.tipName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.tipMetaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tipBadge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.tipPct {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.tipDetail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1024px) {
+  .grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .tooltip { position: static; margin-top: 12px; }
+}

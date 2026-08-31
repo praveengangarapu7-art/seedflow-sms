@@ -1,0 +1,337 @@
+.modalContent {
+  padding: 4px;
+}
+
+.stepperWrapper {
+  margin-bottom: 28px;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.stepContent {
+  animation: fadeUp 300ms ease-out both;
+  min-height: 320px;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stepTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 6px 0;
+}
+
+.stepDescription {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0 0 20px 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+.input,
+.select,
+.textarea {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(128, 128, 0, 0.1);
+}
+
+.inputWithUnit {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+.inputWithUnit .input {
+  padding-right: 50px;
+}
+
+.unit {
+  position: absolute;
+  right: 12px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.helperText {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.radioGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border-light);
+  background-color: #fafaf9;
+  border-radius: 6px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.radioInput {
+  accent-color: var(--color-primary);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.formSection {
+  margin-bottom: 20px;
+}
+
+.formSection .label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.checkboxGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.selectionButton {
+  padding: 8px 12px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  font-family: inherit;
+}
+
+.selectionButton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-accent-light);
+}
+
+.selectionButton.active {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
+.ipRadioGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.ipRadioLabel {
+  cursor: pointer;
+  display: flex;
+  position: relative;
+}
+
+.ipRadioLabel .radioInput {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.ipRadioContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 12px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.ipRadioContent span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.ipRadioContent svg {
+  color: var(--color-text-muted);
+}
+
+.ipRadioLabel:hover .ipRadioContent {
+  border-color: var(--color-primary);
+  background-color: var(--color-accent-light);
+}
+
+.ipRadioLabel .radioInput:checked + .ipRadioContent {
+  border-color: var(--color-primary);
+  background-color: var(--color-accent-light);
+}
+
+.ipRadioLabel .radioInput:checked + .ipRadioContent svg {
+  color: var(--color-primary);
+}
+
+.ipRadioLabel .radioInput:checked + .ipRadioContent span {
+  color: var(--color-primary);
+}
+
+/* Review Card */
+.reviewCard {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background-color: #fafaf9;
+  overflow: hidden;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  background-color: var(--color-accent-light);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.reviewName {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 2px 0;
+}
+
+.reviewSub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.reviewIp {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text-secondary);
+}
+
+.reviewGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 16px;
+}
+
+.reviewItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reviewLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.reviewVal {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* Actions */
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 20px;
+  margin-top: 12px;
+}
+
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  .checkboxGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ipRadioGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

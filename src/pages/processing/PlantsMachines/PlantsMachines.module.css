@@ -1,0 +1,140 @@
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 4px 0 0;
+}
+
+.pageActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border-light);
+  margin: 16px 0 24px;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tabsContainer {
+  margin-bottom: 16px;
+}
+
+.contentArea {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* Plant Card styling */
+.plantsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.plantCard {
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--color-white);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plantTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plantName {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.plantLocation {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.plantMetaRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  font-size: 13px;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 12px;
+}
+
+.metaBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.metaLabel {
+  color: var(--color-text-muted);
+}
+
+.metaVal {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.aiPredictiveMaintenanceCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-left: 4px solid var(--color-warning);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 24px;
+  font-size: 13px;
+}
+
+.aiIcon {
+  color: var(--color-warning);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.aiText {
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.aiTitle {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}

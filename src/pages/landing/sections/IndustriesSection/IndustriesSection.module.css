@@ -1,0 +1,190 @@
+.section {
+  padding: 30px 24px 120px 24px;
+  background-color: var(--color-accent-light);
+  position: relative;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Header styled details */
+.header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 64px auto;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-warning);
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0 0 16px 0;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Responsive Grid columns */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-bottom: 80px;
+}
+
+@media (max-width: 991px) and (min-width: 650px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 649px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Industry Card layout */
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms ease, border-color 300ms ease;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(14, 84, 103, 0.18);
+}
+
+.iconBox {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background-color: var(--color-accent-light);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  transition: all 300ms ease;
+}
+
+.card:hover .iconBox {
+  background-color: rgba(230, 188, 66, 0.15);
+  color: var(--color-warning);
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0 0 12px 0;
+}
+
+.cardDesc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0 0 24px 0;
+  flex-grow: 1; /* Aligns chips at the very bottom of varying cards */
+}
+
+/* Tag Chips list */
+.tagsRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tagChip {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background-color: var(--color-accent-light);
+  padding: 4px 10px;
+  border-radius: 50px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Compliance Strip */
+.complianceStrip {
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .complianceStrip {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+}
+
+.complianceLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.chipsList {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.complianceChip {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+  border: 1.5px solid rgba(14, 84, 103, 0.15);
+  padding: 6px 14px;
+  border-radius: 6px;
+  background-color: var(--color-white);
+  transition: all 250ms ease;
+  cursor: default;
+}
+
+.complianceChip:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+

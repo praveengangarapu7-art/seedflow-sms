@@ -1,0 +1,116 @@
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+.landingContainer {
+  font-family: var(--font-sans);
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Global scroll reveal mechanics */
+:global(.reveal) {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+:global(.reveal.visible) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Common Section Containers */
+.section {
+  padding: 120px 24px;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 80px 16px;
+  }
+}
+
+/* Dot pattern background utility */
+.dotPattern {
+  background-image: radial-gradient(var(--color-border) 1px, transparent 1.5px);
+  background-size: 24px 24px;
+  background-repeat: repeat;
+}
+
+/* Drifting soft gradient mesh */
+.gradientMesh {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  will-change: transform;
+}
+
+.blob1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--color-secondary) 0%, transparent 70%);
+  top: -10%;
+  right: -5%;
+  animation: drift1 35s infinite ease-in-out alternate;
+}
+
+.blob2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--color-warning) 0%, transparent 70%);
+  bottom: 10%;
+  left: -10%;
+  animation: drift2 40s infinite ease-in-out alternate;
+}
+
+@keyframes drift1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-60px, 40px) scale(1.1);
+  }
+  100% {
+    transform: translate(40px, -80px) scale(0.95);
+  }
+}
+
+@keyframes drift2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(80px, -60px) scale(1.05);
+  }
+  100% {
+    transform: translate(-30px, 50px) scale(0.9);
+  }
+}

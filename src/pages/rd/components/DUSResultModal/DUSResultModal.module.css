@@ -1,0 +1,137 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+.input,
+.select,
+.textarea {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(128, 128, 0, 0.1);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-border-light);
+  margin: 8px 0;
+}
+
+.testSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: #fafaf9;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.testHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.statusRadios {
+  display: flex;
+  gap: 8px;
+}
+
+.radioLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.radioLabel input {
+  display: none;
+}
+
+.passActive {
+  background-color: #f0fdf4;
+  color: var(--color-success);
+  border-color: rgba(22, 101, 52, 0.3);
+}
+
+.failActive {
+  background-color: #fef2f2;
+  color: var(--color-danger);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.textarea {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  resize: vertical;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 16px;
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}

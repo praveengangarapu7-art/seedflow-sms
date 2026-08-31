@@ -1,0 +1,494 @@
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f7fbf8 0%, #eef7ef 100%);
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 12px 35px rgba(14, 84, 103, 0.06);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  min-width: min(280px, 100%);
+  color: var(--color-text);
+  background: #fbfdfb;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.input,
+.textarea,
+.select {
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  color: var(--color-text);
+  background: #fbfdfb;
+}
+
+.select:disabled,
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.helperText {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.9rem;
+}
+
+.computedBox {
+  background: #f0f7f2;
+  border: 1px dashed var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  color: var(--color-text);
+}
+
+.computedLabel {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.83rem;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.detailItem {
+  background: #f8fbf8;
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.detailLabel {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.83rem;
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.detailValue {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+  margin: 1.5rem 0 0.75rem;
+}
+
+.sectionTitle:first-child {
+  margin-top: 0;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.statusPlanned {
+  background: #eef2fb;
+  color: #2f4b9e;
+}
+
+.statusSown {
+  background: #fef6e0;
+  color: #91650a;
+}
+
+.statusGrowing {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.statusHarvested {
+  background: #e5f4fb;
+  color: #0f6d95;
+}
+
+.statusCancelled {
+  background: #fbe8e6;
+  color: #a3352b;
+}
+
+.statusPending {
+  background: #fef6e0;
+  color: #91650a;
+}
+
+.statusApproved {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.statusRejected {
+  background: #fbe8e6;
+  color: #a3352b;
+}
+
+.statusDraft {
+  background: #eef2fb;
+  color: #2f4b9e;
+}
+
+.statusReserved {
+  background: #fef6e0;
+  color: #91650a;
+}
+
+.statusConfirmed {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.mapBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: #f0f7f2;
+  border: 1px dashed var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+
+.mapCoords {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.mapLink {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.healthBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.healthGood {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.healthModerate {
+  background: #fef6e0;
+  color: #91650a;
+}
+
+.healthPoor {
+  background: #fbe8e6;
+  color: #a3352b;
+}
+
+.diseaseTag {
+  color: #a3352b;
+  font-weight: 600;
+}
+
+.noneTag {
+  color: var(--color-text-muted);
+}
+
+.groupCard {
+  border: 1px solid var(--color-border-light);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #fbfdfb;
+}
+
+.groupCard:last-child {
+  margin-bottom: 0;
+}
+
+.groupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.groupTitle {
+  font-size: 1rem;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.groupMeta {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.slider {
+  flex: 1;
+  width: 100%;
+  accent-color: var(--color-primary);
+  height: 2rem;
+}
+
+.sliderValue {
+  font-weight: 700;
+  min-width: 3.25rem;
+  text-align: center;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--color-primary);
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.75rem;
+}
+
+.photoThumb {
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  border: 1px solid var(--color-border-light);
+  background: #f0f7f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  text-align: center;
+  padding: 0.4rem;
+  overflow: hidden;
+}
+
+.photoThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aiCard {
+  background: #f0f7f2;
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pillList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pill {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.82rem;
+  color: var(--color-text);
+}
+
+.recommendationList {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.4rem;
+  color: var(--color-text);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.6rem 0.65rem;
+  background: #f7f9f7;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.table td {
+  padding: 0.6rem 0.65rem;
+  border-top: 1px solid #e8efe8;
+  font-size: 0.88rem;
+}
+
+.filterRow {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .controls {
+    align-items: stretch;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sliderRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sliderValue {
+    text-align: left;
+  }
+
+  .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+
+  .groupHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

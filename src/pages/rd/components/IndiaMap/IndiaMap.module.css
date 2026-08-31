@@ -1,0 +1,186 @@
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+}
+
+.header {
+  padding: 16px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 2px 0;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  position: relative;
+}
+
+.mapContainer {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.04));
+}
+
+.indiaState {
+  fill: #F5AF12; /* Golden Orange */
+  fill-opacity: 0.48; /* Slightly increased soft opacity */
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 0.6px;
+  transition: fill 200ms ease, fill-opacity 200ms ease;
+}
+
+.indiaState:hover {
+  fill: #E09A0F; /* Darker Golden Orange */
+  fill-opacity: 0.78; /* Slightly increased hover opacity */
+  stroke: rgba(255, 255, 255, 0.8);
+}
+
+.markerGroup {
+  cursor: pointer;
+}
+
+.marker {
+  transition: r 200ms ease, stroke-width 200ms ease;
+  stroke: var(--color-white);
+  stroke-width: 1.5px;
+}
+
+.markerRipple {
+  fill: var(--color-primary);
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.markerGroup:hover .markerRipple {
+  opacity: 0.15;
+  animation: pulse 1.6s infinite ease-out;
+}
+
+.markerGroupActive .markerRipple {
+  opacity: 0.25;
+  animation: pulseActive 1.6s infinite ease-out;
+}
+
+@keyframes pulse {
+  0% {
+    r: 6px;
+    opacity: 0.4;
+  }
+  100% {
+    r: 18px;
+    opacity: 0;
+  }
+}
+
+@keyframes pulseActive {
+  0% {
+    r: 8px;
+    opacity: 0.5;
+  }
+  100% {
+    r: 22px;
+    opacity: 0;
+  }
+}
+
+/* Marker status classes */
+.markerDefault {
+  fill: var(--color-text-muted);
+}
+
+.markerSown {
+  fill: var(--color-accent);
+}
+
+.markerInProgress {
+  fill: var(--color-primary);
+}
+
+.markerHarvested {
+  fill: var(--color-success);
+}
+
+.markerCancelled {
+  fill: var(--color-danger);
+}
+
+.markerActive {
+  fill: var(--color-primary-hover);
+  stroke: var(--color-accent);
+  stroke-width: 2px;
+  r: 9px !important;
+}
+
+.markerLabel {
+  font-size: 10px;
+  font-weight: 500;
+  fill: var(--color-text-primary);
+  background-color: var(--color-white);
+  pointer-events: none;
+  text-shadow: 0 1px 2px var(--color-white), 0 -1px 2px var(--color-white), 1px 0 2px var(--color-white), -1px 0 2px var(--color-white);
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  justify-content: center;
+  width: 100%;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dotSown {
+  background-color: var(--color-accent);
+}
+
+.dotInProgress {
+  background-color: var(--color-primary);
+}
+
+.dotHarvested {
+  background-color: var(--color-success);
+}
+
+.legendText {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
