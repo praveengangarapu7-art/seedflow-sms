@@ -28,10 +28,47 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 24px auto;
+  animation: dangerBlink 1.1s ease-in-out infinite;
 }
 
 .icon {
   color: var(--color-danger);
+  animation: dangerIconBlink 1.1s ease-in-out infinite;
+}
+
+/* A visible, attention-grabbing pulse — not the faint tint-shift this used
+   to be. The circle swings through a much wider background/shadow range
+   and briefly scales up on each beat so the red genuinely "pops". */
+@keyframes dangerBlink {
+  0%, 100% {
+    background-color: rgba(192, 57, 43, 0.1);
+    box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.45);
+    transform: scale(1);
+  }
+  50% {
+    background-color: rgba(192, 57, 43, 0.55);
+    box-shadow: 0 0 0 14px rgba(192, 57, 43, 0);
+    transform: scale(1.08);
+  }
+}
+
+/* The icon glyph itself blinks in step with the circle behind it — a hard
+   dip near-to-invisible, not just a dim, so it unambiguously reads as a
+   blinking warning light rather than a subtle pulse. */
+@keyframes dangerIconBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iconBox,
+  .icon {
+    animation: none;
+  }
 }
 
 .title {

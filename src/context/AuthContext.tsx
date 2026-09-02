@@ -7,6 +7,8 @@ interface AuthContextValue {
   login: (email: string, password: string, role: UserRole) => void;
   signup: (formData: Record<string, string>) => void;
   logout: () => void;
+  /** Persists a partial edit (name, email, organizationName, avatarUrl) onto the signed-in user. */
+  updateUser: (patch: Partial<Pick<User, 'name' | 'email' | 'organizationName' | 'avatarUrl'>>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -65,8 +67,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEY);
   }
 
+  function updateUser(patch: Partial<Pick<User, 'name' | 'email' | 'organizationName' | 'avatarUrl'>>) {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...patch };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, signup, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, signup, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

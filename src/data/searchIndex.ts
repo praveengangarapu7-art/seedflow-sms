@@ -147,6 +147,26 @@ export const SEARCH_INDEX: SearchEntry[] = [
     requiresAuth: true,
     boost: 3,
   },
+  {
+    id: 'my-profile',
+    title: 'My Profile',
+    description: 'Your name, email and organization.',
+    path: '/profile',
+    module: 'Platform',
+    kind: 'page',
+    keywords: ['profile', 'account', 'name', 'email', 'avatar', 'organization'],
+    requiresAuth: true,
+  },
+  {
+    id: 'account-settings',
+    title: 'Settings',
+    description: 'Notification preferences and account controls.',
+    path: '/settings',
+    module: 'Platform',
+    kind: 'page',
+    keywords: ['settings', 'preferences', 'notifications', 'account', 'logout'],
+    requiresAuth: true,
+  },
 
   /* ------------------------------------------------------------------ */
   /* Procurement                                                        */

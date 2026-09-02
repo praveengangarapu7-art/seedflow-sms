@@ -92,11 +92,23 @@ export function TopHeader({ moduleName }: TopHeaderProps) {
 
           {dropdownOpen && (
             <div className={styles.dropdown}>
-              <button className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+              <button
+                className={styles.dropdownItem}
+                onClick={() => {
+                  setDropdownOpen(false);
+                  navigate('/profile');
+                }}
+              >
                 <User size={15} />
                 Profile
               </button>
-              <button className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+              <button
+                className={styles.dropdownItem}
+                onClick={() => {
+                  setDropdownOpen(false);
+                  navigate('/settings');
+                }}
+              >
                 <Settings size={15} />
                 Settings
               </button>

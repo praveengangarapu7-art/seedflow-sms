@@ -162,9 +162,13 @@ export function AiAssistant() {
     navigate(path);
   };
 
-  // The assistant reads this deployment's operational data, so it is only
-  // offered to a signed-in user — never on the public landing/login pages.
-  if (!isAuthenticated) return null;
+  // The assistant reads this deployment's operational data, so for the most
+  // part it is only offered to a signed-in user — never on the auth pages
+  // (login/signup) where a chat bubble would just be clutter mid-flow. The
+  // public marketing home page is the deliberate exception: it doubles as a
+  // live product demo for a prospective customer who hasn't signed up yet.
+  const isPublicHome = location.pathname === '/';
+  if (!isAuthenticated && !isPublicHome) return null;
 
   return (
     <>

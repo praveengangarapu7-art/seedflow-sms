@@ -8,6 +8,10 @@ const ModuleSelection = lazy(() => import('@/pages/dashboard/ModuleSelection/Mod
 const LandingPage = lazy(() => import('../pages/landing/LandingPage'));
 const SearchResults = lazy(() => import('@/pages/search/SearchResults'));
 
+// Account — global, not scoped to any one module
+const Profile = lazy(() => import('@/pages/account/Profile'));
+const AccountSettings = lazy(() => import('@/pages/account/AccountSettings'));
+
 // Procurement
 const ProcurementDashboard = lazy(() => import('@/pages/procurement/ProcurementDashboard'));
 const PurchaseRequisitions = lazy(() => import('@/pages/procurement/PurchaseRequisitions'));
@@ -185,6 +189,10 @@ export function AppRoutes() {
         {/* Protected */}
         <Route element={<ProtectedRoute />}>
           <Route path="/modules" element={<ModuleSelection />} />
+
+          {/* Account — reached from the user menu in TopHeader on every module page */}
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<AccountSettings />} />
 
           {/* Procurement */}
           <Route path="/procurement" element={<Navigate to="/procurement/dashboard" replace />} />
