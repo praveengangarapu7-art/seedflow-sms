@@ -17,6 +17,7 @@ import { procurementNav } from '@/config/procurementNav';
 import type { PurchaseOrder, POStatus } from '@/types/procurement';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
 import { usePermission } from '@/hooks/usePermission';
+import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './PurchaseOrders.module.css';
 
 const PO_TABS = [
@@ -90,14 +91,20 @@ export default function PurchaseOrders() {
   const [activeTab,   setActiveTab]   = useState('all');
   const [search,      setSearch]      = useState('');
   const [supplier,    setSupplier]    = useState('');
+  const [period,      setPeriod]      = useState<PeriodValue>('all');
   const [page,        setPage]        = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showCreate,  setShowCreate]  = useState(false);
 
+  const periodFiltered = useMemo(
+    () => mockPOs.filter((p) => isDateInPeriod(p.createdDate, period)),
+    [period]
+  );
+
   const tabFiltered = useMemo(() => {
-    if (activeTab === 'all') return mockPOs;
-    return mockPOs.filter((p) => p.status === STATUS_MAP[activeTab]);
-  }, [activeTab]);
+    if (activeTab === 'all') return periodFiltered;
+    return periodFiltered.filter((p) => p.status === STATUS_MAP[activeTab]);
+  }, [periodFiltered, activeTab]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -116,6 +123,12 @@ export default function PurchaseOrders() {
   function handleTabChange(key: string) { setActiveTab(key); setPage(1); setSelectedIds([]); }
   function handleSearch(val: string)    { setSearch(val);   setPage(1); }
   function handleSupplier(val: string)  { setSupplier(val); setPage(1); }
+  function handlePeriod(val: PeriodValue) { setPeriod(val);  setPage(1); }
+
+  const tabsWithCounts = PO_TABS.map((t) => ({
+    ...t,
+    count: t.key === 'all' ? periodFiltered.length : periodFiltered.filter((p) => p.status === STATUS_MAP[t.key]).length,
+  }));
 
   const canCreate = usePermission('create_order');
 
@@ -125,11 +138,12 @@ export default function PurchaseOrders() {
         title="Purchase Orders"
         subtitle="Create, track, and manage supplier purchase orders"
         primaryAction={canCreate ? { label: 'Create PO', icon: Plus, onClick: () => setShowCreate(true) } : undefined}
+        period={{ value: period, onChange: (v) => handlePeriod(v as PeriodValue), options: PERIOD_OPTIONS }}
       />
 
-      <KpiStrip items={buildKpiItems(mockPOs)} />
+      <KpiStrip items={buildKpiItems(periodFiltered)} />
 
-      <Tabs tabs={PO_TABS} activeTab={activeTab} onChange={handleTabChange} />
+      <Tabs tabs={tabsWithCounts} activeTab={activeTab} onChange={handleTabChange} />
 
       <FilterBar
         searchPlaceholder="Search PO #, supplier, PR ref…"

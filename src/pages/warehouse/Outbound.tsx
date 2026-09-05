@@ -29,6 +29,8 @@ import {
   type OutboundKpiIcon,
 } from './mockData/outboundData';
 import type { DispatchOrder, DispatchStatus, DispatchType } from '@/types/warehouse';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './Outbound.module.css';
 
 const ICON_MAP: Record<OutboundKpiIcon, LucideIcon> = { PackageOpen, Truck, Timer, Clock };
@@ -43,6 +45,7 @@ import { usePermission } from '@/hooks/usePermission';
 
 export default function Outbound() {
   const [activeTab, setActiveTab] = useState<OutboundTab>('all');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | DispatchType>('all');
   const [logisticsFilter, setLogisticsFilter] = useState<string>('all');
@@ -53,7 +56,14 @@ export default function Outbound() {
   const [dispatchOrder, setDispatchOrder] = useState<DispatchOrder | null>(null);
   const [trackOrder, setTrackOrder] = useState<DispatchOrder | null>(null);
 
-  const { items: dispatchOrders, update } = useRealtimeMockStore(initialDispatchOrders);
+  const { items: allDispatchOrders, update } = useRealtimeMockStore(initialDispatchOrders);
+
+  // Tab counts, the KPI row and the table all read this, so they never
+  // disagree about which period they are describing.
+  const dispatchOrders = useMemo(
+    () => allDispatchOrders.filter((o) => isDateInPeriod(o.expectedDispatchDate, period)),
+    [allDispatchOrders, period]
+  );
   const { addToast } = useToast();
 
   const canPrepareOutbound = usePermission('prepare_outbound_dispatch');
@@ -100,6 +110,7 @@ export default function Outbound() {
           <p className={styles.pageSubtitle}>Picking, packing, and shipment of goods</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canPrepareOutbound && (
             <Button variant="primary" size="sm" leftIcon={Plus} onClick={() => setIsNewOpen(true)}>
               New dispatch order

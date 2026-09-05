@@ -21,6 +21,7 @@ import { procurementNav } from '@/config/procurementNav';
 import type { Invoice } from '@/types/procurement';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
 import { usePermission } from '@/hooks/usePermission';
+import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './InvoicesPayments.module.css';
 
 const TABS = [
@@ -33,11 +34,11 @@ const TABS = [
 
 const PAGE_SIZE = 10;
 
-function buildKpis() {
-  const totalPayable = mockInvoices.filter((i) => i.paymentStatus !== 'Paid').reduce((s, i) => s + i.total, 0);
-  const pendingMatch = mockInvoices.filter((i) => i.matchStatus !== 'matched').length;
-  const approved     = mockInvoices.filter((i) => i.paymentStatus === 'Approved').length;
-  const overdue      = mockInvoices.filter((i) => i.paymentStatus === 'Overdue').length;
+function buildKpis(invoices: Invoice[]) {
+  const totalPayable = invoices.filter((i) => i.paymentStatus !== 'Paid').reduce((s, i) => s + i.total, 0);
+  const pendingMatch = invoices.filter((i) => i.matchStatus !== 'matched').length;
+  const approved     = invoices.filter((i) => i.paymentStatus === 'Approved').length;
+  const overdue      = invoices.filter((i) => i.paymentStatus === 'Overdue').length;
   return [
     { label: 'Total payable',         value: formatIndianCurrency(totalPayable), icon: Wallet },
     { label: 'Pending 3-way match',   value: String(pendingMatch),               icon: GitCompare },
@@ -372,13 +373,28 @@ export default function InvoicesPayments() {
   const [search, setSearch]       = useState('');
   const [supplier, setSupplier]   = useState('');
   const [status, setStatus]       = useState('');
+  const [period, setPeriod]       = useState<PeriodValue>('all');
   const [page, setPage]           = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [detailInvoice, setDetailInvoice] = useState<Invoice | null>(null);
   const [showRecord, setShowRecord] = useState(false);
 
+  const periodFiltered = useMemo(
+    () => mockInvoices.filter((i) => isDateInPeriod(i.invoiceDate, period)),
+    [period]
+  );
+
+  const tabsWithCounts = TABS.map((t) => {
+    let data = periodFiltered;
+    if (t.key === 'pending')  data = data.filter((i) => i.matchStatus !== 'matched');
+    if (t.key === 'approved') data = data.filter((i) => i.paymentStatus === 'Approved');
+    if (t.key === 'paid')     data = data.filter((i) => i.paymentStatus === 'Paid');
+    if (t.key === 'disputed') data = data.filter((i) => i.paymentStatus === 'Disputed');
+    return { ...t, count: data.length };
+  });
+
   const filtered = useMemo(() => {
-    let data = mockInvoices;
+    let data = periodFiltered;
     if (activeTab === 'pending')  data = data.filter((i) => i.matchStatus !== 'matched');
     if (activeTab === 'approved') data = data.filter((i) => i.paymentStatus === 'Approved');
     if (activeTab === 'paid')     data = data.filter((i) => i.paymentStatus === 'Paid');
@@ -391,7 +407,7 @@ export default function InvoicesPayments() {
       if (status && i.paymentStatus !== status) return false;
       return true;
     });
-  }, [activeTab, search, supplier, status]);
+  }, [periodFiltered, activeTab, search, supplier, status]);
 
   const paginated = useMemo(() => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [filtered, page]);
 
@@ -403,11 +419,12 @@ export default function InvoicesPayments() {
         title="Invoices & payments"
         subtitle="Track invoices and manage supplier payments"
         primaryAction={canRecord ? { label: 'Record invoice', icon: Plus, onClick: () => setShowRecord(true) } : undefined}
+        period={{ value: period, onChange: (v) => { setPeriod(v as PeriodValue); setPage(1); }, options: PERIOD_OPTIONS }}
       />
 
-      <KpiStrip items={buildKpis()} />
+      <KpiStrip items={buildKpis(periodFiltered)} />
 
-      <Tabs tabs={TABS} activeTab={activeTab} onChange={(k) => { setActiveTab(k); setPage(1); }} />
+      <Tabs tabs={tabsWithCounts} activeTab={activeTab} onChange={(k) => { setActiveTab(k); setPage(1); }} />
 
       <FilterBar
         searchPlaceholder="Invoice number, supplier, PO ref…"

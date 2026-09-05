@@ -31,6 +31,8 @@ import {
   type InboundKpiIcon,
 } from './mockData/inboundData';
 import { formatIndianNumber } from '@/utils/formatters';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import type { ASN, PutawayTask, AsnStatus, PutawayPriority } from '@/types/warehouse';
 import styles from './Inbound.module.css';
 
@@ -52,6 +54,7 @@ import { usePermission } from '@/hooks/usePermission';
 
 export default function Inbound() {
   const [activeTab, setActiveTab] = useState<InboundTab>('asn');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [search, setSearch] = useState('');
   const [asnStatusFilter, setAsnStatusFilter] = useState<'all-active' | AsnStatus>('all-active');
   const [putawayPriorityFilter, setPutawayPriorityFilter] = useState<'all' | PutawayPriority>('all');
@@ -61,15 +64,27 @@ export default function Inbound() {
   const [isNewReceivingOpen, setIsNewReceivingOpen] = useState(false);
   const [detailAsn, setDetailAsn] = useState<ASN | null>(null);
 
-  const { items: asnList, add: addAsn, update: updateAsn } = useRealtimeMockStore(initialAsnList);
-  const { items: putawayTasks, update: updatePutaway } = useRealtimeMockStore(initialPutawayTasks);
+  const { items: allAsns, add: addAsn, update: updateAsn } = useRealtimeMockStore(initialAsnList);
+  const { items: allPutawayTasks, update: updatePutaway } = useRealtimeMockStore(initialPutawayTasks);
+
+  // One period filter, applied to each of the three inbound lists against the
+  // date that list is actually keyed on.
+  const asnList = useMemo(() => allAsns.filter((a) => isDateInPeriod(a.expectedDate, period)), [allAsns, period]);
+  const putawayTasks = useMemo(
+    () => allPutawayTasks.filter((t) => isDateInPeriod(t.completedAt ?? t.createdAt, period)),
+    [allPutawayTasks, period]
+  );
+  const periodPendingReceipts = useMemo(
+    () => pendingReceipts.filter((r) => isDateInPeriod(r.receivedAt, period)),
+    [period]
+  );
   const { addToast } = useToast();
 
   const canReceive = usePermission('receive_incoming_goods');
 
   const tabCounts = useMemo(() => {
     const asnCount = asnList.filter((a) => a.status !== 'Completed' && a.status !== 'Cancelled').length;
-    const pendingCount = pendingReceipts.length;
+    const pendingCount = periodPendingReceipts.length;
     const putawayCount = putawayTasks.filter((t) => t.status !== 'Completed').length;
     const completedCount = putawayTasks.filter((t) => t.status === 'Completed' && isToday(t.completedAt)).length;
     return { asn: asnCount, pending: pendingCount, putaway: putawayCount, completed: completedCount };
@@ -141,6 +156,7 @@ export default function Inbound() {
           </p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canReceive && (
             <Button variant="primary" size="sm" leftIcon={Plus} onClick={() => setIsNewReceivingOpen(true)}>
               New ASN

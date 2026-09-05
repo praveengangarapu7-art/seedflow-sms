@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, FlaskConical, RefreshCw } from 'lucide-react';
 import { ModuleLayout } from '@/components/layout/ModuleLayout/ModuleLayout';
@@ -14,6 +14,8 @@ import {
 } from '@/services/seedLotRealtimeClient';
 import { useLabSession } from './useLabSession';
 import styles from './Lab.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, labToday, type PeriodValue } from '@/utils/periodFilter';
 
 export default function QualityFlags() {
   const navigate = useNavigate();
@@ -23,11 +25,17 @@ export default function QualityFlags() {
 
   const [flags, setFlags] = useState<LabQualityFlag[]>([]);
   const [showResolved, setShowResolved] = useState(false);
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const [activeFlag, setActiveFlag] = useState<LabQualityFlag | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
+
+  const visibleFlags = useMemo(
+    () => flags.filter((f) => isDateInPeriod(f.flagged_at, period, labToday())),
+    [flags, period]
+  );
 
   const load = useCallback(async (accessToken: string, resolved: boolean) => {
     setBusy(true);
@@ -77,6 +85,7 @@ export default function QualityFlags() {
             </p>
           </div>
           <div className={styles.controls}>
+            <PeriodSelect value={period} onChange={setPeriod} />
             <Button variant="secondary" leftIcon={RefreshCw} onClick={() => token && void load(token, showResolved)}>
               Refresh
             </Button>
@@ -118,7 +127,7 @@ export default function QualityFlags() {
                   </tr>
                 </thead>
                 <tbody>
-                  {flags.map((f) => (
+                  {visibleFlags.map((f) => (
                     <tr key={f.id}>
                       <td>
                         <button className={styles.rowButton} onClick={() => navigate(`/lab/submissions/${f.submission_id}`)}>

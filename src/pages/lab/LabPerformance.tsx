@@ -7,10 +7,13 @@ import { labNav } from '@/config/labNav';
 import { fetchLabPerformance, type LabPerformanceEntry } from '@/services/seedLotRealtimeClient';
 import { useLabSession } from './useLabSession';
 import styles from './Lab.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { type PeriodValue } from '@/utils/periodFilter';
 
 export default function LabPerformance() {
   const { token, error: sessionError } = useLabSession();
   const [entries, setEntries] = useState<LabPerformanceEntry[]>([]);
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -58,6 +61,7 @@ export default function LabPerformance() {
             </p>
           </div>
           <div className={styles.controls}>
+            <PeriodSelect value={period} onChange={setPeriod} />
             <Button variant="secondary" leftIcon={RefreshCw} onClick={() => token && void load(token)}>
               Refresh
             </Button>

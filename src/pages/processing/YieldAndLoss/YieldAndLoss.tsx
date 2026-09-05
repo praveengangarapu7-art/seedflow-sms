@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { TrendingUp, TrendingDown, Award, PieChart, Download } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as ReChartsPie, Pie, Cell } from 'recharts';
 import { ModuleLayout } from '@/components/layout/ModuleLayout/ModuleLayout';
@@ -6,6 +7,8 @@ import { KpiCard } from '@/components/common/KpiCard/KpiCard';
 import { processingNav } from '@/config/processingNav';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import styles from './YieldAndLoss.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { type PeriodValue } from '@/utils/periodFilter';
 
 const lineData = [
   { month: 'Jul', rate: 80.5 },
@@ -32,6 +35,7 @@ const lossDonutData = [
 
 export default function YieldAndLossPage() {
   const { addToast } = useToast();
+  const [period, setPeriod] = useState<PeriodValue>('all');
 
   return (
     <ModuleLayout moduleName="Processing" moduleIcon={TrendingUp} navItems={processingNav}>
@@ -43,6 +47,7 @@ export default function YieldAndLossPage() {
           </p>
         </div>
         <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <Button variant="secondary" leftIcon={Download} onClick={() => addToast('Downloading yield report...', 'success')}>
             Export Report
           </Button>

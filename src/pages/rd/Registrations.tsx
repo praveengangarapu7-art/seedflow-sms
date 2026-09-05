@@ -15,6 +15,8 @@ import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { registrations as mockRegistrations } from './mockData/registrationsData';
 import { varieties as mockVarieties } from './mockData/varietiesData';
 import { VarietyRegistration, Variety, RegStatus } from '@/types/rd';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { RegistrationDetailModal } from './components/RegistrationDetailModal/RegistrationDetailModal';
 import { NewRegistrationModal } from './components/NewRegistrationModal/NewRegistrationModal';
 import { VarietyDetailModal } from './components/VarietyDetailModal/VarietyDetailModal';
@@ -22,8 +24,14 @@ import styles from './Registrations.module.css';
 
 export default function Registrations() {
   const { addToast } = useToast();
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const { items: allVarieties } = useRealtimeMockStore<Variety>(mockVarieties);
-  const { items, add, update } = useRealtimeMockStore<VarietyRegistration>(mockRegistrations);
+  const { items: allRegistrationItems, add, update } = useRealtimeMockStore<VarietyRegistration>(mockRegistrations);
+
+  const items = useMemo(
+    () => allRegistrationItems.filter((r) => isDateInPeriod(r.filedDate, period, RD_TODAY)),
+    [allRegistrationItems, period]
+  );
 
   const canFile = usePermission('file_variety_registration');
   const canApproveRelease = usePermission('approve_variety_release');
@@ -367,6 +375,7 @@ export default function Registrations() {
           <p className={styles.pageSubtitle}>DUS testing, UPOV/PPV&FRA filings, and IP protection</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <Button 
             variant="secondary" 
             leftIcon={Upload}

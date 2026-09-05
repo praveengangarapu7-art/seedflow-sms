@@ -36,6 +36,7 @@ import { pushNotificationsRouter } from './modules/pushNotifications/pushNotific
 import { seedLotsRouter } from './modules/seedLots/seedLots.routes';
 import { seedRequestsRouter } from './modules/seedRequests/seedRequests.routes';
 import { storageRouter } from './modules/storage/storage.routes';
+import { usersRouter } from './modules/users/users.routes';
 import { varietiesRouter } from './modules/varieties/varieties.routes';
 import { workflowsRouter } from './modules/workflows/workflows.routes';
 
@@ -55,6 +56,7 @@ export function createApp() {
 
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/organizations', organizationsRouter);
+  app.use('/api/v1/users', usersRouter);
   app.use('/api/v1/production/seed-lots', seedLotsRouter);
   app.use('/api/v1/production/allocations', allocationsRouter);
   app.use('/api/v1/audit-logs', auditLogsRouter);

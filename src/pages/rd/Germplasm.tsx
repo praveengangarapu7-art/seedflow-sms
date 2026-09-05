@@ -13,6 +13,8 @@ import { Button } from '@/components/common/Button/Button';
 import { rdNav } from '@/config/rdNav';
 import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { accessions as mockAccessions, germplasmKpis } from './mockData/germplasmData';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import type { GermplasmAccession } from '@/types/rd';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
 import { usePermission } from '@/hooks/usePermission';
@@ -25,7 +27,13 @@ import styles from './Germplasm.module.css';
 
 export default function Germplasm() {
   const { addToast } = useToast();
-  const { items } = useRealtimeMockStore<GermplasmAccession>(mockAccessions);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+  const { items: allAccessions } = useRealtimeMockStore<GermplasmAccession>(mockAccessions);
+
+  const items = useMemo(
+    () => allAccessions.filter((a) => isDateInPeriod(a.registeredDate, period, RD_TODAY)),
+    [allAccessions, period]
+  );
   
   const canCatalog = usePermission('catalog_germplasm');
   const canArchive = usePermission('archive_germplasm');
@@ -266,6 +274,7 @@ export default function Germplasm() {
           <p className={styles.pageSubtitle}>Manage genetic resources, accessions, and pedigree</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <ViewToggle view={viewMode} onChange={setViewMode} />
           {canCatalog && (
             <>

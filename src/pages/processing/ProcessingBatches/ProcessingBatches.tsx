@@ -13,6 +13,8 @@ import { processingNav } from '@/config/processingNav';
 import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import defaultBatches from '@/data/processing/batches';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { PROCESSING_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { rawIntakes as mockIntakes } from '@/data/processing/rawIntakes';
 import { recipes as mockRecipes } from '@/data/processing/recipes';
 import { machines as mockMachines } from '@/data/processing/machines';
@@ -30,7 +32,13 @@ const STEPPER_STEPS = [
 export default function ProcessingBatchesPage() {
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { items, add } = useRealtimeMockStore<ProcessingBatch>(defaultBatches);
+  const { items: allBatches, add } = useRealtimeMockStore<ProcessingBatch>(defaultBatches);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+
+  const items = useMemo(
+    () => allBatches.filter((b) => isDateInPeriod(b.startedDate, period, PROCESSING_TODAY)),
+    [allBatches, period]
+  );
 
   const canCreate = usePermission('create_processing_batch');
   const canApproveRecipe = usePermission('approve_batch_recipe');
@@ -286,6 +294,7 @@ export default function ProcessingBatchesPage() {
           </p>
         </div>
         <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canCreate && (
             <Button variant="primary" leftIcon={Plus} onClick={() => setIsAddModalOpen(true)}>
               New Batch

@@ -5,6 +5,7 @@ import {
   Warehouse, 
   Cog, 
   Microscope, 
+  ShieldCheck,
   Check, 
   ArrowRight,
   ChevronLeft,
@@ -30,12 +31,14 @@ export default function ModulesShowcase() {
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const minSwipeDistance = 50;
 
+  // Derived from the module list below rather than hardcoded, so adding a
+  // module can never leave the arrows wrapping at the wrong index.
   const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % 5); // 5 modules total
+    setActiveIndex((prev) => (prev + 1) % modules.length);
   };
 
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + 5) % 5);
+    setActiveIndex((prev) => (prev - 1 + modules.length) % modules.length);
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -252,6 +255,44 @@ export default function ModulesShowcase() {
             <path d="M3.5,6 L5,7.5 L8.5,4" fill="none" stroke="var(--color-white)" strokeWidth="1.5" strokeLinecap="round" />
             <rect x="20" y="3" width="62" height="6" rx="2" fill="var(--color-text-secondary)" opacity="0.25" />
           </g>
+        </svg>
+      )
+    },
+    {
+      id: 'administration',
+      title: 'Administration',
+      tagline: 'One console for accounts, oversight and the audit trail.',
+      icon: ShieldCheck,
+      bullets: [
+        'User accounts and role assignment across every module',
+        'Complete audit trail of every change, with before and after state',
+        'System health: errors, latency, failed operations and anomalies',
+        'Data governance, privacy exports and retention policy control'
+      ],
+      linkText: 'Explore the admin console',
+      visualSvg: (
+        <svg viewBox="0 0 200 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          {/* Console panel */}
+          <rect x="30" y="20" width="140" height="110" rx="8" fill="var(--color-white)" stroke="var(--color-border-light)" strokeWidth="1.5" style={{ filter: 'drop-shadow(0 6px 15px rgba(14, 84, 103, 0.05))' }} />
+          <rect x="30" y="20" width="140" height="18" rx="8" fill="var(--color-primary)" opacity="0.9" />
+          <circle cx="41" cy="29" r="2.5" fill="var(--color-white)" opacity="0.85" />
+          <circle cx="50" cy="29" r="2.5" fill="var(--color-white)" opacity="0.55" />
+
+          {/* Shield at the centre — the module's own mark */}
+          <path
+            d="M100,50 L118,57 L118,76 C118,88 110,96 100,100 C90,96 82,88 82,76 L82,57 Z"
+            fill="var(--color-primary)"
+            opacity="0.12"
+            stroke="var(--color-primary)"
+            strokeWidth="1.5"
+          />
+          <path d="M93,75 L98,80 L108,68" fill="none" stroke="var(--color-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+
+          {/* Audit-trail rows */}
+          <rect x="44" y="108" width="46" height="5" rx="2.5" fill="var(--color-text-secondary)" opacity="0.25" />
+          <rect x="44" y="118" width="30" height="5" rx="2.5" fill="var(--color-text-secondary)" opacity="0.18" />
+          <rect x="110" y="108" width="46" height="5" rx="2.5" fill="var(--color-text-secondary)" opacity="0.25" />
+          <rect x="110" y="118" width="36" height="5" rx="2.5" fill="var(--color-text-secondary)" opacity="0.18" />
         </svg>
       )
     }

@@ -7,6 +7,8 @@ import { KpiCard } from '@/components/common/KpiCard/KpiCard';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { processingNav } from '@/config/processingNav';
 import styles from './ProcessingReports.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { type PeriodValue } from '@/utils/periodFilter';
 
 // Chart Mock Data
 const EFFICIENCY_DATA = [
@@ -42,6 +44,7 @@ const FORECAST_DATA = [
 export default function ProcessingReportsPage() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<'efficiency' | 'utilization' | 'quality' | 'forecasting'>('efficiency');
+  const [period, setPeriod] = useState<PeriodValue>('month');
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = () => {
@@ -62,6 +65,7 @@ export default function ProcessingReportsPage() {
           </p>
         </div>
         <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <Button
             variant="secondary"
             size="sm"

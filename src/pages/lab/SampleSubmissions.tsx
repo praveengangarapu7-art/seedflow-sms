@@ -19,6 +19,8 @@ import {
 } from '@/services/seedLotRealtimeClient';
 import { useLabSession } from './useLabSession';
 import styles from './Lab.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, labToday, type PeriodValue } from '@/utils/periodFilter';
 
 const ALL_TEST_TYPES: LabTestType[] = ['germination', 'purity', 'vigor'];
 const STATUS_FILTERS = ['all', 'submitted', 'in_progress', 'completed', 'failed'] as const;
@@ -39,6 +41,7 @@ export default function SampleSubmissions() {
   const [lots, setLots] = useState<RealtimeSeedLot[]>([]);
   const [labs, setLabs] = useState<OrganizationRow[]>([]);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -72,8 +75,15 @@ export default function SampleSubmissions() {
     if (token) void load(token);
   }, [token, load]);
 
+  // Period first, then the status chips — so the chip counts and the table
+  // describe the same window.
+  const periodSubmissions = useMemo(
+    () => submissions.filter((s) => isDateInPeriod(s.submitted_at, period, labToday())),
+    [submissions, period]
+  );
+
   const visible = useMemo(
-    () => (statusFilter === 'all' ? submissions : submissions.filter((s) => s.status === statusFilter)),
+    () => (statusFilter === 'all' ? periodSubmissions : periodSubmissions.filter((s) => s.status === statusFilter)),
     [submissions, statusFilter],
   );
 
@@ -120,6 +130,7 @@ export default function SampleSubmissions() {
             </p>
           </div>
           <div className={styles.controls}>
+            <PeriodSelect value={period} onChange={setPeriod} />
             <Button variant="secondary" leftIcon={RefreshCw} onClick={() => token && void load(token)}>
               Refresh
             </Button>
@@ -142,7 +153,7 @@ export default function SampleSubmissions() {
               onClick={() => setStatusFilter(s)}
             >
               {s === 'all' ? 'All' : s.replace('_', ' ')}
-              {s !== 'all' ? ` (${submissions.filter((x) => x.status === s).length})` : ` (${submissions.length})`}
+              {s !== 'all' ? ` (${periodSubmissions.filter((x) => x.status === s).length})` : ` (${periodSubmissions.length})`}
             </button>
           ))}
         </div>

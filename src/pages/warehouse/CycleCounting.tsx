@@ -32,6 +32,8 @@ import {
   type CycleCountKpiIcon,
 } from './mockData/cycleCountData';
 import type { CycleCount, CountStatus, CountStrategy } from '@/types/warehouse';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './CycleCounting.module.css';
 
 const ICON_MAP: Record<CycleCountKpiIcon, LucideIcon> = { ClipboardList, Target, BarChart3, AlertTriangle };
@@ -54,6 +56,7 @@ import { usePermission } from '@/hooks/usePermission';
 
 export default function CycleCounting() {
   const [activeTab, setActiveTab] = useState<CCTab>('all');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [search, setSearch] = useState('');
   const [strategyFilter, setStrategyFilter] = useState<'all' | CountStrategy>('all');
   const [warehouseFilter, setWarehouseFilter] = useState('all');
@@ -65,7 +68,12 @@ export default function CycleCounting() {
   const [postingCount, setPostingCount] = useState<{ count: CycleCount; decisions: VarianceDecision[] } | null>(null);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
-  const { items: cycleCounts, update, add } = useRealtimeMockStore(initialCycleCounts);
+  const { items: allCycleCounts, update, add } = useRealtimeMockStore(initialCycleCounts);
+
+  const cycleCounts = useMemo(
+    () => allCycleCounts.filter((c) => isDateInPeriod(c.scheduledDate, period)),
+    [allCycleCounts, period]
+  );
   const { addToast } = useToast();
 
   const canSchedule = usePermission('schedule_cycle_count');
@@ -119,6 +127,7 @@ export default function CycleCounting() {
           <p className={styles.pageSubtitle}>Plan, execute, and reconcile physical inventory counts</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canSchedule && <Button variant="secondary" size="sm" leftIcon={Calendar} onClick={() => setIsScheduleOpen(true)}>Schedule</Button>}
           {canSchedule && <Button variant="primary" size="sm" leftIcon={Plus} onClick={() => setIsNewOpen(true)}>New count</Button>}
         </div>

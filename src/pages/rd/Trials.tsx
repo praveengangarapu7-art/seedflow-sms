@@ -14,6 +14,8 @@ import { useToast } from '@/components/common/Toast/ToastContext';
 import { rdNav } from '@/config/rdNav';
 import { trials as initialTrials } from './mockData/trialsData';
 import { Trial, TrialType, TrialDesign } from '@/types/rd';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { NewTrialModal } from './components/NewTrialModal/NewTrialModal';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './Trials.module.css';
@@ -25,7 +27,13 @@ const SEASONS = ['Kharif 2025', 'Rabi 2025-26', 'Zaid 2026', 'Kharif 2026'];
 export default function Trials() {
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { items: trialsList, add, update, remove } = useRealtimeMockStore(initialTrials);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+  const { items: allTrials, add, update, remove } = useRealtimeMockStore(initialTrials);
+
+  const trialsList = useMemo(
+    () => allTrials.filter((t) => isDateInPeriod(t.startDate, period, RD_TODAY)),
+    [allTrials, period]
+  );
 
   const canDesign = usePermission('design_trial');
   const canExecute = usePermission('execute_trial');
@@ -272,6 +280,7 @@ export default function Trials() {
           <p className={styles.pageSubtitle}>Multi-location trials (MLT), agricultural research farms, and field plot grids</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <Button
             variant="secondary"
             size="sm"

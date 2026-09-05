@@ -38,6 +38,10 @@ export function ModuleLayout({ moduleName, moduleIcon, navItems, children }: Mod
     return <Navigate to="/lab/placeholder" replace />;
   }
 
+  if (moduleName === 'Administration' && filteredNav.length === 0) {
+    return <Navigate to="/admin/placeholder" replace />;
+  }
+
   return (
     <div className={styles.root}>
       <TopHeader moduleName={moduleName} />

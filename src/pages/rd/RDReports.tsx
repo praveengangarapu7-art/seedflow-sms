@@ -33,6 +33,8 @@ import {
   ScheduledReport,
   RDInsight
 } from './mockData/reportsData';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { type PeriodValue } from '@/utils/periodFilter';
 
 import styles from './RDReports.module.css';
 
@@ -41,6 +43,7 @@ export default function RDReports() {
   
   // State
   const [activeTab, setActiveTab] = useState('library');
+  const [period, setPeriod] = useState<PeriodValue>('month');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [seasonFilter, setSeasonFilter] = useState('All seasons');
   const [cropFilter, setCropFilter] = useState('All crops');
@@ -526,6 +529,7 @@ export default function RDReports() {
           <p className={styles.pageSubtitle}>Research insights, trial summaries, and breeding analytics</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <Button 
             variant="secondary" 
             leftIcon={Download}

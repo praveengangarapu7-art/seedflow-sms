@@ -13,10 +13,15 @@ import {
   ShoppingCart, BarChart3, Award, Clock, TrendingUp, Sparkles, 
   FileCheck, TrendingDown, AlertTriangle, Workflow, Wallet, Download
 } from 'lucide-react';
+import { PERIOD_OPTIONS, periodLabel, type PeriodValue } from '@/utils/periodFilter';
 import styles from './ProcurementReports.module.css';
 
 export default function ProcurementReports() {
   const [activeReport, setActiveReport] = useState<any>(null);
+  const [period, setPeriod] = useState<PeriodValue>('month');
+  const [department, setDepartment] = useState('All Departments');
+  const [category, setCategory] = useState('All Categories');
+  const [supplierScope, setSupplierScope] = useState('All Suppliers');
 
   const reports = [
     {
@@ -198,28 +203,23 @@ export default function ProcurementReports() {
             onClick: handleExportAll,
             disabled: isExportingAll
           }}
+          period={{ value: period, onChange: (v) => setPeriod(v as PeriodValue), options: PERIOD_OPTIONS }}
         />
 
         <div className={styles.filterBar} data-export-ignore="true">
-        <select className={styles.filterSelect}>
-          <option>Last 30 Days</option>
-          <option>Last Quarter</option>
-          <option>Year to Date</option>
-          <option>Last 12 Months</option>
-        </select>
-        <select className={styles.filterSelect}>
+        <select className={styles.filterSelect} value={department} onChange={(e) => setDepartment(e.target.value)}>
           <option>All Departments</option>
           <option>Laboratory</option>
           <option>Warehouse</option>
           <option>Procurement</option>
         </select>
-        <select className={styles.filterSelect}>
+        <select className={styles.filterSelect} value={category} onChange={(e) => setCategory(e.target.value)}>
           <option>All Categories</option>
           <option>Raw Seeds</option>
           <option>Packaging</option>
           <option>Chemicals</option>
         </select>
-        <select className={styles.filterSelect}>
+        <select className={styles.filterSelect} value={supplierScope} onChange={(e) => setSupplierScope(e.target.value)}>
           <option>All Suppliers</option>
           <option>Preferred Only</option>
           <option>Top 10 by Spend</option>
@@ -245,7 +245,7 @@ export default function ProcurementReports() {
               </div>
               
               <div className={styles.cardBottom}>
-                <span className={styles.lastGenerated}>Last generated: {report.lastGenerated}</span>
+                <span className={styles.lastGenerated}>{periodLabel(period)} · generated {report.lastGenerated}</span>
                 <span className={styles.viewReport}>View report →</span>
               </div>
             </Card>
@@ -265,7 +265,7 @@ export default function ProcurementReports() {
             <div className={styles.modalHeader}>
               <div>
                 <h2 className={styles.modalTitle}>{activeReport.title}</h2>
-                <p className={styles.modalDesc}>{activeReport.description} · Last 12 Months</p>
+                <p className={styles.modalDesc}>{activeReport.description} · {periodLabel(period)}</p>
               </div>
               <div className={styles.exportButtons}>
                 <Button variant="ghost" icon={<Download size={16} />} onClick={() => handleExport('PDF')}>PDF</Button>

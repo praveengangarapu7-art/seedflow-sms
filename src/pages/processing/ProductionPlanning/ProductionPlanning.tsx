@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Calendar, Plus, Activity, PieChart, AlertCircle } from 'lucide-react';
 import { ModuleLayout } from '@/components/layout/ModuleLayout/ModuleLayout';
 import { Button } from '@/components/common/Button/Button';
@@ -10,6 +10,8 @@ import { processingNav } from '@/config/processingNav';
 import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { productionSchedule as mockSchedule } from '@/data/processing/productionSchedule';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { PROCESSING_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { ProductionSchedule } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './ProductionPlanning.module.css';
@@ -26,7 +28,13 @@ const CALENDAR_DAYS = [
 
 export default function ProductionPlanningPage() {
   const { addToast } = useToast();
-  const { items, add } = useRealtimeMockStore<ProductionSchedule>(mockSchedule);
+  const { items: allSchedule, add } = useRealtimeMockStore<ProductionSchedule>(mockSchedule);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+
+  const items = useMemo(
+    () => allSchedule.filter((s) => isDateInPeriod(s.plannedStartDate, period, PROCESSING_TODAY)),
+    [allSchedule, period]
+  );
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid'); // 'grid' represents calendar/timeline, 'table' represents list
   const [activeSubView, setActiveSubView] = useState<'calendar' | 'gantt'>('calendar');
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -76,6 +84,7 @@ export default function ProductionPlanningPage() {
           </p>
         </div>
         <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canSchedule && (
             <Button variant="primary" leftIcon={Plus} onClick={() => setIsAddOpen(true)}>
               Schedule Batch

@@ -4314,3 +4314,124 @@ export interface ReconciliationReport {
 export async function runReconciliation(token: string): Promise<ReconciliationReport> {
   return request('/master-data/reconcile', token, { method: 'POST' });
 }
+
+// --- Administration ------------------------------------------------------
+// Backs the Administration module (/admin/*). Two things live here that
+// nothing else in the app could reach before:
+//
+//   1. The audit trail. GET /audit-logs has existed on the server since the
+//      first phase but had no client wrapper at all, so the audit_logs table
+//      was write-only from the front end's point of view.
+//   2. User administration. /users is new (see
+//      server/src/modules/users/users.routes.ts) — the platform had
+//      authentication but no way to list accounts or change a role.
+//
+// Everything else the Administration module shows (system health, data
+// governance, privacy/retention, workflows, organizations) deliberately
+// reuses the wrappers already defined above rather than duplicating them,
+// because those are the SAME records the Production module surfaces — Admin
+// is a different audience for one source of truth, not a second copy of it.
+
+export interface AuditLogRow {
+  id: string;
+  entity_type: string;
+  entity_id: string;
+  action: string;
+  performed_by: string;
+  before_state: unknown | null;
+  after_state: unknown | null;
+  metadata: unknown | null;
+  created_at: string;
+}
+
+export async function fetchAuditLogs(
+  token: string,
+  filters: { entityType?: string; entityId?: string; limit?: number; offset?: number } = {},
+): Promise<AuditLogRow[]> {
+  const params = new URLSearchParams();
+  if (filters.entityType) params.set('entityType', filters.entityType);
+  if (filters.entityId) params.set('entityId', filters.entityId);
+  if (filters.limit !== undefined) params.set('limit', String(filters.limit));
+  if (filters.offset !== undefined) params.set('offset', String(filters.offset));
+  const query = params.toString();
+  return request(`/audit-logs${query ? `?${query}` : ''}`, token);
+}
+
+export interface AdminUserRow {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  organization_id: string | null;
+  organization_name: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  last_action_at: string | null;
+  action_count: number;
+}
+
+export interface AdminUserStats {
+  total: number;
+  active: number;
+  inactive: number;
+  withoutOrganization: number;
+  byRole: { role: string; count: number }[];
+}
+
+export interface BackendRoleInfo {
+  role: string;
+  requiresOrganization: boolean;
+}
+
+export interface CreateAdminUserPayload {
+  email: string;
+  name: string;
+  password: string;
+  role: string;
+  organizationId?: string | null;
+}
+
+export interface UpdateAdminUserPayload {
+  name?: string;
+  role?: string;
+  organizationId?: string | null;
+  isActive?: boolean;
+}
+
+export async function fetchAdminUsers(
+  token: string,
+  filters: { role?: string; organizationId?: string; isActive?: boolean; q?: string } = {},
+): Promise<AdminUserRow[]> {
+  const params = new URLSearchParams();
+  if (filters.role) params.set('role', filters.role);
+  if (filters.organizationId) params.set('organizationId', filters.organizationId);
+  if (filters.isActive !== undefined) params.set('isActive', String(filters.isActive));
+  if (filters.q) params.set('q', filters.q);
+  const query = params.toString();
+  return request(`/users${query ? `?${query}` : ''}`, token);
+}
+
+export async function fetchAdminUserStats(token: string): Promise<AdminUserStats> {
+  return request('/users/stats', token);
+}
+
+export async function fetchBackendRoles(token: string): Promise<BackendRoleInfo[]> {
+  return request('/users/roles', token);
+}
+
+export async function createAdminUser(token: string, payload: CreateAdminUserPayload): Promise<AdminUserRow> {
+  return request('/users', token, { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateAdminUser(
+  token: string,
+  id: string,
+  payload: UpdateAdminUserPayload,
+): Promise<AdminUserRow> {
+  return request(`/users/${id}`, token, { method: 'PATCH', body: JSON.stringify(payload) });
+}
+
+export async function resetAdminUserPassword(token: string, id: string, password: string): Promise<void> {
+  await request(`/users/${id}/reset-password`, token, { method: 'POST', body: JSON.stringify({ password }) });
+}

@@ -12,6 +12,8 @@ import {
 } from '@/services/seedLotRealtimeClient';
 import { useLabSession } from './useLabSession';
 import styles from './Lab.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, labToday, type PeriodValue } from '@/utils/periodFilter';
 
 const TEST_FILTERS = ['all', 'germination', 'purity', 'vigor'] as const;
 type TestFilter = (typeof TEST_FILTERS)[number];
@@ -35,6 +37,7 @@ export default function TestResults() {
   const { token, error: sessionError } = useLabSession();
   const [submissions, setSubmissions] = useState<LabTestSubmission[]>([]);
   const [testFilter, setTestFilter] = useState<TestFilter>('all');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -54,9 +57,14 @@ export default function TestResults() {
     if (token) void load(token);
   }, [token, load]);
 
+  const periodSubmissions = useMemo(
+    () => submissions.filter((s) => isDateInPeriod(s.submitted_at, period, labToday())),
+    [submissions, period]
+  );
+
   const allResults = useMemo<FlatResult[]>(
     () =>
-      submissions.flatMap((s) =>
+      periodSubmissions.flatMap((s) =>
         (s.results ?? []).map((r) => ({
           id: r.id,
           submissionId: s.id,
@@ -71,8 +79,9 @@ export default function TestResults() {
           recordedAt: r.recorded_at,
         })),
       ),
-    [submissions],
+    [periodSubmissions],
   );
+
 
   const visible = useMemo(
     () =>
@@ -105,6 +114,7 @@ export default function TestResults() {
             </p>
           </div>
           <div className={styles.controls}>
+            <PeriodSelect value={period} onChange={setPeriod} />
             <Button variant="secondary" leftIcon={RefreshCw} onClick={() => token && void load(token)}>
               Refresh
             </Button>

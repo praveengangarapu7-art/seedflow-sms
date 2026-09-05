@@ -1,0 +1,633 @@
+.page {
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 80ch;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 35px rgba(14, 84, 103, 0.06);
+  margin-bottom: 1.25rem;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem;
+}
+
+.sectionSubtitle {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.select,
+.textInput,
+.textArea {
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  color: var(--color-text);
+  background: #fbfdfb;
+}
+
+.textInput {
+  min-width: 140px;
+}
+
+.textArea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+}
+
+.label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  flex: 1;
+}
+
+.formRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.65rem 0.5rem;
+  border-bottom: 1px solid #eef4ee;
+  vertical-align: top;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.rowButton {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badgeCompleted,
+.badgePassed,
+.badgeResolved {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.badgeSubmitted {
+  background: #e8f1fb;
+  color: #1c5b96;
+}
+
+.badgeIn_progress {
+  background: #fdf2e3;
+  color: #a3701f;
+}
+
+.badgeFailed,
+.badgeOpen {
+  background: #fdeceb;
+  color: #c0392b;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.88rem;
+}
+
+.successText {
+  color: #187a43;
+  font-size: 0.88rem;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.metaItem {
+  font-size: 0.9rem;
+}
+
+.metaLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.2rem;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #e8efe8;
+  overflow: hidden;
+  margin-top: 0.35rem;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--color-primary);
+}
+
+.thresholdNote {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 0.35rem;
+}
+
+.filterBar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.chip {
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-light);
+  background: white;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chipActive {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.backLink {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 1000px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Administration-specific additions                                  */
+/* ------------------------------------------------------------------ */
+/* Everything above this line is the shared module page shell copied
+   from the Laboratory module so the two look identical; the classes
+   below only exist on admin pages. */
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* Roles & permissions matrix — many narrow columns, so it needs its own
+   tighter cell rules and a sticky first column to stay readable while
+   scrolling sideways. */
+.matrixWrap {
+  overflow: auto;
+  max-height: 70vh;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.matrix {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.78rem;
+}
+
+.matrix th,
+.matrix td {
+  padding: 0.4rem 0.55rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.matrix thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--color-surface, #fff);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.matrix tbody th,
+.matrixRowHead {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-surface, #fff);
+  text-align: left;
+  font-weight: 600;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matrixGroupRow th {
+  position: sticky;
+  left: 0;
+  background: var(--color-bg-subtle, #f6f7f9);
+  text-align: left;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.yes {
+  color: #187a43;
+  font-weight: 700;
+}
+
+.no {
+  color: var(--color-border);
+}
+
+/* Severity badges — the admin module ranks alerts and violations across
+   every module, so it needs a severity vocabulary the per-module pages
+   don't. */
+.badgeCritical,
+.badgeError,
+.badgeExpired {
+  background: #fdeceb;
+  color: #c0392b;
+}
+
+.badgeWarning {
+  background: #fdf2e3;
+  color: #a3701f;
+}
+
+.badgeInfo,
+.badgeOk {
+  background: #e8f1fb;
+  color: #1c5b96;
+}
+
+.badgeActive {
+  background: #e6f7ec;
+  color: #187a43;
+}
+
+.badgeInactive {
+  background: #eef0f2;
+  color: #5b6570;
+}
+
+/* Read-only banner shown to Compliance Auditor on every write-capable page. */
+.readOnlyNotice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #cfe0f2;
+  background: #f3f8fd;
+  color: #1c5b96;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+/* JSON diff shown in an audit-log row's expanded state. */
+.jsonBlock {
+  margin: 0;
+  padding: 0.6rem 0.7rem;
+  background: var(--color-bg-subtle, #f6f7f9);
+  border-radius: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.diffGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .diffGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Module registry cards. */
+.moduleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.moduleTile {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--color-surface, #fff);
+}
+
+.moduleTileHead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.moduleTileMeta {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+/* Settings toggles. */
+.toggleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.toggleRow:last-child {
+  border-bottom: none;
+}
+
+.toggleCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.toggleTitle {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.toggleDesc {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: var(--color-border);
+  transition: background 0.15s ease;
+}
+
+.switchOn {
+  background: #187a43;
+}
+
+.switchKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+
+.switchOn .switchKnob {
+  transform: translateX(18px);
+}
+
+.inlineForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.rowActions {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* Modules-at-a-glance cards on the Dashboard — each is a plain <button> so
+   the whole tile is one click through to that module's own dashboard, not
+   just a link buried in the corner. Named "Snapshot" (not .moduleGrid) to
+   avoid colliding with the unrelated .moduleGrid used by Module registry
+   further up this file. */
+.moduleSnapshotGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.9rem;
+}
+
+.moduleCard {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fbfdfb;
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;
+  padding: 1rem;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.moduleCard:hover,
+.moduleCard:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 24px rgba(14, 84, 103, 0.1);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.moduleCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.moduleIconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(14, 84, 103, 0.09);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.moduleCardTitle {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--color-text);
+  flex: 1;
+}
+
+.moduleLinkIcon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.moduleMetricValue {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-text);
+}

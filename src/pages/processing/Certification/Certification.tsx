@@ -14,10 +14,18 @@ import { certifications as mockCertifications } from '@/data/processing/certific
 import { CertificationRecord } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './Certification.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { PROCESSING_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 
 export default function CertificationPage() {
   const { addToast } = useToast();
-  const { items, add, update } = useRealtimeMockStore<CertificationRecord>(mockCertifications);
+  const { items: allCertifications, add, update } = useRealtimeMockStore<CertificationRecord>(mockCertifications);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+
+  const items = useMemo(
+    () => allCertifications.filter((c) => isDateInPeriod(c.issueDate, period, PROCESSING_TODAY)),
+    [allCertifications, period]
+  );
 
   const canSubmit = usePermission('submit_for_certification');
   const canManage = usePermission('manage_certification_records');
@@ -191,6 +199,7 @@ export default function CertificationPage() {
           </p>
         </div>
         <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canSubmit && (
             <Button variant="primary" leftIcon={Plus} onClick={() => setIsAddModalOpen(true)}>
               Add Certificate

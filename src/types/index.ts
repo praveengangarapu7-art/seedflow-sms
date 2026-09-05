@@ -22,7 +22,12 @@ export type UserRole =
   // Laboratory roles (NEW)
   | 'lab_manager'
   | 'lab_technician'
-  | 'lab_quality_analyst';
+  | 'lab_quality_analyst'
+  // Administration roles (NEW) — the only roles that are not scoped to a
+  // single business module: they administer every module of the platform.
+  | 'super_admin'
+  | 'system_admin'
+  | 'compliance_auditor';
 
 export type ProcurementRole = Extract<UserRole,
   'purchase_executive' | 'purchase_manager' | 'finance_manager' | 'procurement_quality_field_inspector'>;
@@ -34,6 +39,8 @@ export type ProcessingRole = Extract<UserRole,
   'plant_supervisor' | 'plant_manager' | 'processing_quality_field_inspector'>;
 export type LabRole = Extract<UserRole,
   'lab_manager' | 'lab_technician' | 'lab_quality_analyst'>;
+export type AdminRole = Extract<UserRole,
+  'super_admin' | 'system_admin' | 'compliance_auditor'>;
 
 export interface User {
   name: string;
@@ -61,6 +68,9 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   lab_manager: 'Lab Manager',
   lab_technician: 'Lab Technician',
   lab_quality_analyst: 'Quality Analyst (Laboratory)',
+  super_admin: 'Super Admin',
+  system_admin: 'System Admin',
+  compliance_auditor: 'Compliance Auditor',
 };
 
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
@@ -81,6 +91,9 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   lab_manager: 'Owns lab throughput: accepts samples, approves results, issues certificates, resolves quality flags',
   lab_technician: 'Runs the bench: records germination, purity and vigor results and uploads result files',
   lab_quality_analyst: 'Reviews results against certification thresholds and audits lab performance',
+  super_admin: 'Unrestricted platform authority: users, roles, organizations, governance, privacy and every module setting',
+  system_admin: 'Runs the platform day to day: user accounts, organizations, system health, notifications and module availability',
+  compliance_auditor: 'Read-only oversight: audit trail, data governance violations, privacy compliance and retention policies',
 };
 
 export const PROCUREMENT_ROLES: UserRole[] = [
@@ -97,6 +110,9 @@ export const PROCESSING_ROLES: UserRole[] = [
 ];
 export const LAB_ROLES: UserRole[] = [
   'lab_manager', 'lab_technician', 'lab_quality_analyst'
+];
+export const ADMIN_ROLES: UserRole[] = [
+  'super_admin', 'system_admin', 'compliance_auditor'
 ];
 
 

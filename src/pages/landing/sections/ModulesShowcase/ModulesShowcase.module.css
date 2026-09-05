@@ -1,6 +1,6 @@
 .section {
-  padding: 30px 24px 120px 24px;
-  background-color: var(--color-accent-light);
+  padding: 72px 24px;
+  background-color: var(--landing-surface-alt);
   position: relative;
   overflow: hidden;
 }
@@ -38,7 +38,7 @@
 .subtitle {
   font-size: 17px;
   line-height: 1.6;
-  color: var(--color-text-secondary);
+  color: var(--landing-text-on-tint);
   margin: 0;
 }
 
@@ -54,8 +54,8 @@
 .card {
   display: flex;
   background-color: var(--color-white);
-  border: 1px solid var(--color-border-light) !important;
-  border-left: 1px solid var(--color-border-light) !important;
+  border: 1px solid var(--landing-border) !important;
+  border-left: 1px solid var(--landing-border) !important;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   min-height: 290px;

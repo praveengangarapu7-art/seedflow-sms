@@ -11,6 +11,8 @@ import { processingNav } from '@/config/processingNav';
 import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import mockPackages from '@/data/processing/packages';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { PROCESSING_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { PackageRun } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './Packaging.module.css';
@@ -28,7 +30,13 @@ const MOCK_MATERIALS = [
 
 export default function PackagingPage() {
   const { addToast } = useToast();
-  const { items, add, update } = useRealtimeMockStore<PackageRun>(mockPackages);
+  const { items: allPackages, add, update } = useRealtimeMockStore<PackageRun>(mockPackages);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+
+  const items = useMemo(
+    () => allPackages.filter((p) => isDateInPeriod(p.labelIssueDate, period, PROCESSING_TODAY)),
+    [allPackages, period]
+  );
 
   const canGenerate = usePermission('generate_packages');
   const canPrint = usePermission('print_labels_qr');
@@ -250,6 +258,7 @@ export default function PackagingPage() {
           </p>
         </div>
         <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canGenerate && (
             <Button variant="primary" leftIcon={Plus} onClick={() => setIsAddModalOpen(true)}>
               New Pack Run

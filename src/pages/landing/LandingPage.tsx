@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import LandingNav from './sections/LandingNav/LandingNav';
 import LandingHero from './sections/LandingHero/LandingHero';
-import LogoStrip from './sections/LogoStrip/LogoStrip';
 import AboutSection from './sections/AboutSection/AboutSection';
 import ModulesShowcase from './sections/ModulesShowcase/ModulesShowcase';
 import HowItWorks from './sections/HowItWorks/HowItWorks';
@@ -46,8 +45,7 @@ export default function LandingPage() {
       {/* Main Sections */}
       <LandingNav />
       <LandingHero />
-      <LogoStrip />
-      
+
       {/* Rebuilt 4 Content Sections in correct order */}
       <div id="about">
         <AboutSection />

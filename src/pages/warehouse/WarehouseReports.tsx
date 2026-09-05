@@ -27,6 +27,7 @@ import {
   scheduledReports as initialScheduled, 
   aiInsights as initialInsights 
 } from './mockData/reportsData';
+import { PERIOD_OPTIONS, type PeriodValue } from '@/utils/periodFilter';
 import { warehouseNav } from '@/config/warehouseNav';
 import { ReportDefinition, AIInsight, ScheduledReport } from '@/types/warehouse';
 import { useToast } from '@/components/common/Toast/ToastContext';
@@ -40,6 +41,7 @@ const WarehouseReports: React.FC = () => {
   const [dateRange, setDateRange] = useState('Last 30 days');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [insightSeverityFilter, setInsightSeverityFilter] = useState<'All' | 'Critical' | 'Warning' | 'Info' | 'Opportunity'>('All');
+  const [period, setPeriod] = useState<PeriodValue>('month');
   const [showDismissed, setShowDismissed] = useState(false);
   
   const [reports, setReports] = useState<ReportDefinition[]>(initialReports);
@@ -330,6 +332,7 @@ const WarehouseReports: React.FC = () => {
               onClick: () => addToast({ type: 'success', message: 'Exporting all reports as ZIP archive (15.2 MB)' })
             }
           ]}
+          period={{ value: period, onChange: (v) => setPeriod(v as PeriodValue), options: PERIOD_OPTIONS }}
         />
 
         <div className={styles.filterBar}>

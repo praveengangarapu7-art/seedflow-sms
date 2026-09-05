@@ -1,6 +1,6 @@
 .section {
-  padding: 30px 24px 140px 24px;
-  background-color: var(--color-white);
+  padding: 72px 24px;
+  background-color: var(--landing-surface);
   position: relative;
   overflow: hidden;
   z-index: 5;
@@ -39,7 +39,7 @@
 .subtitle {
   font-size: 17px;
   line-height: 1.6;
-  color: var(--color-text-secondary);
+  color: var(--landing-text-on-tint);
   margin: 0;
 }
 
@@ -56,7 +56,7 @@
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 40px 0 80px 0;
+  padding: 32px 0 56px 0;
 }
 
 .svgTimeline {
@@ -226,7 +226,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: var(--color-accent-light);
+  background-color: var(--color-white);
   padding: 8px 16px;
   border-radius: 50px;
   transition: all 200ms ease;
@@ -353,7 +353,7 @@
   max-width: 720px;
   margin: 0 auto;
   background-color: var(--color-white);
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--landing-border);
   border-radius: var(--radius-lg);
   padding: 40px;
   box-shadow: var(--shadow-md);

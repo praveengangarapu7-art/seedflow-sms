@@ -15,6 +15,8 @@ import {
 } from '@/services/seedLotRealtimeClient';
 import { useLabSession } from './useLabSession';
 import styles from './Lab.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, labToday, type PeriodValue } from '@/utils/periodFilter';
 
 function statusBadgeClass(status: string): string {
   const key = `badge${status.charAt(0).toUpperCase()}${status.slice(1)}`;
@@ -31,6 +33,7 @@ export default function LabDashboard() {
   const { token, loading: sessionLoading, error: sessionError, reload } = useLabSession();
 
   const [submissions, setSubmissions] = useState<LabTestSubmission[]>([]);
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [flags, setFlags] = useState<LabQualityFlag[]>([]);
   const [performance, setPerformance] = useState<LabPerformanceEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -60,12 +63,13 @@ export default function LabDashboard() {
   }, [token, load]);
 
   const stats = useMemo(() => {
-    const inProgress = submissions.filter((s) => s.status === 'submitted' || s.status === 'in_progress').length;
-    const completed = submissions.filter((s) => s.status === 'completed');
+    const inPeriod = submissions.filter((s) => isDateInPeriod(s.submitted_at, period, labToday()));
+    const inProgress = inPeriod.filter((s) => s.status === 'submitted' || s.status === 'in_progress').length;
+    const completed = inPeriod.filter((s) => s.status === 'completed');
     const allResults = submissions.flatMap((s) => s.results ?? []);
     const passed = allResults.filter((r) => r.passed).length;
     const passRate = allResults.length > 0 ? Math.round((passed / allResults.length) * 100) : null;
-    const overdue = submissions.filter(isOverdue).length;
+    const overdue = inPeriod.filter(isOverdue).length;
     return {
       total: submissions.length,
       inProgress,
@@ -73,7 +77,7 @@ export default function LabDashboard() {
       passRate,
       overdue,
     };
-  }, [submissions]);
+  }, [submissions, period]);
 
   const recent = useMemo(
     () => [...submissions].sort((a, b) => new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime()).slice(0, 8),
@@ -92,6 +96,7 @@ export default function LabDashboard() {
             </p>
           </div>
           <div className={styles.controls}>
+            <PeriodSelect value={period} onChange={setPeriod} />
             <Button variant="secondary" leftIcon={RefreshCw} onClick={() => (token ? void load(token) : reload())}>
               Refresh
             </Button>

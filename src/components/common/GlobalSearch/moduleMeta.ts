@@ -4,6 +4,7 @@ import {
   FlaskConical,
   LayoutGrid,
   ShoppingCart,
+  ShieldCheck,
   Sprout,
   TestTube,
   Users,
@@ -20,6 +21,7 @@ export const MODULE_ICON: Record<SearchModule, LucideIcon> = {
   Processing: Factory,
   Production: Sprout,
   Laboratory: TestTube,
+  Administration: ShieldCheck,
   'Master Data': Database,
   Portals: Users,
 };

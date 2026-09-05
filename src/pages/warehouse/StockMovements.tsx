@@ -35,6 +35,8 @@ import {
   type MovementsKpiIcon,
 } from './mockData/movementsData';
 import type { MovementRecord, MovementCategory, MovementStatus } from '@/types/warehouse';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { formatIndianNumber } from '@/utils/formatters';
 import styles from './StockMovements.module.css';
 
@@ -87,6 +89,7 @@ import { usePermission } from '@/hooks/usePermission';
 
 export default function StockMovements() {
   const [activeTab, setActiveTab] = useState<MovementsTab>('all');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | MovementStatus>('all');
   const [warehouseFilter, setWarehouseFilter] = useState('all');
@@ -96,7 +99,12 @@ export default function StockMovements() {
   const [detailRecord, setDetailRecord] = useState<MovementRecord | null>(null);
   const [approvalState, setApprovalState] = useState<{ record: MovementRecord; decision: 'approve' | 'reject' } | null>(null);
 
-  const { items: movementRecords, update } = useRealtimeMockStore(initialMovementRecords);
+  const { items: allMovementRecords, update } = useRealtimeMockStore(initialMovementRecords);
+
+  const movementRecords = useMemo(
+    () => allMovementRecords.filter((r) => isDateInPeriod(r.initiatedAt, period)),
+    [allMovementRecords, period]
+  );
   const { addToast } = useToast();
 
   const canLogMovement = usePermission('log_stock_movement');
@@ -147,6 +155,7 @@ export default function StockMovements() {
           <p className={styles.pageSubtitle}>Transfers, adjustments, returns, and material issues</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canLogMovement && (
             <div className={styles.newWrap} ref={newBtnRef}>
               <Button variant="primary" size="sm" leftIcon={Plus} rightIcon={ChevronDown} onClick={() => setNewMenuOpen((o) => !o)}>

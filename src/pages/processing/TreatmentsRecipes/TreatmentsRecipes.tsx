@@ -12,6 +12,8 @@ import { processingNav } from '@/config/processingNav';
 import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { recipes as initialRecipes } from '@/data/processing/recipes';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { type PeriodValue } from '@/utils/periodFilter';
 import { TreatmentRecipe } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './TreatmentsRecipes.module.css';
@@ -25,6 +27,7 @@ const STEPPER_STEPS = [
 export default function TreatmentsRecipesPage() {
   const { addToast } = useToast();
   const { items, add, update } = useRealtimeMockStore<TreatmentRecipe>(initialRecipes);
+  const [period, setPeriod] = useState<PeriodValue>('all');
 
   const canCreate = usePermission('create_recipe');
   const canApprove = usePermission('approve_recipe_system');
@@ -217,6 +220,7 @@ export default function TreatmentsRecipesPage() {
           </p>
         </div>
         <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canCreate && (
             <Button variant="primary" leftIcon={Plus} onClick={() => setIsAddOpen(true)}>
               New Recipe

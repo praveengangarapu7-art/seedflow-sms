@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { ShoppingCart, Download } from 'lucide-react';
+import { useState, useRef, useMemo } from 'react';
+import { ShoppingCart, Download, Clock, Wallet, Users, Percent } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { ModuleLayout } from '@/components/layout/ModuleLayout/ModuleLayout';
@@ -22,21 +22,56 @@ import {
   activeAlerts,
 } from './mockData/dashboardData';
 import { usePermission } from '@/hooks/usePermission';
+import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
+import type { KpiData } from '@/types/procurement';
 import styles from './ProcurementDashboard.module.css';
 
-const DATE_RANGES = [
-  'Today',
-  'Last 7 days',
-  'Last 30 days',
-  'Last quarter',
-  'Last year',
-  'Custom range',
-];
+// Period-aware variants of the top KPI strip. 'month' matches the dashboard's
+// original always-on figures; the rest are plausible period-scaled variants.
+const KPI_DATA_BY_PERIOD: Record<PeriodValue, KpiData[]> = {
+  today: [
+    { label: 'Procurement cycle time', value: '11 days', icon: Clock, trend: { direction: 'down', percentage: '8.3%', isPositive: true }, comparison: 'vs 12 days yesterday' },
+    { label: 'Cost savings today',     value: '₹0.4 L',  icon: Wallet, trend: { direction: 'up', percentage: '12.1%', isPositive: true }, comparison: 'vs ₹0.35 L yesterday' },
+    { label: 'Active suppliers',       value: '47',      icon: Users, trend: { direction: 'up', percentage: '0%', isPositive: true }, comparison: 'no change today' },
+    { label: 'Purchase price variance', value: '2.1%',   icon: Percent, trend: { direction: 'down', percentage: '0.3%', isPositive: true }, comparison: 'within target range' },
+  ],
+  week: [
+    { label: 'Procurement cycle time', value: '11.5 days', icon: Clock, trend: { direction: 'down', percentage: '10.2%', isPositive: true }, comparison: 'vs 12.8 days last week' },
+    { label: 'Cost savings this week', value: '₹0.9 L',    icon: Wallet, trend: { direction: 'up', percentage: '15.8%', isPositive: true }, comparison: 'vs ₹0.8 L last week' },
+    { label: 'Active suppliers',       value: '47',        icon: Users, trend: { direction: 'up', percentage: '2.2%', isPositive: true }, comparison: '1 onboarded this week' },
+    { label: 'Purchase price variance', value: '2.2%',     icon: Percent, trend: { direction: 'down', percentage: '0.5%', isPositive: true }, comparison: 'within target range' },
+  ],
+  month: kpiData,
+  quarter: [
+    { label: 'Procurement cycle time', value: '12.6 days', icon: Clock, trend: { direction: 'down', percentage: '9.7%', isPositive: true }, comparison: 'vs 14 days last quarter' },
+    { label: 'Cost savings this quarter', value: '₹8.6 L', icon: Wallet, trend: { direction: 'up', percentage: '18.9%', isPositive: true }, comparison: 'vs ₹7.2 L last quarter' },
+    { label: 'Active suppliers',       value: '49',        icon: Users, trend: { direction: 'up', percentage: '6.5%', isPositive: true }, comparison: '5 onboarded this quarter' },
+    { label: 'Purchase price variance', value: '2.6%',     icon: Percent, trend: { direction: 'down', percentage: '0.6%', isPositive: true }, comparison: 'within target range' },
+  ],
+  year: [
+    { label: 'Procurement cycle time', value: '13.1 days', icon: Clock, trend: { direction: 'down', percentage: '7.4%', isPositive: true }, comparison: 'vs 14.2 days last year' },
+    { label: 'Cost savings this year', value: '₹31.4 L',   icon: Wallet, trend: { direction: 'up', percentage: '24.6%', isPositive: true }, comparison: 'vs ₹25.2 L last year' },
+    { label: 'Active suppliers',       value: '52',        icon: Users, trend: { direction: 'up', percentage: '13.0%', isPositive: true }, comparison: '12 onboarded this year' },
+    { label: 'Purchase price variance', value: '2.9%',     icon: Percent, trend: { direction: 'down', percentage: '0.4%', isPositive: true }, comparison: 'within target range' },
+  ],
+  all: [
+    { label: 'Procurement cycle time', value: '13.4 days', icon: Clock, trend: { direction: 'down', percentage: '6.1%', isPositive: true }, comparison: 'vs 14.3 days prior average' },
+    { label: 'Cost savings all time',  value: '₹58.2 L',   icon: Wallet, trend: { direction: 'up', percentage: '—', isPositive: true }, comparison: 'cumulative since launch' },
+    { label: 'Active suppliers',       value: '52',        icon: Users, trend: { direction: 'up', percentage: '—', isPositive: true }, comparison: '52 suppliers onboarded to date' },
+    { label: 'Purchase price variance', value: '3.1%',     icon: Percent, trend: { direction: 'down', percentage: '—', isPositive: true }, comparison: 'within target range' },
+  ],
+};
 
 export default function ProcurementDashboard() {
-  const [dateRange, setDateRange] = useState('Last 30 days');
+  const [period, setPeriod] = useState<PeriodValue>('month');
   const [isExporting, setIsExporting] = useState(false);
   const dashboardRef = useRef<HTMLDivElement>(null);
+
+  const displayedKpis = KPI_DATA_BY_PERIOD[period];
+  const displayedRecentPOs = useMemo(
+    () => recentPOs.filter((po) => isDateInPeriod(po.date, period)),
+    [period]
+  );
 
   const canApprove = usePermission('approve_order') || usePermission('approve_requisition') || usePermission('approve_invoice_payment');
   const isManagement = false;
@@ -89,12 +124,12 @@ export default function ProcurementDashboard() {
           <div className={styles.headerActions} data-export-ignore="true">
             <select
               className={styles.dateSelect}
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              aria-label="Date range filter"
+              value={period}
+              onChange={(e) => setPeriod(e.target.value as PeriodValue)}
+              aria-label="Period filter"
             >
-              {DATE_RANGES.map((r) => (
-                <option key={r} value={r}>{r}</option>
+              {PERIOD_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
             <Button 
@@ -113,7 +148,7 @@ export default function ProcurementDashboard() {
 
       {/* KPI cards */}
       <div className={`${styles.section} ${styles.kpiGrid}`}>
-        {kpiData.map((kpi) => (
+        {displayedKpis.map((kpi) => (
           <KpiCard key={kpi.label} data={kpi} />
         ))}
       </div>
@@ -126,7 +161,7 @@ export default function ProcurementDashboard() {
 
       {/* Tables */}
       <div className={`${styles.section} ${styles.tablesGrid}`}>
-        <RecentPOsTable data={recentPOs} />
+        <RecentPOsTable data={displayedRecentPOs} />
         {isManagement ? (
           <div className={styles.executivePanel}>
             <h3 className={styles.executiveTitle}>Executive Summary</h3>

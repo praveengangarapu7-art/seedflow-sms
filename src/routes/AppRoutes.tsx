@@ -78,6 +78,22 @@ const LabCertificates = lazy(() => import('@/pages/lab/Certificates'));
 const LabPerformance = lazy(() => import('@/pages/lab/LabPerformance'));
 const LabPlaceholder = lazy(() => import('@/pages/lab/Placeholder'));
 
+// Administration — the cross-module admin console (users, roles, audit trail,
+// system health, governance, privacy, workflows, alerts, module registry).
+const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
+const AdminUsers = lazy(() => import('@/pages/admin/UserManagement'));
+const AdminRoles = lazy(() => import('@/pages/admin/RolesPermissions'));
+const AdminOrganizations = lazy(() => import('@/pages/admin/AdminOrganizations'));
+const AdminAuditLogs = lazy(() => import('@/pages/admin/AuditLogs'));
+const AdminSystemHealth = lazy(() => import('@/pages/admin/SystemHealth'));
+const AdminDataGovernance = lazy(() => import('@/pages/admin/AdminDataGovernance'));
+const AdminDataPrivacy = lazy(() => import('@/pages/admin/AdminDataPrivacy'));
+const AdminWorkflows = lazy(() => import('@/pages/admin/AdminWorkflows'));
+const AdminNotifications = lazy(() => import('@/pages/admin/AdminNotifications'));
+const AdminModuleRegistry = lazy(() => import('@/pages/admin/ModuleRegistry'));
+const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettings'));
+const AdminPlaceholder = lazy(() => import('@/pages/admin/Placeholder'));
+
 // Processing
 const ProcessingDashboard = lazy(() => import('@/pages/processing/ProcessingDashboard/ProcessingDashboard'));
 const RawIntake = lazy(() => import('@/pages/processing/RawIntake/RawIntake'));
@@ -263,6 +279,27 @@ export function AppRoutes() {
           <Route element={<ProtectedRoute permission="view_lab_quality_flags" />}><Route path="/lab/quality-flags" element={<LabQualityFlags />} /></Route>
           <Route element={<ProtectedRoute permission="view_lab_certificates" />}><Route path="/lab/certificates" element={<LabCertificates />} /></Route>
           <Route element={<ProtectedRoute permission="view_lab_performance" />}><Route path="/lab/performance" element={<LabPerformance />} /></Route>
+
+          {/* --------------------------- Administration --------------------------
+              The only module that is not a business domain: it administers the
+              others. Read surfaces (audit trail, governance, workflows) are
+              Admin-OR-Inspector on the server; the account, health and privacy
+              surfaces are Admin-only, which is why compliance_auditor holds the
+              view permissions for the former and not the latter. */}
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/admin/placeholder" element={<AdminPlaceholder />} />
+          <Route element={<ProtectedRoute permission="view_admin_dashboard" />}><Route path="/admin/dashboard" element={<AdminDashboard />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_users" />}><Route path="/admin/users" element={<AdminUsers />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_roles" />}><Route path="/admin/roles" element={<AdminRoles />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_organizations" />}><Route path="/admin/organizations" element={<AdminOrganizations />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_audit_logs" />}><Route path="/admin/audit-logs" element={<AdminAuditLogs />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_system_health" />}><Route path="/admin/system-health" element={<AdminSystemHealth />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_data_governance" />}><Route path="/admin/data-governance" element={<AdminDataGovernance />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_data_privacy" />}><Route path="/admin/data-privacy" element={<AdminDataPrivacy />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_workflows" />}><Route path="/admin/workflows" element={<AdminWorkflows />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_notifications" />}><Route path="/admin/notifications" element={<AdminNotifications />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_modules" />}><Route path="/admin/modules" element={<AdminModuleRegistry />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_settings" />}><Route path="/admin/settings" element={<AdminSettingsPage />} /></Route>
 
           {/* Master Data */}
           <Route path="/varieties" element={<VarietyList />} />

@@ -17,6 +17,7 @@ import { procurementNav } from '@/config/procurementNav';
 import type { GRN, GRNStatus } from '@/types/procurement';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
 import { usePermission } from '@/hooks/usePermission';
+import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './GoodsReceipt.module.css';
 
 const GRN_TABS = [
@@ -86,13 +87,13 @@ const COLUMNS: DataTableColumn<GRN>[] = [
   },
 ];
 
-function buildKpis() {
-  const pending  = mockGRNs.filter((g) => g.status === 'Pending Inspection').length;
-  const accepted = mockGRNs.filter((g) => g.status === 'Accepted').length;
-  const total    = mockGRNs.length;
+function buildKpis(grns: GRN[]) {
+  const pending  = grns.filter((g) => g.status === 'Pending Inspection').length;
+  const accepted = grns.filter((g) => g.status === 'Accepted').length;
+  const total    = grns.length;
   const rate     = total ? Math.round((accepted / total) * 1000) / 10 : 0;
   return [
-    { label: 'GRNs this month',     value: String(total),    icon: PackageCheck },
+    { label: 'Total GRNs',          value: String(total),    icon: PackageCheck },
     { label: 'Pending inspection',  value: String(pending),  icon: Clock },
     { label: 'Acceptance rate',     value: `${rate}%`,        icon: CheckCircle2 },
     { label: 'Avg inspection time', value: '1.4 days',        icon: Timer },
@@ -105,6 +106,7 @@ export default function GoodsReceipt() {
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch]       = useState('');
   const [supplier, setSupplier]   = useState('');
+  const [period, setPeriod]       = useState<PeriodValue>('all');
   const [page, setPage]           = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -113,10 +115,15 @@ export default function GoodsReceipt() {
     addToast(`GRN created successfully for PO ${data.poReference}. Sent for quality inspection.`, 'success');
   };
 
+  const periodFiltered = useMemo(
+    () => mockGRNs.filter((g) => isDateInPeriod(g.receivedDate, period)),
+    [period]
+  );
+
   const tabFiltered = useMemo(() => {
-    if (activeTab === 'all') return mockGRNs;
-    return mockGRNs.filter((g) => g.status === STATUS_MAP[activeTab]);
-  }, [activeTab]);
+    if (activeTab === 'all') return periodFiltered;
+    return periodFiltered.filter((g) => g.status === STATUS_MAP[activeTab]);
+  }, [periodFiltered, activeTab]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -131,7 +138,7 @@ export default function GoodsReceipt() {
 
   const tabs = GRN_TABS.map((t) => ({
     ...t,
-    count: t.key === 'all' ? mockGRNs.length : mockGRNs.filter((g) => g.status === STATUS_MAP[t.key]).length,
+    count: t.key === 'all' ? periodFiltered.length : periodFiltered.filter((g) => g.status === STATUS_MAP[t.key]).length,
   }));
 
   const canCreate = usePermission('create_grn');
@@ -146,9 +153,10 @@ export default function GoodsReceipt() {
           icon: Plus, 
           onClick: () => setIsCreateModalOpen(true) 
         } : undefined}
+        period={{ value: period, onChange: (v) => { setPeriod(v as PeriodValue); setPage(1); }, options: PERIOD_OPTIONS }}
       />
 
-      <KpiStrip items={buildKpis()} />
+      <KpiStrip items={buildKpis(periodFiltered)} />
 
       <Tabs tabs={tabs} activeTab={activeTab} onChange={(k) => { setActiveTab(k); setPage(1); }} />
 

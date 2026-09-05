@@ -7,6 +7,8 @@ import { Modal } from '@/components/common/Modal/Modal';
 import { FlaskConical, Download, Sprout, TrendingUp, FlaskConical as FlaskIcon, Workflow } from 'lucide-react';
 import { rdNav } from '@/config/rdNav';
 import { rdKpis } from './mockData/dashboardData';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { RD_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 
 import { BreedingPipelineFunnel } from './components/BreedingPipelineFunnel/BreedingPipelineFunnel';
 import { ActiveTrialsMap } from './components/ActiveTrialsMap/ActiveTrialsMap';
@@ -35,6 +37,7 @@ interface DetailModalState {
 export default function RDDashboard() {
   const { addToast } = useToast();
   const [season, setSeason] = useState('Kharif 2026');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [detailModal, setDetailModal] = useState<DetailModalState>({
     isOpen: false,
     title: '',
@@ -378,6 +381,7 @@ export default function RDDashboard() {
           <p className={styles.pageSubtitle}>Welcome to research operations</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <select 
             className={styles.seasonSelect}
             value={season}

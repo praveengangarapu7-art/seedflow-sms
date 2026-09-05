@@ -13,6 +13,8 @@ import {
 } from '@/services/seedLotRealtimeClient';
 import { useLabSession } from './useLabSession';
 import styles from './Lab.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, labToday, type PeriodValue } from '@/utils/periodFilter';
 
 function isExpired(cert: LabIssuedCertificate): boolean {
   return cert.expiry_date !== null && new Date(cert.expiry_date) < new Date();
@@ -22,6 +24,7 @@ export default function Certificates() {
   const navigate = useNavigate();
   const { token, error: sessionError } = useLabSession();
   const [certificates, setCertificates] = useState<LabIssuedCertificate[]>([]);
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [submissions, setSubmissions] = useState<LabTestSubmission[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -54,7 +57,12 @@ export default function Certificates() {
     return submissions.filter((s) => !certified.has(s.id));
   }, [certificates, submissions]);
 
-  const expiredCount = useMemo(() => certificates.filter(isExpired).length, [certificates]);
+  const visibleCertificates = useMemo(
+    () => certificates.filter((c) => isDateInPeriod(c.issue_date, period, labToday())),
+    [certificates, period]
+  );
+
+  const expiredCount = useMemo(() => visibleCertificates.filter(isExpired).length, [visibleCertificates]);
 
   return (
     <ModuleLayout moduleName="Laboratory" moduleIcon={FlaskConical} navItems={labNav}>
@@ -68,6 +76,7 @@ export default function Certificates() {
             </p>
           </div>
           <div className={styles.controls}>
+            <PeriodSelect value={period} onChange={setPeriod} />
             <Button variant="secondary" leftIcon={RefreshCw} onClick={() => token && void load(token)}>
               Refresh
             </Button>
@@ -143,7 +152,7 @@ export default function Certificates() {
                   </tr>
                 </thead>
                 <tbody>
-                  {certificates.map((c) => (
+                  {visibleCertificates.map((c) => (
                     <tr key={c.id}>
                       <td>{c.certificate_number}</td>
                       <td>

@@ -15,6 +15,7 @@ import { procurementNav } from '@/config/procurementNav';
 import type { PurchaseRequisition, PRStatus, Priority, Department } from '@/types/procurement';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
 import { usePermission } from '@/hooks/usePermission';
+import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './PurchaseRequisitions.module.css';
 
 const PR_TABS = [
@@ -93,13 +94,19 @@ export default function PurchaseRequisitions() {
   const [search,      setSearch]      = useState('');
   const [deptFilter,  setDeptFilter]  = useState('');
   const [prioFilter,  setPrioFilter]  = useState('');
+  const [period,      setPeriod]      = useState<PeriodValue>('all');
   const [page,        setPage]        = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showNew,     setShowNew]     = useState(false);
   const [detailPR,    setDetailPR]    = useState<PurchaseRequisition | null>(null);
 
+  const periodFiltered = useMemo(
+    () => mockPRs.filter((p) => isDateInPeriod(p.createdDate, period)),
+    [period]
+  );
+
   const tabFiltered = useMemo(() => {
-    if (activeTab === 'all') return mockPRs;
+    if (activeTab === 'all') return periodFiltered;
     const map: Record<string, PRStatus> = {
       draft:     'Draft',
       pending:   'Pending Approval',
@@ -107,8 +114,8 @@ export default function PurchaseRequisitions() {
       rejected:  'Rejected',
       converted: 'Converted to PO',
     };
-    return mockPRs.filter((p) => p.status === map[activeTab]);
-  }, [activeTab]);
+    return periodFiltered.filter((p) => p.status === map[activeTab]);
+  }, [periodFiltered, activeTab]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -129,6 +136,21 @@ export default function PurchaseRequisitions() {
   function handleSearch(val: string)    { setSearch(val);    setPage(1); }
   function handleDept(val: string)      { setDeptFilter(val); setPage(1); }
   function handlePrio(val: string)      { setPrioFilter(val); setPage(1); }
+  function handlePeriod(val: PeriodValue) { setPeriod(val);   setPage(1); }
+
+  const tabsWithCounts = PR_TABS.map((t) => {
+    const map: Record<string, PRStatus> = {
+      draft:     'Draft',
+      pending:   'Pending Approval',
+      approved:  'Approved',
+      rejected:  'Rejected',
+      converted: 'Converted to PO',
+    };
+    return {
+      ...t,
+      count: t.key === 'all' ? periodFiltered.length : periodFiltered.filter((p) => p.status === map[t.key]).length,
+    };
+  });
 
   const canCreate = usePermission('create_requisition');
 
@@ -138,11 +160,12 @@ export default function PurchaseRequisitions() {
         title="Purchase Requisitions"
         subtitle="Manage and track internal purchase requests across departments"
         primaryAction={canCreate ? { label: 'New Requisition', icon: Plus, onClick: () => setShowNew(true) } : undefined}
+        period={{ value: period, onChange: (v) => handlePeriod(v as PeriodValue), options: PERIOD_OPTIONS }}
       />
 
-      <KpiStrip items={buildKpiItems(mockPRs)} />
+      <KpiStrip items={buildKpiItems(periodFiltered)} />
 
-      <Tabs tabs={PR_TABS} activeTab={activeTab} onChange={handleTabChange} />
+      <Tabs tabs={tabsWithCounts} activeTab={activeTab} onChange={handleTabChange} />
 
       <FilterBar
         searchPlaceholder="Search PR #, title, requester…"

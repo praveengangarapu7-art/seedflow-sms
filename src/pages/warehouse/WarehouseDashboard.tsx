@@ -28,10 +28,35 @@ import {
   type DashboardKpiIcon,
 } from './mockData/dashboardData';
 import { formatIndianCurrency } from '@/utils/formatters';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, periodLabel, type PeriodValue } from '@/utils/periodFilter';
 import styles from './WarehouseDashboard.module.css';
 
-const DATE_RANGES = ['Today', 'Last 7 days', 'Last 30 days', 'Last quarter', 'Last year', 'Custom range'];
-const periodMultipliers: Record<string, number> = { 'Today': 0.05, 'Last 7 days': 0.3, 'Last 30 days': 1, 'Last quarter': 3.2, 'Last year': 12.8, 'Custom range': 1 };
+/**
+ * How much of a full month each period represents, used to scale the headline
+ * KPIs. These four figures (accuracy, fulfilment, utilisation, SKU count) are
+ * warehouse-wide measures with no per-record source behind them, so they are
+ * scaled rather than recounted; everything below them — movements, the trend
+ * chart — filters against real record dates.
+ */
+const PERIOD_MULTIPLIERS: Record<PeriodValue, number> = {
+  all: 12.8,
+  today: 0.05,
+  week: 0.3,
+  month: 1,
+  quarter: 3.2,
+  year: 12.8,
+};
+
+/** Months of trend history to show for each period. */
+const TREND_MONTHS: Record<PeriodValue, number> = {
+  all: 12,
+  today: 1,
+  week: 1,
+  month: 6,
+  quarter: 3,
+  year: 12,
+};
 
 const ICON_MAP: Record<DashboardKpiIcon, LucideIcon> = {
   Target,
@@ -41,7 +66,7 @@ const ICON_MAP: Record<DashboardKpiIcon, LucideIcon> = {
 };
 
 export default function WarehouseDashboard() {
-  const [dateRange, setDateRange] = useState('Last 30 days');
+  const [period, setPeriod] = useState<PeriodValue>('month');
   const [isExporting, setIsExporting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRecentMovementsModalOpen, setIsRecentMovementsModalOpen] = useState(false);
@@ -56,16 +81,16 @@ export default function WarehouseDashboard() {
     }, 1000);
   };
 
-  const handleDateRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handlePeriodChange = (value: PeriodValue) => {
     setIsLoading(true);
-    setDateRange(e.target.value);
+    setPeriod(value);
     setTimeout(() => {
       setIsLoading(false);
     }, 200);
   };
 
   const derivedKpis = useMemo(() => {
-    const multiplier = periodMultipliers[dateRange] || 1;
+    const multiplier = PERIOD_MULTIPLIERS[period] ?? 1;
     return dashboardKpis.map(kpi => {
       let val = kpi.value;
       if (typeof val === 'string' && val.startsWith('₹')) {
@@ -79,14 +104,18 @@ export default function WarehouseDashboard() {
       }
       return { ...kpi, value: val };
     });
-  }, [dateRange]);
+  }, [period]);
 
-  const displayedTrend = useMemo(() => {
-    if (dateRange === 'Last year') return monthlyStockTrend;
-    if (dateRange === 'Last quarter') return monthlyStockTrend.slice(-3);
-    if (dateRange === 'Last 7 days') return monthlyStockTrend.slice(-1);
-    return monthlyStockTrend.slice(-6); // default to 6 months for 30 days
-  }, [dateRange]);
+  const displayedTrend = useMemo(
+    () => monthlyStockTrend.slice(-(TREND_MONTHS[period] ?? 6)),
+    [period]
+  );
+
+  /** Real filtering: every movement carries a timestamp, so this is a count, not a scale. */
+  const displayedMovements = useMemo(
+    () => recentMovements.filter((m) => isDateInPeriod(m.timestamp, period)),
+    [period]
+  );
 
   const maxTrendValue = Math.max(...displayedTrend.map((p) => p.value), 1);
 
@@ -100,16 +129,7 @@ export default function WarehouseDashboard() {
           </p>
         </div>
         <div className={styles.headerActions}>
-          <select
-            className={styles.dateSelect}
-            value={dateRange}
-            onChange={handleDateRangeChange}
-            aria-label="Date range filter"
-          >
-            {DATE_RANGES.map((r) => (
-              <option key={r} value={r}>{r}</option>
-            ))}
-          </select>
+          <PeriodSelect value={period} onChange={handlePeriodChange} />
           <Button variant="secondary" size="sm" leftIcon={Download} onClick={handleExport} isLoading={isExporting}>
             Export
           </Button>
@@ -144,7 +164,7 @@ export default function WarehouseDashboard() {
           <div className={styles.trendHeader}>
             <div>
               <h3 className={styles.trendTitle}>Stock value trend</h3>
-              <span className={styles.trendSubtitle}>{dateRange}</span>
+              <span className={styles.trendSubtitle}>{periodLabel(period)}</span>
             </div>
             <div className={styles.trendPill}>
               <TrendingUp size={11} />
@@ -185,7 +205,7 @@ export default function WarehouseDashboard() {
       </div>
 
       <div className={`${styles.section} ${styles.tablesGrid}`}>
-        <RecentMovements data={recentMovements} onViewAll={() => setIsRecentMovementsModalOpen(true)} />
+        <RecentMovements data={displayedMovements} onViewAll={() => setIsRecentMovementsModalOpen(true)} />
         <AlertsList data={dashboardAlerts} onAlertClick={(id) => console.log('alert clicked', id)} />
       </div>
 

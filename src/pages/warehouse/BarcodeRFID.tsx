@@ -32,6 +32,8 @@ import {
   devices,
   type BarcodeKpiIcon,
 } from './mockData/barcodeData';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import type { BarcodeRecord, ScanLogEntry, PrintJob, ScanDeviceRecord, LabelType, BarcodeFormat, ScanDevice } from '@/types/warehouse';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './BarcodeRFID.module.css';
@@ -49,6 +51,7 @@ const DEVICE_ICON: Record<ScanDevice, LucideIcon> = {
 
 export default function BarcodeRFID() {
   const [activeTab, setActiveTab] = useState<BCTab>('catalog');
+  const [period, setPeriod] = useState<PeriodValue>('all');
 
   const [catalogSearch, setCatalogSearch] = useState('');
   const [catalogType, setCatalogType] = useState<'all' | LabelType>('all');
@@ -65,15 +68,19 @@ export default function BarcodeRFID() {
   const [previewJob, setPreviewJob] = useState<PrintJob | null>(null);
   const [printQueueOpen, setPrintQueueOpen] = useState(false);
 
+  // Labels are keyed on when they were generated, scans on when they happened.
+  const periodBarcodes = useMemo(() => barcodes.filter((b) => isDateInPeriod(b.generatedAt, period)), [period]);
+  const periodScans = useMemo(() => scanLog.filter((s) => isDateInPeriod(s.timestamp, period)), [period]);
+
   const tabCounts = useMemo(() => ({
-    catalog: barcodes.filter((b) => showInactive || b.active).length,
+    catalog: periodBarcodes.filter((b) => showInactive || b.active).length,
     jobs:    printJobs.length,
-    scans:   scanLog.length,
+    scans:   periodScans.length,
     devices: devices.length,
-  }), [showInactive]);
+  }), [showInactive, periodBarcodes, periodScans]);
 
   const filteredCatalog = useMemo(() => {
-    return barcodes.filter((b) => {
+    return periodBarcodes.filter((b) => {
       if (!showInactive && !b.active) return false;
       if (catalogType !== 'all' && b.type !== catalogType) return false;
       if (catalogFormat !== 'all' && b.format !== catalogFormat) return false;
@@ -84,10 +91,10 @@ export default function BarcodeRFID() {
       }
       return true;
     });
-  }, [catalogSearch, catalogType, catalogFormat, showInactive]);
+  }, [catalogSearch, catalogType, catalogFormat, showInactive, periodBarcodes]);
 
   const filteredScans = useMemo(() => {
-    return scanLog.filter((s) => {
+    return periodScans.filter((s) => {
       if (scanContext !== 'all' && s.context !== scanContext) return false;
       if (scanResult !== 'all' && s.result !== scanResult) return false;
       if (scanDevice !== 'all' && s.device !== scanDevice) return false;
@@ -98,10 +105,10 @@ export default function BarcodeRFID() {
       }
       return true;
     });
-  }, [scanSearch, scanContext, scanResult, scanDevice]);
+  }, [scanSearch, scanContext, scanResult, scanDevice, periodScans]);
 
-  const successCount = scanLog.filter((s) => s.result === 'Success').length;
-  const successRate = ((successCount / scanLog.length) * 100).toFixed(1);
+  const successCount = periodScans.filter((s) => s.result === 'Success').length;
+  const successRate = periodScans.length === 0 ? '0.0' : ((successCount / periodScans.length) * 100).toFixed(1);
 
   const queuedJobsCount = printJobs.filter((j) => j.status === 'Queued' || j.status === 'Printing').length;
 
@@ -116,6 +123,7 @@ export default function BarcodeRFID() {
           <p className={styles.pageSubtitle}>Generate, print, and track scannable codes across the warehouse</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canPrint && (
             <Button variant="secondary" size="sm" leftIcon={Printer} onClick={() => setPrintQueueOpen(true)}>
               Print queue
@@ -236,7 +244,7 @@ export default function BarcodeRFID() {
           {activeTab === 'scans' && (
             <>
               <div className={styles.statsStrip}>
-                <strong>{scanLog.length}</strong> scans today
+                <strong>{periodScans.length}</strong> scans
                 <span className={styles.dot}>·</span>
                 <strong>{successRate}%</strong> success rate
                 <span className={styles.dot}>·</span>

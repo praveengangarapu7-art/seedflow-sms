@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Factory, Download, Sparkles, TrendingUp, Clock, ShieldCheck, Activity, Plus } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -9,6 +9,8 @@ import { processingNav } from '@/config/processingNav';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './ProcessingDashboard.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { type PeriodValue } from '@/utils/periodFilter';
 
 const trendData = [
   { day: '01 Jun', volume: 4.2, recovery: 81.5 },
@@ -27,10 +29,78 @@ const trendData = [
   { day: '14 Jun', volume: 5.5, recovery: 83.0 },
 ];
 
+const yearTrend = [
+  { day: 'Jan', volume: 142, recovery: 78.2 },
+  { day: 'Feb', volume: 138, recovery: 78.6 },
+  { day: 'Mar', volume: 156, recovery: 79.4 },
+  { day: 'Apr', volume: 164, recovery: 80.1 },
+  { day: 'May', volume: 171, recovery: 80.9 },
+  { day: 'Jun', volume: 178, recovery: 81.5 },
+  { day: 'Jul', volume: 165, recovery: 81.8 },
+  { day: 'Aug', volume: 182, recovery: 82.0 },
+  { day: 'Sep', volume: 188, recovery: 82.3 },
+  { day: 'Oct', volume: 196, recovery: 82.6 },
+  { day: 'Nov', volume: 203, recovery: 82.9 },
+  { day: 'Dec', volume: 210, recovery: 83.2 },
+];
+
+/**
+ * The dashboard's own three-way duration, kept as the shape of the KPI and
+ * trend tables below, but now driven by the standard six-option period
+ * selector every other page in the app uses: anything shorter than a month
+ * reads as a week of data, anything longer as a year.
+ */
+type Duration = 'Week' | 'Month' | 'Year';
+
+const DURATION_BY_PERIOD: Record<PeriodValue, Duration> = {
+  today: 'Week',
+  week: 'Week',
+  month: 'Month',
+  quarter: 'Year',
+  year: 'Year',
+  all: 'Year',
+};
+
+const trendByDuration: Record<Duration, typeof trendData> = {
+  Week: trendData.slice(-7),
+  Month: trendData,
+  Year: yearTrend,
+};
+
+const trendTitleByDuration: Record<Duration, string> = {
+  Week: "Daily Production Trend — This Week",
+  Month: "Daily Production Trend — This Month",
+  Year: "Monthly Production Trend — This Year",
+};
+
+const kpiDataByDuration: Record<Duration, {
+  recovery: { value: string; subValue: string; change: string; trend: 'up' | 'down' | 'neutral' };
+  turnaround: { value: string; subValue: string; change: string; trend: 'up' | 'down' | 'neutral' };
+  rejection: { value: string; subValue: string; change: string; trend: 'up' | 'down' | 'neutral' };
+}> = {
+  Week: {
+    recovery: { value: '83.1%', subValue: '7-day average', change: '+0.6% vs last week', trend: 'up' },
+    turnaround: { value: '2.4 days', subValue: 'Raw intake to finished lot', change: '-0.2 days vs last week', trend: 'down' },
+    rejection: { value: '3.8%', subValue: '7-day rolling', change: '-0.4% vs last week', trend: 'down' },
+  },
+  Month: {
+    recovery: { value: '82.4%', subValue: 'FY26 average', change: '+1.8% vs last month', trend: 'up' },
+    turnaround: { value: '2.6 days', subValue: 'Raw intake to finished lot', change: '-1.1 days vs Q1', trend: 'down' },
+    rejection: { value: '4.2%', subValue: '30-day rolling', change: '-2.8% vs last quarter', trend: 'down' },
+  },
+  Year: {
+    recovery: { value: '81.6%', subValue: 'FY26 year-to-date', change: '+2.3% vs FY25', trend: 'up' },
+    turnaround: { value: '2.9 days', subValue: 'Raw intake to finished lot', change: '-0.6 days vs FY25', trend: 'down' },
+    rejection: { value: '4.9%', subValue: '365-day rolling', change: '-1.2% vs FY25', trend: 'down' },
+  },
+};
+
 export default function ProcessingDashboard() {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const [isExporting, setIsExporting] = useState(false);
+  const [period, setPeriod] = useState<PeriodValue>('month');
+  const duration: Duration = DURATION_BY_PERIOD[period];
 
   const canCreateIntake = usePermission('create_raw_intake');
   const canCreateBatch = usePermission('create_processing_batch');
@@ -45,6 +115,10 @@ export default function ProcessingDashboard() {
     }, 1500);
   };
 
+  const currentKpis = useMemo(() => kpiDataByDuration[duration], [duration]);
+  const currentTrend = useMemo(() => trendByDuration[duration], [duration]);
+  const currentTrendTitle = trendTitleByDuration[duration];
+
   return (
     <ModuleLayout moduleName="Processing" moduleIcon={Factory} navItems={processingNav}>
       <div className={styles.dashboardContainer}>
@@ -57,6 +131,7 @@ export default function ProcessingDashboard() {
             </p>
           </div>
           <div className={styles.headerActions}>
+            <PeriodSelect value={period} onChange={setPeriod} />
             <Button
               variant="secondary"
               size="sm"
@@ -106,26 +181,26 @@ export default function ProcessingDashboard() {
           <KpiCard
             icon={TrendingUp}
             title="Processing Recovery"
-            value="82.4%"
-            subValue="FY26 average"
-            trend="up"
-            change="+1.8% vs last month"
+            value={currentKpis.recovery.value}
+            subValue={currentKpis.recovery.subValue}
+            trend={currentKpis.recovery.trend}
+            change={currentKpis.recovery.change}
           />
           <KpiCard
             icon={Clock}
             title="Batch Turnaround"
-            value="2.6 days"
-            subValue="Raw intake to finished lot"
-            trend="down"
-            change="-1.1 days vs Q1"
+            value={currentKpis.turnaround.value}
+            subValue={currentKpis.turnaround.subValue}
+            trend={currentKpis.turnaround.trend}
+            change={currentKpis.turnaround.change}
           />
           <KpiCard
             icon={ShieldCheck}
             title="Rejection Rate"
-            value="4.2%"
-            subValue="30-day rolling"
-            trend="down"
-            change="-2.8% vs last quarter"
+            value={currentKpis.rejection.value}
+            subValue={currentKpis.rejection.subValue}
+            trend={currentKpis.rejection.trend}
+            change={currentKpis.rejection.change}
           />
         </div>
 
@@ -255,10 +330,10 @@ export default function ProcessingDashboard() {
 
         {/* Daily Production Trend Chart */}
         <div className={styles.chartCard}>
-          <h3 className={styles.chartTitle}>Daily Production Trend — Last 30 Days</h3>
+          <h3 className={styles.chartTitle}>{currentTrendTitle}</h3>
           <div style={{ width: '100%', height: 300 }}>
             <ResponsiveContainer>
-              <AreaChart data={trendData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <AreaChart data={currentTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#0E5467" stopOpacity={0.8}/>

@@ -48,6 +48,7 @@ import {
   maintenanceTasks,
   energyConsumption
 } from './mockData/iotData';
+import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { warehouseNav } from '@/config/warehouseNav';
 import { IoTSensor } from '@/types/warehouse';
 
@@ -75,6 +76,7 @@ const IoTMonitoring: React.FC = () => {
 
   // Alert filter
   const [alertSeverityFilter, setAlertSeverityFilter] = useState<'all' | 'critical' | 'warning' | 'info'>('all');
+  const [period, setPeriod] = useState<PeriodValue>('all');
 
   const filteredGermination = React.useMemo(() => {
     return germinationDeclineRecords.filter((g: any) => {
@@ -94,9 +96,12 @@ const IoTMonitoring: React.FC = () => {
   }, []);
 
   const filteredAlerts = React.useMemo(() => {
-    if (alertSeverityFilter === 'all') return mockAlerts;
-    return mockAlerts.filter((a: any) => a.severity === alertSeverityFilter);
-  }, [alertSeverityFilter]);
+    // Sensors are permanent equipment; alerts are events, so the period
+    // filters the alert feed rather than the sensor list.
+    const inPeriod = mockAlerts.filter((a: any) => isDateInPeriod(a.triggeredAt, period));
+    if (alertSeverityFilter === 'all') return inPeriod;
+    return inPeriod.filter((a: any) => a.severity === alertSeverityFilter);
+  }, [alertSeverityFilter, period]);
 
   const tabs = [
     { key: 'live', label: 'Live monitoring' },
@@ -408,6 +413,7 @@ const IoTMonitoring: React.FC = () => {
               onClick: () => console.log('Refresh')
             }
           ]}
+          period={{ value: period, onChange: (v) => setPeriod(v as PeriodValue), options: PERIOD_OPTIONS }}
         />
 
         <div className={styles.statsStrip}>

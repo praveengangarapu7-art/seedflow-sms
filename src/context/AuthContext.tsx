@@ -4,7 +4,7 @@ import type { User, UserRole } from '@/types';
 interface AuthContextValue {
   isAuthenticated: boolean;
   user: User | null;
-  login: (email: string, password: string, role: UserRole) => void;
+  login: (email: string, password: string, role: UserRole, name?: string) => void;
   signup: (formData: Record<string, string>) => void;
   logout: () => void;
   /** Persists a partial edit (name, email, organizationName, avatarUrl) onto the signed-in user. */
@@ -41,9 +41,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
-  function login(email: string, _password: string, role: UserRole) {
+  function login(email: string, _password: string, role: UserRole, name?: string) {
     const newUser: User = {
-      name: 'Demo User',
+      name: name ?? 'Demo User',
       email,
       role,
     };

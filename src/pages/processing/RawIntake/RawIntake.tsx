@@ -12,6 +12,8 @@ import { processingNav } from '@/config/processingNav';
 import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { rawIntakes as mockIntakes } from '@/data/processing/rawIntakes';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { PROCESSING_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { RawIntake, IntakeStatus } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './RawIntake.module.css';
@@ -26,7 +28,13 @@ const STEPPER_STEPS = [
 
 export default function RawIntakePage() {
   const { addToast } = useToast();
-  const { items, add, update } = useRealtimeMockStore<RawIntake>(mockIntakes);
+  const { items: allIntakes, add, update } = useRealtimeMockStore<RawIntake>(mockIntakes);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+
+  const items = useMemo(
+    () => allIntakes.filter((i) => isDateInPeriod(i.arrivalTime, period, PROCESSING_TODAY)),
+    [allIntakes, period]
+  );
 
   const canCreate = usePermission('create_raw_intake');
   const canInspect = usePermission('pre_processing_inspection');
@@ -237,6 +245,7 @@ export default function RawIntakePage() {
           </p>
         </div>
         <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canCreate && (
             <Button variant="primary" leftIcon={Plus} onClick={() => setIsAddModalOpen(true)}>
               New Intake

@@ -36,6 +36,8 @@ import {
   type AdjustmentsKpiIcon,
 } from './mockData/adjustmentsData';
 import type { StockAdjustment, AdjustmentReason, AdjustmentSource } from '@/types/warehouse';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './StockAdjustments.module.css';
 
 const ICON_MAP: Record<AdjustmentsKpiIcon, LucideIcon> = { Clock, CheckCircle2, TrendingDown, Target };
@@ -59,6 +61,7 @@ import { usePermission } from '@/hooks/usePermission';
 
 export default function StockAdjustments() {
   const [activeTab, setActiveTab] = useState<AdjTab>('all');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [search, setSearch] = useState('');
   const [reasonFilter, setReasonFilter] = useState<'all' | AdjustmentReason>('all');
   const [sourceFilter, setSourceFilter] = useState<'all' | AdjustmentSource>('all');
@@ -72,7 +75,12 @@ export default function StockAdjustments() {
   const [reversalAdj, setReversalAdj] = useState<StockAdjustment | null>(null);
   const [isPolicyOpen, setIsPolicyOpen] = useState(false);
 
-  const { items: adjustments, update } = useRealtimeMockStore(initialAdjustments);
+  const { items: allAdjustments, update } = useRealtimeMockStore(initialAdjustments);
+
+  const adjustments = useMemo(
+    () => allAdjustments.filter((a) => isDateInPeriod(a.initiatedAt, period)),
+    [allAdjustments, period]
+  );
   const { addToast } = useToast();
 
   const canPropose = usePermission('propose_stock_adjustment');
@@ -132,6 +140,7 @@ export default function StockAdjustments() {
           <p className={styles.pageSubtitle}>Review variances, approve adjustments, and post to inventory</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <button className={styles.policyLink} onClick={() => setIsPolicyOpen(true)}>
             Adjustment policy
           </button>

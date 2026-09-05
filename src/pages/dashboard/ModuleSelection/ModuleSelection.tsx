@@ -6,12 +6,15 @@ import {
   Cog,
   TestTube,
   Sprout,
+  ShieldCheck,
   ArrowRight,
 } from 'lucide-react';
 import { TopHeader } from '@/components/layout/TopHeader/TopHeader';
 import { Badge } from '@/components/common/Badge/Badge';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/common/Toast/ToastContext';
+import { hasPermission } from '@/utils/permissions';
+import { isModuleEnabled, readAdminSettings, type ModuleKey } from '@/services/adminSettings';
 import type { ModuleCardData } from '@/types';
 import styles from './ModuleSelection.module.css';
 
@@ -58,7 +61,25 @@ const modules: ModuleCardData[] = [
     path: '/lab/dashboard',
     status: 'active',
   },
+  {
+    name: 'Administration',
+    description: 'Users, roles, audit trail, system health, governance and privacy across every module',
+    icon: ShieldCheck,
+    path: '/admin/dashboard',
+    status: 'active',
+  },
 ];
+
+/** Maps a card to the registry key the Administration module toggles. */
+const MODULE_KEY_BY_NAME: Record<string, ModuleKey> = {
+  Procurement: 'procurement',
+  Warehouse: 'warehouse',
+  'Research & Development': 'rd',
+  Processing: 'processing',
+  'Production Planning': 'production',
+  Laboratory: 'lab',
+  Administration: 'admin',
+};
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -71,6 +92,21 @@ export default function ModuleSelection() {
   const { user } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  // Two filters, for two different reasons. Module visibility is an
+  // administrator's choice (Administration → Module registry). The
+  // Administration card itself is additionally hidden from anyone without an
+  // admin role, since a Purchase Executive clicking it would only ever land
+  // on the "no pages for this role" placeholder.
+  const adminSettings = readAdminSettings();
+  const visibleModules = modules.filter((mod) => {
+    const key = MODULE_KEY_BY_NAME[mod.name];
+    if (key && !isModuleEnabled(key, adminSettings)) return false;
+    if (mod.name === 'Administration') {
+      return Boolean(user && hasPermission(user.role, 'view_admin_dashboard'));
+    }
+    return true;
+  });
 
   function handleCardClick(mod: ModuleCardData) {
     if (mod.status === 'active' && mod.path) {
@@ -90,7 +126,7 @@ export default function ModuleSelection() {
         <p className={styles.subtitle}>Seed lifecycle overview: variety registration → production → inspection → processing → certification → traceability</p>
 
         <div className={styles.grid}>
-          {modules.map((mod) => {
+          {visibleModules.map((mod) => {
             const Icon = mod.icon;
             const isActive = mod.status === 'active';
             return (

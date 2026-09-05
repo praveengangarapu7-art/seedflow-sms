@@ -14,7 +14,12 @@
 
 .landingContainer {
   font-family: var(--font-sans);
-  background-color: var(--color-white);
+  /* Tinted canvas, with a taller gradient wash behind the nav and hero so the
+     top of the page lightens toward the headline instead of sitting flat. */
+  background-color: var(--landing-surface);
+  background-image: linear-gradient(180deg, var(--landing-hero-top) 0%, var(--landing-hero-bottom) 100%);
+  background-size: 100% 760px;
+  background-repeat: no-repeat;
   color: var(--color-text-primary);
   min-height: 100vh;
   overflow-x: hidden;

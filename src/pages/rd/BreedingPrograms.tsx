@@ -19,6 +19,8 @@ import { useToast } from '@/components/common/Toast/ToastContext';
 import { rdNav } from '@/config/rdNav';
 import { programs as initialPrograms } from './mockData/breedingData';
 import { BreedingProgram, BreedingObjective, GenerationStage } from '@/types/rd';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { BreedingProgramCard } from './components/BreedingProgramCard/BreedingProgramCard';
 import { NewProgramModal } from './components/NewProgramModal/NewProgramModal';
 import { usePermission } from '@/hooks/usePermission';
@@ -47,7 +49,13 @@ const OBJECTIVES: BreedingObjective[] = [
 
 export default function BreedingPrograms() {
   const { addToast } = useToast();
-  const { items: programs, add, update, remove } = useRealtimeMockStore(initialPrograms);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+  const { items: allPrograms, add, update, remove } = useRealtimeMockStore(initialPrograms);
+
+  const programs = useMemo(
+    () => allPrograms.filter((p) => isDateInPeriod(p.startDate, period, RD_TODAY)),
+    [allPrograms, period]
+  );
 
   const canCreate = usePermission('create_breeding_program');
 
@@ -225,6 +233,7 @@ export default function BreedingPrograms() {
           <p className={styles.pageSubtitle}>Plan crosses, advance generations, track variety pipelines</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <Button variant="secondary" size="sm" leftIcon={Download} onClick={handleExport}>
             Export
           </Button>

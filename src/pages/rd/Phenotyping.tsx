@@ -16,6 +16,8 @@ import { usePermission } from '@/hooks/usePermission';
 
 // Mock Data
 import { enhancedObservations as initialObservations } from './mockData/phenotypingData';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { trials as initialTrials } from './mockData/trialsData';
 
 // Modals
@@ -32,7 +34,13 @@ export default function Phenotyping() {
   const canVerify = usePermission('verify_field_observations');
 
   // Stores
-  const { items: obsList, add: addObservation, update: updateObservation } = useRealtimeMockStore(initialObservations);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+  const { items: allObservations, add: addObservation, update: updateObservation } = useRealtimeMockStore(initialObservations);
+
+  const obsList = useMemo(
+    () => allObservations.filter((o) => isDateInPeriod(o.date, period, RD_TODAY)),
+    [allObservations, period]
+  );
   const { items: trialsList } = useRealtimeMockStore(initialTrials);
 
   // States
@@ -215,6 +223,7 @@ export default function Phenotyping() {
           <p className={styles.pageSubtitle}>Collect, validate, and analyze plant biological traits data</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canRecord && (
             <>
               <Button

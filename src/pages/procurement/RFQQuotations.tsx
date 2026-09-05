@@ -17,6 +17,7 @@ import { procurementNav } from '@/config/procurementNav';
 import type { RFQ, RFQStatus } from '@/types/procurement';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
 import { usePermission } from '@/hooks/usePermission';
+import { PERIOD_OPTIONS, isDateInPeriod, MOCK_TODAY, type PeriodValue } from '@/utils/periodFilter';
 import styles from './RFQQuotations.module.css';
 
 const RFQ_TABS = [
@@ -37,8 +38,7 @@ const PAGE_SIZE = 10;
 
 function daysUntil(date: string): number {
   const d = new Date(date);
-  const today = new Date('2026-04-29');
-  return Math.round((d.getTime() - today.getTime()) / 86_400_000);
+  return Math.round((d.getTime() - MOCK_TODAY.getTime()) / 86_400_000);
 }
 
 const COLUMNS: DataTableColumn<RFQ>[] = [
@@ -103,8 +103,8 @@ const COLUMNS: DataTableColumn<RFQ>[] = [
   },
 ];
 
-function buildKpis() {
-  const active = mockRFQs.filter((r) => ['Sent', 'Responses Received'].includes(r.status)).length;
+function buildKpis(rfqs: RFQ[]) {
+  const active = rfqs.filter((r) => ['Sent', 'Responses Received'].includes(r.status)).length;
   return [
     { label: 'Active RFQs',           value: String(active),  icon: FileQuestion },
     { label: 'Avg cost savings',      value: '12.4%',         icon: TrendingDown },
@@ -118,6 +118,7 @@ export default function RFQQuotations() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch]       = useState('');
+  const [period, setPeriod]       = useState<PeriodValue>('all');
   const [page, setPage]           = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -126,10 +127,15 @@ export default function RFQQuotations() {
     addToast(`RFQ "${data.title}" has been created and sent to ${data.invitedSuppliers.length} suppliers.`, 'success');
   };
 
+  const periodFiltered = useMemo(
+    () => mockRFQs.filter((r) => isDateInPeriod(r.createdDate, period)),
+    [period]
+  );
+
   const tabFiltered = useMemo(() => {
-    if (activeTab === 'all') return mockRFQs;
-    return mockRFQs.filter((r) => r.status === STATUS_MAP[activeTab]);
-  }, [activeTab]);
+    if (activeTab === 'all') return periodFiltered;
+    return periodFiltered.filter((r) => r.status === STATUS_MAP[activeTab]);
+  }, [periodFiltered, activeTab]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -143,7 +149,7 @@ export default function RFQQuotations() {
 
   const tabs = RFQ_TABS.map((t) => ({
     ...t,
-    count: t.key === 'all' ? mockRFQs.length : mockRFQs.filter((r) => r.status === STATUS_MAP[t.key]).length,
+    count: t.key === 'all' ? periodFiltered.length : periodFiltered.filter((r) => r.status === STATUS_MAP[t.key]).length,
   }));
 
   const canCreate = usePermission('create_rfq');
@@ -158,9 +164,10 @@ export default function RFQQuotations() {
           icon: Plus, 
           onClick: () => setIsCreateModalOpen(true) 
         } : undefined}
+        period={{ value: period, onChange: (v) => { setPeriod(v as PeriodValue); setPage(1); }, options: PERIOD_OPTIONS }}
       />
 
-      <KpiStrip items={buildKpis()} />
+      <KpiStrip items={buildKpis(periodFiltered)} />
 
       <Tabs tabs={tabs} activeTab={activeTab} onChange={(k) => { setActiveTab(k); setPage(1); }} />
 

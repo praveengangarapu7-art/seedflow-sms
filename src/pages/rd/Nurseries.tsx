@@ -20,6 +20,8 @@ import { rdNav } from '@/config/rdNav';
 import { nurseries as initialNurseries } from './mockData/nurseriesData';
 import { programs as initialPrograms } from './mockData/breedingData';
 import { Nursery, NurseryType } from '@/types/rd';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { NurseryCard } from './components/NurseryCard/NurseryCard';
 import { NurseryDetailModal } from './components/NurseryDetailModal/NurseryDetailModal';
 import { NewNurseryModal } from './components/NewNurseryModal/NewNurseryModal';
@@ -37,7 +39,13 @@ const SEASONS = ['Kharif 2026', 'Rabi 2026-27', 'Zaid 2027'];
 
 export default function Nurseries() {
   const { addToast } = useToast();
-  const { items: nurseries, add, update, remove } = useRealtimeMockStore(initialNurseries);
+  const [period, setPeriod] = useState<PeriodValue>('all');
+  const { items: allNurseries, add, update, remove } = useRealtimeMockStore(initialNurseries);
+
+  const nurseries = useMemo(
+    () => allNurseries.filter((n) => isDateInPeriod(n.sownDate, period, RD_TODAY)),
+    [allNurseries, period]
+  );
   
   const canCreate = usePermission('create_nursery');
   const canInspect = usePermission('inspect_nursery');
@@ -200,6 +208,7 @@ export default function Nurseries() {
           <p className={styles.pageSubtitle}>Manage parental blocks, hybridizations, and early-generation plots</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <Button
             variant="secondary"
             size="sm"

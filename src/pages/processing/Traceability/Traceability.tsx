@@ -6,10 +6,13 @@ import { useToast } from '@/components/common/Toast/ToastContext';
 import { processingNav } from '@/config/processingNav';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './Traceability.module.css';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { type PeriodValue } from '@/utils/periodFilter';
 
 export default function TraceabilityPage() {
   const { addToast } = useToast();
   const [searchQuery, setSearchQuery] = useState('BT-2026-1142');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [searched, setSearched] = useState(true);
   const [showRecallModal, setShowRecallModal] = useState(false);
   const [recallReason, setRecallReason] = useState('');
@@ -45,6 +48,9 @@ export default function TraceabilityPage() {
           <p className={styles.pageSubtitle}>
             Perform end-to-end forward and backward lot tracing by Lot ID, Batch ID, or QR code serial number
           </p>
+        </div>
+        <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
         </div>
       </div>
 

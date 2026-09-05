@@ -23,6 +23,8 @@ import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { returnKpis, returnRecords as initialReturnRecords, type ReturnsKpiIcon } from './mockData/returnsData';
 import type { ReturnRecord, ReturnStatus, ReturnDirection, ReturnReason, ReturnDisposition } from '@/types/warehouse';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './ReturnsManagement.module.css';
 
 const ICON_MAP: Record<ReturnsKpiIcon, LucideIcon> = { Undo2, Timer, TrendingDown, IndianRupee };
@@ -33,6 +35,7 @@ import { usePermission } from '@/hooks/usePermission';
 
 export default function ReturnsManagement() {
   const [activeTab, setActiveTab] = useState<RTab>('all');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [directionFilter, setDirectionFilter] = useState<'all' | ReturnDirection>('all');
   const [search, setSearch] = useState('');
   const [reasonFilter, setReasonFilter] = useState<'all' | ReturnReason>('all');
@@ -42,7 +45,12 @@ export default function ReturnsManagement() {
   const [inspectingRecord, setInspectingRecord] = useState<ReturnRecord | null>(null);
   const [resolvingRecord, setResolvingRecord] = useState<ReturnRecord | null>(null);
 
-  const { items: returnRecords, update, add } = useRealtimeMockStore(initialReturnRecords);
+  const { items: allReturnRecords, update, add } = useRealtimeMockStore(initialReturnRecords);
+
+  const returnRecords = useMemo(
+    () => allReturnRecords.filter((r) => isDateInPeriod(r.initiatedDate, period)),
+    [allReturnRecords, period]
+  );
   const { addToast } = useToast();
 
   const canLogReturn = usePermission('log_return');
@@ -99,6 +107,7 @@ export default function ReturnsManagement() {
           <p className={styles.pageSubtitle}>Customer returns, supplier returns, and disposition workflows</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <div className={styles.chipGroup} role="radiogroup" aria-label="Direction filter">
             {(['all', 'Customer return', 'Supplier return'] as Array<'all' | ReturnDirection>).map((d) => (
                <button

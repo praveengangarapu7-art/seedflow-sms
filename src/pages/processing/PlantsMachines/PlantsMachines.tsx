@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Layers, Plus, Factory, Wrench, ShieldAlert, Sparkles } from 'lucide-react';
 import { ModuleLayout } from '@/components/layout/ModuleLayout/ModuleLayout';
 import { Button } from '@/components/common/Button/Button';
@@ -11,6 +11,8 @@ import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { plants as initialPlants } from '@/data/processing/plants';
 import { machines as initialMachines } from '@/data/processing/machines';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { PROCESSING_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { Plant, Machine } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './PlantsMachines.module.css';
@@ -18,8 +20,16 @@ import styles from './PlantsMachines.module.css';
 export default function PlantsMachinesPage() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState('plants');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const { items: plantItems } = useRealtimeMockStore<Plant>(initialPlants);
-  const { items: machineItems, update: updateMachine } = useRealtimeMockStore<Machine>(initialMachines);
+  const { items: allMachines, update: updateMachine } = useRealtimeMockStore<Machine>(initialMachines);
+
+  // Machines are equipment, not events: the period narrows by last service,
+  // and a machine with no service on record stays listed either way.
+  const machineItems = useMemo(
+    () => allMachines.filter((m) => !m.lastServiceDate || isDateInPeriod(m.lastServiceDate, period, PROCESSING_TODAY)),
+    [allMachines, period]
+  );
 
   const canConfigure = usePermission('configure_plant');
   const canScheduleMaintenance = usePermission('schedule_maintenance');
@@ -87,6 +97,7 @@ export default function PlantsMachinesPage() {
           </p>
         </div>
         <div className={styles.pageActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           {canConfigure && (
             <Button variant="primary" leftIcon={Plus} onClick={() => addToast('Form to register new plant/machine.', 'info')}>
               Add Machinery

@@ -39,6 +39,8 @@ import {
   buildBinCode,
   type StorageKpiIcon,
 } from './mockData/storageData';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import type { StorageLocation } from '@/types/warehouse';
 import { formatIndianNumber } from '@/utils/formatters';
 import styles from './StorageLocations.module.css';
@@ -55,6 +57,7 @@ export default function StorageLocations() {
   const [warehouse, setWarehouse] = useState('Telangana Main');
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<StorageTab>('bins');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [search, setSearch] = useState('');
   const [zoneFilter, setZoneFilter] = useState<string>('all');
   const [binStatusFilter, setBinStatusFilter] = useState<string>('all');
@@ -79,6 +82,9 @@ export default function StorageLocations() {
 
   const filteredBins = useMemo(() => {
     return bins.filter((b) => {
+      // Period = last activity. A location that has never been moved through
+      // is idle, not out of range, so it stays visible in every period.
+      if (b.lastMovement && !isDateInPeriod(b.lastMovement, period)) return false;
       if (zoneFilter !== 'all' && b.zone !== zoneFilter) return false;
       if (binStatusFilter !== 'all' && b.status !== binStatusFilter) return false;
       if (abcFilter !== 'all' && b.abcZone !== abcFilter) return false;
@@ -133,6 +139,7 @@ export default function StorageLocations() {
           <p className={styles.pageSubtitle}>Warehouse layout, zones, and bin-level occupancy ({warehouse})</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={setPeriod} />
           <select
             className={styles.warehouseSelect}
             value={warehouse}

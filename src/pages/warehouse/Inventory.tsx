@@ -27,6 +27,8 @@ import { ActionMenu } from '@/components/common/ActionMenu';
 import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { inventoryItems as initialItems, inventoryWarehouses } from './mockData/inventoryData';
+import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
+import { isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import type { InventoryItem, ItemCategory, StockStatus } from '@/types/warehouse';
 import { formatIndianNumber, formatRupees } from '@/utils/formatters';
 import { usePermission } from '@/hooks/usePermission';
@@ -70,8 +72,17 @@ export default function Inventory() {
   const [detailItem, setDetailItem] = useState<InventoryItem | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [period, setPeriod] = useState<PeriodValue>('all');
 
-  const { items: inventoryItems, add, bulkUpdate } = useRealtimeMockStore(initialItems);
+  const { items: allItems, add, bulkUpdate } = useRealtimeMockStore(initialItems);
+
+  // Everything below — tab counts, the table and the KPI row — reads from the
+  // period-filtered set, so the numbers always describe the same slice of time
+  // the header is showing.
+  const inventoryItems = useMemo(
+    () => allItems.filter((it) => isDateInPeriod(it.receivedDate, period)),
+    [allItems, period]
+  );
   const { addToast } = useToast();
 
   const canUpdateInventory = usePermission('update_inventory');
@@ -180,6 +191,7 @@ export default function Inventory() {
           <p className={styles.pageSubtitle}>Track every item across warehouses, batches, and lots</p>
         </div>
         <div className={styles.headerActions}>
+          <PeriodSelect value={period} onChange={(v) => { setPeriod(v); setPage(1); }} />
           {canUpdateInventory && <Button variant="secondary" size="sm" leftIcon={Upload} onClick={() => setIsImportOpen(true)}>Import</Button>}
           <Button variant="secondary" size="sm" leftIcon={Download} onClick={() => { console.log('export inventory'); addToast({ type: 'success', message: 'Inventory exported' }) }}>Export</Button>
           {canUpdateInventory && <Button variant="primary" size="sm" leftIcon={Plus} onClick={() => setIsAddModalOpen(true)}>Add item</Button>}

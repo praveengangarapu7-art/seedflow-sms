@@ -1,6 +1,6 @@
 .section {
-  padding: 30px 24px 120px 24px;
-  background-color: var(--color-white);
+  padding: 72px 24px;
+  background-color: var(--landing-surface);
   position: relative;
   overflow: hidden;
 }
@@ -38,7 +38,7 @@
 .subtitle {
   font-size: 17px;
   line-height: 1.6;
-  color: var(--color-text-secondary);
+  color: var(--landing-text-on-tint);
   margin: 0;
 }
 
@@ -107,7 +107,7 @@
   gap: 18px;
   align-items: flex-start;
   background-color: var(--color-white);
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--landing-border);
   border-radius: var(--radius-md);
   padding: 16px 20px;
   box-shadow: var(--shadow-sm);

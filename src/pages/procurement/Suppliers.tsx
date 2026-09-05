@@ -23,6 +23,7 @@ import { useToast } from '@/components/common/Toast';
 import type { Supplier } from '@/types/procurement';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
 import { usePermission } from '@/hooks/usePermission';
+import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './Suppliers.module.css';
 
 // ── Constants ──────────────────────────────────────────────────
@@ -51,12 +52,18 @@ const CATEGORY_FILTER_OPTIONS = [
   })),
 ];
 
-const KPI_ITEMS = [
-  { label: 'Total suppliers', value: '20', icon: Users },
-  { label: 'Preferred', value: '8', icon: Star },
-  { label: 'Avg score', value: '85.4', icon: Award },
-  { label: 'Pending onboarding', value: '2', icon: UserPlus },
-];
+function buildKpiItems(suppliers: Supplier[]) {
+  const total     = suppliers.length;
+  const preferred = suppliers.filter((s) => s.classification === 'Preferred').length;
+  const avgScore  = total ? Math.round((suppliers.reduce((s, x) => s + x.overallScore, 0) / total) * 10) / 10 : 0;
+  const pending   = suppliers.filter((s) => s.classification === 'Registered').length;
+  return [
+    { label: 'Total suppliers',    value: String(total),     icon: Users },
+    { label: 'Preferred',          value: String(preferred), icon: Star },
+    { label: 'Avg score',          value: String(avgScore),  icon: Award },
+    { label: 'Pending onboarding', value: String(pending),   icon: UserPlus },
+  ];
+}
 
 const STEP_DEFS = [
   { key: 'info', label: 'Basic info' },
@@ -482,17 +489,28 @@ export default function Suppliers() {
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [period, setPeriod] = useState<PeriodValue>('all');
   const [page, setPage] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  const periodFiltered = useMemo(
+    () => mockSuppliers.filter((s) => isDateInPeriod(s.lastPODate, period)),
+    [period]
+  );
+
   const tabFiltered = useMemo(
     () =>
       activeTab === 'all'
-        ? mockSuppliers
-        : mockSuppliers.filter((s) => s.classification === TAB_TO_CLASS[activeTab]),
-    [activeTab]
+        ? periodFiltered
+        : periodFiltered.filter((s) => s.classification === TAB_TO_CLASS[activeTab]),
+    [periodFiltered, activeTab]
   );
+
+  const tabsWithCounts = SUPPLIER_TABS.map((t) => ({
+    ...t,
+    count: t.key === 'all' ? periodFiltered.length : periodFiltered.filter((s) => s.classification === TAB_TO_CLASS[t.key]).length,
+  }));
 
   const filtered = useMemo(
     () =>
@@ -579,6 +597,19 @@ export default function Suppliers() {
           <p className={styles.pageTopSub}>Manage your supplier network and performance</p>
         </div>
         <div className={styles.pageTopActions}>
+          <select
+            className={styles.periodSelect}
+            value={period}
+            onChange={(e) => {
+              setPeriod(e.target.value as PeriodValue);
+              setPage(1);
+            }}
+            aria-label="Period filter"
+          >
+            {PERIOD_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
           <ViewToggle view={view} onChange={setView} />
           {canAddSupplier && (
             <Button
@@ -595,12 +626,12 @@ export default function Suppliers() {
       <div className={styles.divider} />
 
       {/* KPI strip */}
-      <KpiStrip items={KPI_ITEMS} />
+      <KpiStrip items={buildKpiItems(periodFiltered)} />
 
       {/* Tabs */}
       <div style={{ marginTop: 20 }}>
         <Tabs
-          tabs={SUPPLIER_TABS}
+          tabs={tabsWithCounts}
           activeTab={activeTab}
           onChange={(key) => {
             setActiveTab(key);

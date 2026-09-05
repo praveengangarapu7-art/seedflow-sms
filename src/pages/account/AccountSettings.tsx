@@ -33,6 +33,7 @@ const MODULE_SETTINGS_LINKS = [
   { label: 'Warehouse Settings', path: '/warehouse/settings' },
   { label: 'R&D Settings', path: '/rd/settings' },
   { label: 'Processing Settings', path: '/processing/settings' },
+  { label: 'Admin Settings', path: '/admin/settings' },
 ];
 
 export default function AccountSettings() {
@@ -45,11 +46,13 @@ export default function AccountSettings() {
   const canViewWarehouseSettings = usePermission('view_warehouse_settings');
   const canViewRdSettings = usePermission('view_rd_settings');
   const canViewProcessingSettings = usePermission('view_processing_settings');
+  const canViewAdminSettings = usePermission('view_admin_settings');
   const moduleAccess = [
     canViewProcurementSettings,
     canViewWarehouseSettings,
     canViewRdSettings,
     canViewProcessingSettings,
+    canViewAdminSettings,
   ];
   const visibleModuleLinks = MODULE_SETTINGS_LINKS.filter((_, i) => moduleAccess[i]);
 

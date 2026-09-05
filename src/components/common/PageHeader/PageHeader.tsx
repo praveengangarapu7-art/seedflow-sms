@@ -16,12 +16,28 @@ interface PrimaryAction {
   disabled?: boolean;
 }
 
+/**
+ * The period selector every list page carries in its header.
+ *
+ * It lives here rather than in each page's FilterBar so the control sits in
+ * the same place on every screen in the module — next to the page's actions,
+ * exactly where the dashboard puts it — instead of moving around depending on
+ * how many filters a page happens to have.
+ */
+interface PeriodControl {
+  value: string;
+  onChange: (value: string) => void;
+  options: { label: string; value: string }[];
+  ariaLabel?: string;
+}
+
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
   description?: string;
   primaryAction?: PrimaryAction;
   secondaryActions?: SecondaryAction[];
+  period?: PeriodControl;
   kpis?: any[];
   backTo?: string;
   className?: string;
@@ -34,6 +50,7 @@ export function PageHeader({
   description,
   primaryAction,
   secondaryActions = [],
+  period,
   kpis = [],
   backTo,
   className = '',
@@ -53,8 +70,22 @@ export function PageHeader({
           <h1 className={styles.title}>{title}</h1>
           {displaySubtitle && <p className={styles.subtitle}>{displaySubtitle}</p>}
         </div>
-        {(primaryAction || secondaryActions.length > 0) && (
+        {(primaryAction || secondaryActions.length > 0 || period) && (
           <div className={styles.actions} data-export-ignore="true">
+            {period && (
+              <select
+                className={styles.periodSelect}
+                value={period.value}
+                onChange={(e) => period.onChange(e.target.value)}
+                aria-label={period.ariaLabel ?? 'Period filter'}
+              >
+                {period.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            )}
             {secondaryActions.map((action) => (
               <Button
                 key={action.label}
