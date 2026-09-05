@@ -19,7 +19,11 @@ export function ProtectedRoute({ permission }: ProtectedRouteProps = {}) {
   }
 
   if (permission && user && !hasPermission(user.role, permission)) {
-    return <Navigate to="/unauthorized" replace />;
+    // Carry where they were headed. The Access denied screen uses it to name
+    // the module and offer the demo logins that DO open it, which is far more
+    // use than "your role doesn't have permission" on its own.
+    const attempted = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate to="/unauthorized" replace state={{ from: attempted }} />;
   }
   return <Outlet />;
 }

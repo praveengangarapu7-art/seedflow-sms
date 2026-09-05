@@ -13,8 +13,8 @@
   border: 1px solid var(--color-border-light);
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
-  padding: 48px 32px;
-  max-width: 460px;
+  padding: 40px 32px;
+  max-width: 560px;
   width: 100%;
   text-align: center;
 }
@@ -82,7 +82,123 @@
   font-size: 15px;
   line-height: 1.6;
   color: var(--color-text-secondary);
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+}
+
+/* ------------------------------------------------------------------ */
+/* The demo logins that DO open the module they were turned away from  */
+/* ------------------------------------------------------------------ */
+.credentials {
+  text-align: left;
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  background-color: #fbfdfd;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.credentialsHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+}
+
+.credentialsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.credentialRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  background-color: var(--color-white);
+}
+
+.credentialText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.credentialRole {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.credentialMeta {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+}
+
+.credentialLogin {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.credentialLogin code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  color: var(--color-text-secondary);
+  background-color: var(--color-accent-light);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.useBtn {
+  flex-shrink: 0;
+  background-color: var(--color-warning);
+  color: var(--color-primary-hover);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 200ms ease, transform 200ms ease;
+}
+
+.useBtn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.credentialsFoot {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  margin: 12px 0 0;
+}
+
+@media (max-width: 520px) {
+  .credentialRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .useBtn {
+    width: 100%;
+  }
 }
 
 .actions {
