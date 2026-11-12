@@ -174,6 +174,40 @@ export type Permission =
   | 'bulk_upload_lab_results'
   | 'issue_phytosanitary_certificate'
   | 'resolve_lab_quality_flag'
+  // ========== QUALITY (NEW) ==========
+  // The quality spine: SOP -> non-conformance -> CAPA -> effectiveness
+  // verification, plus complaints and lot holds. Server-side gates live in
+  // server/src/modules/quality/quality.routes.ts: any signed-in role may
+  // read, raise, log and acknowledge; Admin/Inspector author and investigate;
+  // Admin alone approves, closes, verifies and releases. The manager/officer
+  // split below mirrors that so the UI never offers what the server refuses.
+  // Page visibility
+  | 'view_quality_dashboard'
+  | 'view_sop_register'
+  | 'view_ncrs'
+  | 'view_capas'
+  | 'view_complaints'
+  | 'view_lot_holds'
+  | 'view_compliance'
+  // Actions — open to every role (see FRONTLINE_QUALITY)
+  | 'acknowledge_sop'
+  | 'raise_ncr'
+  | 'log_complaint'
+  // Actions — quality officer
+  | 'author_sop'
+  | 'manage_ncr'
+  | 'manage_capa'
+  | 'manage_complaint'
+  | 'place_lot_hold'
+  | 'manage_compliance'
+  // Actions — quality manager (four-eyes / closure authority)
+  | 'approve_sop'
+  | 'close_ncr'
+  | 'verify_capa'
+  | 'close_complaint'
+  | 'release_lot_hold'
+  | 'cancel_quality_records'
+  | 'load_compliance_template'
   // ========== ADMINISTRATION (NEW) ==========
   // The Administration module is the one module that is not a business
   // domain of its own: it owns the concerns every OTHER module shares —
@@ -297,9 +331,37 @@ const CROSS_MODULE_VIEW: Permission[] = [
   'view_lab_quality_flags',
   'view_lab_certificates',
   'view_lab_performance',
+  // Quality
+  'view_quality_dashboard',
+  'view_sop_register',
+  'view_ncrs',
+  'view_capas',
+  'view_complaints',
+  'view_lot_holds',
+  'view_compliance',
 ];
 
-const PERMISSIONS_BY_ROLE: Record<UserRole, Permission[]> = {
+/**
+ * What every employee gets from the Quality module, whatever their own
+ * module. The site visit found poor inter-department communication and no
+ * evidence that people had read the procedures they work to; the fix is not
+ * to route every problem through the quality team but to let whoever notices
+ * it raise it, and to let everyone acknowledge the SOPs that bind them.
+ * Deliberately read + raise + acknowledge only — nothing here closes,
+ * approves or releases anything.
+ */
+const FRONTLINE_QUALITY: Permission[] = [
+  'view_quality_dashboard',
+  'view_sop_register',
+  'view_ncrs',
+  'view_capas',
+  'view_complaints',
+  'acknowledge_sop',
+  'raise_ncr',
+  'log_complaint',
+];
+
+const ROLE_PERMISSIONS_BASE: Record<UserRole, Permission[]> = {
   // ===== Existing procurement roles (KEEP AS-IS) =====
   purchase_executive: [
     'view_procurement_dashboard',
@@ -612,6 +674,37 @@ const PERMISSIONS_BY_ROLE: Record<UserRole, Permission[]> = {
     'resolve_lab_quality_flag',
   ],
 
+  // ===== Quality roles (NEW) =====
+  quality_officer: [
+    ...FRONTLINE_QUALITY,
+    'view_lot_holds',
+    'view_compliance',
+    'manage_compliance',
+    'author_sop',
+    'manage_ncr',
+    'manage_capa',
+    'manage_complaint',
+    'place_lot_hold',
+  ],
+  quality_manager: [
+    ...FRONTLINE_QUALITY,
+    'view_lot_holds',
+    'view_compliance',
+    'manage_compliance',
+    'load_compliance_template',
+    'author_sop',
+    'manage_ncr',
+    'manage_capa',
+    'manage_complaint',
+    'place_lot_hold',
+    'approve_sop',
+    'close_ncr',
+    'verify_capa',
+    'close_complaint',
+    'release_lot_hold',
+    'cancel_quality_records',
+  ],
+
   // ===== Administration roles (NEW) =====
   // super_admin holds every admin permission there is. system_admin runs
   // the platform but is deliberately kept out of irreversible data-privacy
@@ -691,6 +784,19 @@ const PERMISSIONS_BY_ROLE: Record<UserRole, Permission[]> = {
     'export_audit_logs',
   ],
 };
+
+/**
+ * The effective table: each role's own permissions plus the frontline
+ * quality set. Kept separate from the literal above so adding a new role
+ * cannot forget it — and so the Administration roles page, which reads this
+ * through getRolePermissions, shows the real grant rather than half of it.
+ */
+const PERMISSIONS_BY_ROLE: Record<UserRole, Permission[]> = Object.fromEntries(
+  (Object.entries(ROLE_PERMISSIONS_BASE) as [UserRole, Permission[]][]).map(([role, permissions]) => [
+    role,
+    [...new Set([...permissions, ...FRONTLINE_QUALITY])],
+  ]),
+) as Record<UserRole, Permission[]>;
 
 export function hasPermission(role: UserRole, permission: Permission): boolean {
   return PERMISSIONS_BY_ROLE[role]?.includes(permission) ?? false;
@@ -894,6 +1000,34 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       'bulk_upload_lab_results',
       'issue_phytosanitary_certificate',
       'resolve_lab_quality_flag',
+    ],
+  },
+  {
+    module: 'Quality',
+    permissions: [
+      'view_quality_dashboard',
+      'view_sop_register',
+      'view_ncrs',
+      'view_capas',
+      'view_complaints',
+      'view_lot_holds',
+      'view_compliance',
+      'acknowledge_sop',
+      'raise_ncr',
+      'log_complaint',
+      'author_sop',
+      'manage_ncr',
+      'manage_capa',
+      'manage_complaint',
+      'place_lot_hold',
+      'manage_compliance',
+      'approve_sop',
+      'close_ncr',
+      'verify_capa',
+      'close_complaint',
+      'release_lot_hold',
+      'cancel_quality_records',
+      'load_compliance_template',
     ],
   },
   {

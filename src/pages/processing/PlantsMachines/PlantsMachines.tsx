@@ -17,12 +17,14 @@ import { Plant, Machine } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './PlantsMachines.module.css';
 
+import { RecordEditModal } from '@/components/common/RecordEditModal/RecordEditModal';
 export default function PlantsMachinesPage() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState('plants');
   const [period, setPeriod] = useState<PeriodValue>('all');
-  const { items: plantItems } = useRealtimeMockStore<Plant>(initialPlants);
-  const { items: allMachines, update: updateMachine } = useRealtimeMockStore<Machine>(initialMachines);
+  const { items: plantItems } = useRealtimeMockStore<Plant>(initialPlants, 'processing.plants');
+  const { items: allMachines, update: updateMachine, add: addMachine } = useRealtimeMockStore<Machine>(initialMachines, 'processing.machines');
+  const [showAddMachine, setShowAddMachine] = useState(false);
 
   // Machines are equipment, not events: the period narrows by last service,
   // and a machine with no service on record stays listed either way.
@@ -99,7 +101,7 @@ export default function PlantsMachinesPage() {
         <div className={styles.pageActions}>
           <PeriodSelect value={period} onChange={setPeriod} />
           {canConfigure && (
-            <Button variant="primary" leftIcon={Plus} onClick={() => addToast('Form to register new plant/machine.', 'info')}>
+            <Button variant="primary" leftIcon={Plus} onClick={() => setShowAddMachine(true)}>
               Add Machinery
             </Button>
           )}
@@ -195,6 +197,26 @@ export default function PlantsMachinesPage() {
           </div>
         )}
       </div>
+      <RecordEditModal
+        isOpen={showAddMachine}
+        title="Add machinery"
+        fields={[
+          { key: 'name', label: 'Machine name', required: true, placeholder: 'e.g. Cleaner-04' },
+          { key: 'type', label: 'Type', type: 'select', options: ['Cleaner', 'Dryer', 'Grader', 'Treater', 'Packager'], required: true },
+          { key: 'plantId', label: 'Plant', type: 'select', options: plantItems.map((p) => p.id), required: true },
+          { key: 'manufacturer', label: 'Manufacturer' },
+          { key: 'capacity', label: 'Capacity', placeholder: 'e.g. 5 tonnes/day' },
+          { key: 'nextServiceDue', label: 'Next service due', type: 'date' },
+        ]}
+        values={{ type: 'Cleaner', plantId: plantItems[0]?.id ?? '' }}
+        onClose={() => setShowAddMachine(false)}
+        onSave={(v) => {
+          const today = new Date().toISOString().slice(0, 10);
+          addMachine({ id: `MC-${Date.now().toString(36).toUpperCase()}`, name: String(v.name), type: v.type as Machine['type'], plantId: String(v.plantId), manufacturer: String(v.manufacturer) || '—', capacity: String(v.capacity) || '—', status: 'Idle', utilization30Days: 0, lastServiceDate: today, nextServiceDue: String(v.nextServiceDue) || today });
+          addToast(`${v.name} added`, 'success');
+          setShowAddMachine(false);
+        }}
+      />
     </ModuleLayout>
   );
 }

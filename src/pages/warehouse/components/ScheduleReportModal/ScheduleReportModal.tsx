@@ -5,6 +5,10 @@ import { Input } from '@/components/common/Input/Input';
 import { ReportDefinition, ReportFrequency, ReportFormat } from '@/types/warehouse';
 import styles from './ScheduleReportModal.module.css';
 
+import { setCollection } from '@/hooks/persistentCollections';
+import { scheduledReports } from '../../mockData/reportsData';
+import type { ScheduledReport } from '@/types/warehouse';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface ScheduleReportModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,6 +23,8 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({
   const [selectedReportId, setSelectedReportId] = useState('');
   const [frequency, setFrequency] = useState<ReportFrequency>('Weekly');
   const [format, setFormat] = useState<ReportFormat>('PDF');
+  const [day, setDay] = useState('Mon');
+  const { addToast } = useToast();
 
   return (
     <Modal
@@ -68,8 +74,8 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({
               <div className={styles.formGroup} style={{flex: 1}}>
                 <label className={styles.label}>Day of week</label>
                 <div className={styles.chipGroup}>
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                    <button key={day} className={styles.chip}>{day}</button>
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
+                    <button key={d} type="button" className={`${styles.chip} ${day === d ? styles.chipActive : ''}`} onClick={() => setDay(d)}>{d}</button>
                   ))}
                 </div>
               </div>
@@ -123,7 +129,14 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({
 
         <div className={styles.footer}>
           <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" onClick={onClose}>
+          <Button variant="primary" onClick={() => {
+            const rep = reports.find((r) => r.id === selectedReportId) ?? reports[0];
+            if (!rep) { onClose(); return; }
+            const dow = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(day);
+            setCollection<ScheduledReport>('warehouse.scheduled', scheduledReports, (prev) => [{ id: `SCH-${Date.now().toString(36).toUpperCase()}`, reportId: rep.id, reportTitle: rep.title, frequency, dayOfWeek: frequency === 'Weekly' ? dow : undefined, timeOfDay: '09:00', recipients: [], format, active: true, nextRun: new Date(Date.now() + 86_400_000).toISOString(), createdBy: 'You', createdAt: new Date().toISOString() }, ...prev]);
+            addToast({ type: 'success', message: `${rep.title} scheduled (${frequency}${frequency === 'Weekly' ? `, ${day}` : ''}, ${format})` });
+            onClose();
+          }}>
             Schedule report
           </Button>
         </div>

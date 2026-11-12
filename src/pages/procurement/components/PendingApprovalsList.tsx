@@ -3,11 +3,25 @@ import type { PendingApproval } from '@/types/procurement';
 import { formatIndianNumber } from '@/utils/formatters';
 import styles from './PendingApprovalsList.module.css';
 
+import { decideApproval, useApprovals } from '../procurementStore';
+import type { Approval } from '@/types/procurement';
+import { useToast } from '@/components/common/Toast';
 interface PendingApprovalsListProps {
   data: PendingApproval[];
 }
 
-export function PendingApprovalsList({ data }: PendingApprovalsListProps) {
+export function PendingApprovalsList({ data: sample }: PendingApprovalsListProps) {
+  const [approvals] = useApprovals();
+  const { addToast } = useToast();
+  // Live queue (same as the Approvals page); the sample list only shows if the queue was never loaded.
+  const data: (PendingApproval & { live?: Approval })[] = approvals.length
+    ? approvals.slice(0, 5).map((a) => ({ id: a.id, type: a.type, title: a.title, amount: a.amount, submittedBy: a.submittedBy.name, timeAgo: a.submittedAt, live: a }) as unknown as PendingApproval & { live?: Approval })
+    : sample;
+  const decide = (item: PendingApproval & { live?: Approval }, d: 'approve' | 'reject') => {
+    if (!item.live) return;
+    decideApproval(item.live, d);
+    addToast(`${item.live.referenceId} ${d === 'approve' ? 'approved' : 'rejected'}`, d === 'approve' ? 'success' : 'error');
+  };
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
@@ -35,14 +49,14 @@ export function PendingApprovalsList({ data }: PendingApprovalsListProps) {
                 <button
                   className={`${styles.actionBtn} ${styles.actionApprove}`}
                   aria-label={`Approve: ${item.title}`}
-                  onClick={() => console.log('approve', item.id)}
+                  onClick={() => decide(item, 'approve')}
                 >
                   <Check size={13} />
                 </button>
                 <button
                   className={`${styles.actionBtn} ${styles.actionReject}`}
                   aria-label={`Reject: ${item.title}`}
-                  onClick={() => console.log('reject', item.id)}
+                  onClick={() => decide(item, 'reject')}
                 >
                   <X size={13} />
                 </button>

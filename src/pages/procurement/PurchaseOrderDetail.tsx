@@ -1,17 +1,21 @@
 import { useState } from 'react';
+import { CustomFieldsPanel } from '@/components/customFields/CustomFieldsPanel';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, ChevronRight, Download, Send } from 'lucide-react';
 import { ModuleLayout } from '@/components/layout/ModuleLayout/ModuleLayout';
 import { Button } from '@/components/common/Button/Button';
 import { StatusBadge } from '@/components/common/StatusBadge/StatusBadge';
 import { POLifecycleTimeline } from './components/POLifecycleTimeline/POLifecycleTimeline';
-import { mockPOs } from './mockData/ordersData';
+import { updatePO, usePOs } from './procurementStore';
 import { formatIndianCurrency } from '@/utils/formatters';
 import { procurementNav } from '@/config/procurementNav';
 import type { GRNReference, InvoiceReference } from '@/types/procurement';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './PurchaseOrderDetail.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
+import { useToast } from '@/components/common/Toast';
+import { printDocument } from '@/utils/fileExport';
 type DetailTab = 'overview' | 'lineItems' | 'grn' | 'invoices' | 'activity';
 
 const DETAIL_TABS: { key: DetailTab; label: string }[] = [
@@ -48,7 +52,9 @@ export default function PurchaseOrderDetail() {
   const [activeTab, setActiveTab] = useState<DetailTab>('overview');
   const canSend = usePermission('create_order');
 
-  const po = mockPOs.find((p) => p.id === id);
+  const { addToast } = useToast();
+  const [pos] = usePOs();
+  const po = pos.find((p) => p.id === id);
 
   if (!po) {
     return (
@@ -67,6 +73,7 @@ export default function PurchaseOrderDetail() {
   return (
     <ModuleLayout moduleName="Procurement" moduleIcon={ShoppingCart} navItems={procurementNav}>
 
+      <CustomFieldsPanel entityType="purchase_order" entityId={po.id} />
       {/* ── Breadcrumb ──────────────────────────────────────────────── */}
       <div className={styles.breadcrumb}>
         <button className={styles.breadcrumbLink} onClick={() => navigate('/procurement/orders')}>
@@ -76,6 +83,7 @@ export default function PurchaseOrderDetail() {
         <span>{po.id}</span>
       </div>
 
+      <RecordAiPanel recordType="procurement.purchase_order" record={po} label={po.id} />
       {/* ── Header card ─────────────────────────────────────────────── */}
       <div className={styles.headerCard}>
         <div className={styles.headerTop}>
@@ -85,9 +93,16 @@ export default function PurchaseOrderDetail() {
           </div>
           <div className={styles.headerActions}>
             <StatusBadge status={po.status} type="po" />
-            <Button variant="ghost" size="sm" leftIcon={Download}>Export PDF</Button>
+            <Button variant="ghost" size="sm" leftIcon={Download} onClick={() => printDocument(`Purchase Order ${po.id}`, [
+              { fields: [['Supplier', po.supplier], ['Status', po.status], ['Created', po.createdDate], ['Expected delivery', po.expectedDelivery], ['Payment terms', po.paymentTerms], ['Delivery address', po.deliveryAddress], ['Requisition', po.prReference ?? '—']] },
+              { heading: 'Line items', table: { columns: ['Description', 'Qty', 'Unit', 'Unit price', 'Tax %', 'Total'], rows: po.lineItems.map((l) => [l.description, l.quantity, l.unit, formatIndianCurrency(l.unitPrice), l.taxPercent, formatIndianCurrency(l.total)]) } },
+              { fields: [['Order total', formatIndianCurrency(po.totalAmount)]] },
+            ])}>Export PDF</Button>
             {po.status === 'Draft' && canSend && (
-              <Button variant="primary" size="sm" leftIcon={Send}>Send to Supplier</Button>
+              <Button variant="primary" size="sm" leftIcon={Send} onClick={() => {
+                updatePO(po.id, { status: 'Sent' }, `PO sent to ${po.supplier}`);
+                addToast(`${po.id} sent to ${po.supplier}`, 'success');
+              }}>Send to Supplier</Button>
             )}
           </div>
         </div>

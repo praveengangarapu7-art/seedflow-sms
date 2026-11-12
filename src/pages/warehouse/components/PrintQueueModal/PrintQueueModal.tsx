@@ -24,7 +24,7 @@ function statusClass(s: PrintJob['status']): string {
 
 export function PrintQueueModal({ isOpen, onClose, jobs }: PrintQueueModalProps) {
   const { addToast } = useToast();
-  const { items, update, remove } = useRealtimeMockStore<PrintJob>(jobs);
+  const { items, update, remove } = useRealtimeMockStore<PrintJob>(jobs, 'warehouse.print_jobs');
   const [confirmAll, setConfirmAll] = useState(false);
 
   if (!isOpen) return null;

@@ -11,20 +11,24 @@ import { formatIndianCurrency } from '@/utils/formatters';
 import { ClipboardList, ShoppingBag, Receipt, Building2, CheckCircle, Clock } from 'lucide-react';
 import styles from './PortalPages.module.css';
 
+import { readCollection, usePersistentCollection } from '@/hooks/persistentCollections';
+import { C, updatePO, updateRFQ } from '@/pages/procurement/procurementStore';
+import { mockRFQs } from '@/pages/procurement/mockData/rfqsData';
+import type { RFQ } from '@/types/procurement';
 // Mock invited RFQs
-const MOCK_INVITED_RFQS = [
+const MOCK_INVITED_RFQS_START = [
   { id: 'RFQ-2026-004', title: 'High-Purity Packaging Bags supply', items: 3, deadline: '2026-06-05', status: 'Pending Response', description: 'Requires 10,000 units of moisture-barrier multi-wall paper bags.' },
   { id: 'RFQ-2026-005', title: 'Processing Equipment lab glassware', items: 12, deadline: '2026-06-12', status: 'Submitted', description: 'Supplying borosilicate beaker and flask batches for laboratory Q3 renewal.' },
 ];
 
 // Mock POs
-const MOCK_DISTRIBUTOR_POS = [
+const MOCK_DISTRIBUTOR_POS_START = [
   { id: 'PO-2026-0145', referenceId: 'PR-2026-0089', totalAmount: 1250000, status: 'Sent', expectedDelivery: '2026-06-03', paymentTerms: 'Net 30', lineItems: 4 },
   { id: 'PO-2026-0118', referenceId: 'PR-2026-0062', totalAmount: 645000, status: 'Acknowledged', expectedDelivery: '2026-05-24', paymentTerms: 'Net 30', lineItems: 2 },
 ];
 
 // Mock Invoices
-const MOCK_DISTRIBUTOR_INVOICES = [
+const MOCK_DISTRIBUTOR_INVOICES_START = [
   { id: 'INV-PION-091', poReference: 'PO-2026-0118', total: 645000, matchStatus: 'matched', dueDate: '2026-06-24', paymentStatus: 'Approved' },
   { id: 'INV-PION-080', poReference: 'PO-2026-0098', total: 320000, matchStatus: 'matched', dueDate: '2026-05-15', paymentStatus: 'Paid' },
 ];
@@ -34,6 +38,9 @@ type PortalTab = 'dashboard' | 'rfqs' | 'orders' | 'invoices' | 'profile';
 export default function DistributorPortal() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<PortalTab>('dashboard');
+  const [MOCK_INVITED_RFQS, setRfqs] = usePersistentCollection('portal.invited_rfqs', MOCK_INVITED_RFQS_START);
+  const [MOCK_DISTRIBUTOR_POS, setPos] = usePersistentCollection('portal.distributor_pos', MOCK_DISTRIBUTOR_POS_START);
+  const [MOCK_DISTRIBUTOR_INVOICES, setInvoices] = usePersistentCollection('portal.distributor_invoices', MOCK_DISTRIBUTOR_INVOICES_START);
   
   // Bid form state
   const [bidModal, setBidModal] = useState<any | null>(null);
@@ -64,6 +71,13 @@ export default function DistributorPortal() {
       addToast('Please complete the bidding values.', 'error');
       return;
     }
+    setRfqs((prev) => prev.map((r) => (r.id === bidModal.id ? { ...r, status: 'Submitted' } : r)));
+    const rfq = readCollection<RFQ>(C.rfqs, mockRFQs).find((r) => r.id === bidModal.id);
+    if (rfq) {
+      const unit = Number(bidPrice);
+      const qty = rfq.lineItems.reduce((s, l) => s + l.quantity, 0) || 1;
+      updateRFQ(rfq.id, { status: 'Responses Received', responsesReceived: rfq.responsesReceived + 1, bids: [...rfq.bids, { supplierId: 'portal-vendor', supplierName: 'Portal vendor', submittedDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), unitPrice: unit, deliveryDays: Number(deliveryDays), total: unit * qty, terms: 'Net 30', notes: bidNotes || undefined }] });
+    }
     addToast(`Bid successfully submitted for ${bidModal.id} at ₹${Number(bidPrice).toLocaleString('en-IN')}`, 'success');
     setBidModal(null);
     setBidPrice('');
@@ -72,6 +86,8 @@ export default function DistributorPortal() {
   };
 
   const handleAcknowledge = () => {
+    setPos((prev) => prev.map((p) => (p.id === ackModal.id ? { ...p, status: 'Acknowledged' } : p)));
+    updatePO(ackModal.id, { status: 'Acknowledged' }, 'Acknowledged by supplier via portal');
     addToast(`Purchase Order ${ackModal.id} acknowledged. Supply schedule confirmed.`, 'success');
     setAckModal(null);
   };
@@ -82,6 +98,7 @@ export default function DistributorPortal() {
       addToast('Please fill out all invoice details', 'error');
       return;
     }
+    setInvoices((prev) => [{ id: uploadInvoiceNo, poReference: selectedPo, total: Number(uploadAmount), matchStatus: 'pending', dueDate: new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10), paymentStatus: 'Pending' }, ...prev]);
     addToast(`Invoice ${uploadInvoiceNo} recorded successfully against ${selectedPo}. Sent for 3-way match.`, 'success');
     setShowUploadModal(false);
     setUploadInvoiceNo('');

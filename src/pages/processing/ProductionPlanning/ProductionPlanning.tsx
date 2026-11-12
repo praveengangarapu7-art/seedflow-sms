@@ -16,6 +16,7 @@ import { ProductionSchedule } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './ProductionPlanning.module.css';
 
+import { useNavigate } from 'react-router-dom';
 const CALENDAR_DAYS = [
   { day: 10, batch: 'BT-2026-1142 (Cotton)', isToday: false },
   { day: 11, batch: 'BT-2026-1140 (Paddy)', isToday: false },
@@ -28,7 +29,8 @@ const CALENDAR_DAYS = [
 
 export default function ProductionPlanningPage() {
   const { addToast } = useToast();
-  const { items: allSchedule, add } = useRealtimeMockStore<ProductionSchedule>(mockSchedule);
+  const navigate = useNavigate();
+  const { items: allSchedule, add } = useRealtimeMockStore<ProductionSchedule>(mockSchedule, 'processing.schedule');
   const [period, setPeriod] = useState<PeriodValue>('all');
 
   const items = useMemo(
@@ -160,7 +162,7 @@ export default function ProductionPlanningPage() {
                     <div key={idx} className={`${styles.calendarCell} ${d.isToday ? styles.calendarCellToday : ''}`}>
                       <div className={styles.dayNumber}>{d.day} Jun {d.isToday && '(Today)'}</div>
                       {d.batch && (
-                        <div className={`${styles.scheduleBlock} ${idx % 2 === 0 ? styles.scheduleBlockAlt : ''}`} onClick={() => addToast(`Opening ${d.batch} details.`, 'info')}>
+                        <div className={`${styles.scheduleBlock} ${idx % 2 === 0 ? styles.scheduleBlockAlt : ''}`} onClick={() => navigate(`/processing/batches/${d.batch.split(' ')[0]}`)}>
                           {d.batch}
                         </div>
                       )}

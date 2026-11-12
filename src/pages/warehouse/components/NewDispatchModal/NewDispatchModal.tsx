@@ -4,7 +4,8 @@ import { Modal } from '@/components/common/Modal/Modal';
 import { Button } from '@/components/common/Button/Button';
 import { Stepper } from '@/components/common/Stepper/Stepper';
 import { useToast } from '@/components/common/Toast/ToastContext';
-import { inventoryItems } from '../../mockData/inventoryData';
+import { useWh, whAdd, whRead, whNextId, whDisplayDate, whDate, nowIso } from '../../warehouseStore';
+import type { DispatchOrder } from '@/types/warehouse';
 import type { DispatchType, PickingStrategy } from '@/types/warehouse';
 import { formatIndianCurrency, formatIndianNumber } from '@/utils/formatters';
 import { buildBinCode } from '../../mockData/storageData';
@@ -37,6 +38,7 @@ const LOGISTICS_PARTNERS = ['Blue Dart', 'VRL Logistics', 'Gati', 'TCI Express',
 
 export function NewDispatchModal({ isOpen, onClose }: NewDispatchModalProps) {
   const { addToast } = useToast();
+  const [inventoryItems] = useWh('items');
   const [step, setStep] = useState(0);
   const [type, setType] = useState<DispatchType>('Sales order');
   const [reference, setReference] = useState('');
@@ -74,8 +76,33 @@ export function NewDispatchModal({ isOpen, onClose }: NewDispatchModalProps) {
 
   const handleClose = () => { reset(); onClose(); };
 
+  const buildOrder = (): DispatchOrder => {
+    const valid = lines.filter((l) => l.sku && l.orderedQty > 0);
+    return {
+      id: whNextId('DO', whRead('dispatch').map((o) => o.id)),
+      salesOrderRef: reference || '—',
+      type,
+      consignee: { name: consignee.name, address: consignee.address, city: consignee.city, state: consignee.state, phone: consignee.phone },
+      logisticsPartner: logistics.partner,
+      vehicleNumber: logistics.vehicleNumber || undefined,
+      driverName: logistics.driverName || undefined,
+      expectedDispatchDate: expectedDate ? whDisplayDate(expectedDate) : whDate(),
+      status: 'Pending',
+      pickingStrategy: strategy,
+      totalItems: valid.length,
+      totalQuantity: valid.reduce((s, l) => s + Number(l.orderedQty), 0),
+      uom: valid[0]?.uom ?? 'bags',
+      totalValue: valid.reduce((s, l) => s + Number(l.orderedQty) * Number(l.unitPrice), 0),
+      documents: {},
+      lineItems: valid.map((l) => ({ sku: l.sku, itemName: l.itemName, batch: l.batch, pickFrom: l.pickFrom, orderedQty: Number(l.orderedQty), pickedQty: 0, packedQty: 0, uom: l.uom, unitPrice: Number(l.unitPrice) })),
+      createdAt: nowIso(),
+    };
+  };
+
   const handleSubmit = () => {
-    console.log('create dispatch order', { type, reference, expectedDate, strategy, consignee, lines, logistics });
+    const order = buildOrder();
+    whAdd('dispatch', order);
+    addToast({ type: 'success', message: `Dispatch order ${order.id} created for ${order.consignee.name || 'consignee'}` });
     handleClose();
   };
 
@@ -313,7 +340,7 @@ export function NewDispatchModal({ isOpen, onClose }: NewDispatchModalProps) {
       <div className={styles.footer}>
         <Button variant="ghost" size="sm" onClick={handleClose}>Cancel</Button>
         <div className={styles.footerRight}>
-          <Button variant="secondary" size="sm" onClick={() => { console.log('save dispatch draft'); addToast({ type: 'success', message: 'Dispatch saved as draft' }); onClose(); }}>Save as draft</Button>
+          <Button variant="secondary" size="sm" onClick={() => { const order = buildOrder(); whAdd('dispatch', { ...order, status: 'Pending', salesOrderRef: `${order.salesOrderRef} (draft)` }); addToast({ type: 'success', message: `Dispatch ${order.id} saved as draft` }); handleClose(); }}>Save as draft</Button>
           {step > 0 && (
             <Button variant="ghost" size="sm" onClick={() => setStep((s) => Math.max(0, s - 1))}>← Back</Button>
           )}

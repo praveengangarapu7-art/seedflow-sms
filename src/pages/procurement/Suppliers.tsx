@@ -13,7 +13,6 @@ import { Stepper } from '@/components/common/Stepper/Stepper';
 import { FileUpload } from '@/components/common/FileUpload/FileUpload';
 import { KpiStrip } from './components/KpiStrip/KpiStrip';
 import {
-  mockSuppliers,
   SUPPLIER_TAB_COUNTS,
   SUPPLIER_CATEGORY_OPTIONS,
 } from './mockData/suppliersData';
@@ -26,6 +25,7 @@ import { usePermission } from '@/hooks/usePermission';
 import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './Suppliers.module.css';
 
+import { addSupplier, today, useSuppliers } from './procurementStore';
 // ── Constants ──────────────────────────────────────────────────
 const PAGE_SIZE = 12;
 
@@ -170,7 +170,22 @@ function SupplierFormModal({ isOpen, onClose, onSubmit }: SupplierFormModalProps
   }
 
   function handleSubmit() {
-    addToast('Supplier added successfully', 'success');
+    const created = addSupplier({
+      name: supplierName.trim() || 'New supplier',
+      code: supplierCode.trim() || undefined,
+      category: selectedCategories[0] ?? 'General',
+      classification: classification as Supplier['classification'],
+      contact: { person: contactPerson, email, phone },
+      address: { line1: address1, city, state, pincode, country },
+      gst, pan,
+      bankDetails: { accountHolder, accountNumber, ifsc, bank: bankName },
+      paymentTerms,
+      qualityScore: 0, deliveryScore: 0, costScore: 0, overallScore: 0,
+      totalPOs: 0, totalSpend: 0, lastPODate: '', onboardingDate: today(),
+      documents: uploadedFiles.map((f) => ({ name: f.name, uploadedDate: today() })),
+      notes: [notes, selectedCategories.length > 1 ? `Categories: ${selectedCategories.join(', ')}` : ''].filter(Boolean).join(' · '),
+    });
+    addToast(`${created.name} added as ${created.code}`, 'success');
     handleClose();
     onSubmit();
   }
@@ -493,10 +508,11 @@ export default function Suppliers() {
   const [page, setPage] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [mockSuppliers] = useSuppliers();
 
   const periodFiltered = useMemo(
-    () => mockSuppliers.filter((s) => isDateInPeriod(s.lastPODate, period)),
-    [period]
+    () => mockSuppliers.filter((s) => !s.lastPODate || isDateInPeriod(s.lastPODate, period)),
+    [period, mockSuppliers]
   );
 
   const tabFiltered = useMemo(

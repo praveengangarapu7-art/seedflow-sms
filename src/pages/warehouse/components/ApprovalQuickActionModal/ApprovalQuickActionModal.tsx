@@ -5,6 +5,8 @@ import type { StockAdjustment } from '@/types/warehouse';
 import { formatIndianNumber, formatRupees } from '@/utils/formatters';
 import styles from './ApprovalQuickActionModal.module.css';
 
+import { adjustStock, nowIso, whUpdate } from '../../warehouseStore';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface ApprovalQuickActionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -13,6 +15,7 @@ interface ApprovalQuickActionModalProps {
 }
 
 export function ApprovalQuickActionModal({ isOpen, onClose, adjustment, decision }: ApprovalQuickActionModalProps) {
+  const { addToast } = useToast();
   const [comment, setComment] = useState('');
 
   useEffect(() => { if (isOpen) setComment(''); }, [isOpen]);
@@ -60,7 +63,18 @@ export function ApprovalQuickActionModal({ isOpen, onClose, adjustment, decision
           variant={isReject ? 'secondary' : 'primary'}
           size="sm"
           disabled={!canSubmit}
-          onClick={() => { console.log(decision, a.id, comment); onClose(); }}
+          onClick={() => {
+            const ok = decision === 'approve';
+            whUpdate('adjustments', a.id, (x) => ({
+              ...x,
+              status: ok ? 'Posted' : 'Rejected',
+              postedAt: ok ? nowIso() : x.postedAt,
+              approvalChain: x.approvalChain.map((s) => (s.status === 'pending' ? { ...s, status: ok ? 'approved' : 'rejected', timestamp: nowIso(), comment: comment || undefined } : s)),
+            }));
+            if (ok) adjustStock(a.itemSku, a.varianceQty);
+            addToast({ type: ok ? 'success' : 'warning', message: `${a.id} ${ok ? 'approved and posted' : 'rejected'}` });
+            onClose();
+          }}
         >
           {isReject ? 'Confirm rejection' : 'Confirm approval'}
         </Button>

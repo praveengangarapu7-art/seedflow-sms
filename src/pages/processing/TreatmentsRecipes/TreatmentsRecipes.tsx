@@ -26,7 +26,7 @@ const STEPPER_STEPS = [
 
 export default function TreatmentsRecipesPage() {
   const { addToast } = useToast();
-  const { items, add, update } = useRealtimeMockStore<TreatmentRecipe>(initialRecipes);
+  const { items, add, update } = useRealtimeMockStore<TreatmentRecipe>(initialRecipes, 'processing.recipes');
   const [period, setPeriod] = useState<PeriodValue>('all');
 
   const canCreate = usePermission('create_recipe');

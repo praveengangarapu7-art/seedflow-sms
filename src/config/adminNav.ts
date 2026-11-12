@@ -4,6 +4,7 @@ import {
   Bell,
   Building2,
   GitBranch,
+  SlidersHorizontal,
   KeyRound,
   LayoutDashboard,
   LayoutGrid,
@@ -86,6 +87,12 @@ export const adminNav: AdminNavItem[] = [
     path: '/admin/workflows',
     icon: GitBranch,
     permission: 'view_admin_workflows',
+  },
+  {
+    label: 'Custom fields',
+    path: '/admin/custom-fields',
+    icon: SlidersHorizontal,
+    permission: 'view_admin_settings',
   },
   {
     label: 'Alerts & notifications',

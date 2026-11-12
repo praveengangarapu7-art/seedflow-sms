@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 import type { NavItem } from '@/types';
 import { TopHeader } from '@/components/layout/TopHeader/TopHeader';
 import { Sidebar } from '@/components/layout/Sidebar/Sidebar';
+import { ModuleAiStrip, aiModuleKeyFor } from '@/components/ai/ModuleAiStrip/ModuleAiStrip';
 import { useFilteredNav } from '@/hooks/useFilteredNav';
 import type { ProcurementNavItem } from '@/config/procurementNav';
 import styles from './ModuleLayout.module.css';
@@ -17,6 +18,7 @@ interface ModuleLayoutProps {
 
 export function ModuleLayout({ moduleName, moduleIcon, navItems, children }: ModuleLayoutProps) {
   const filteredNav = useFilteredNav(navItems as ProcurementNavItem[]);
+  const aiKey = aiModuleKeyFor(moduleName);
 
   if (moduleName === 'Procurement' && filteredNav.length === 0) {
     return <Navigate to="/procurement/placeholder" replace />;
@@ -38,6 +40,10 @@ export function ModuleLayout({ moduleName, moduleIcon, navItems, children }: Mod
     return <Navigate to="/lab/placeholder" replace />;
   }
 
+  if (moduleName === 'Quality' && filteredNav.length === 0) {
+    return <Navigate to="/modules" replace />;
+  }
+
   if (moduleName === 'Administration' && filteredNav.length === 0) {
     return <Navigate to="/admin/placeholder" replace />;
   }
@@ -47,7 +53,10 @@ export function ModuleLayout({ moduleName, moduleIcon, navItems, children }: Mod
       <TopHeader moduleName={moduleName} />
       <div className={styles.body}>
         <Sidebar moduleName={moduleName} moduleIcon={moduleIcon} navItems={filteredNav} />
-        <main className={styles.content}>{children}</main>
+        <main className={styles.content}>
+          {aiKey && <ModuleAiStrip moduleKey={aiKey} />}
+          {children}
+        </main>
       </div>
     </div>
   );

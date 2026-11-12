@@ -3,3 +3,6 @@
 .next
 dist
 build
+
+# Vercel build output (npm run build:vercel)
+.vercel/output

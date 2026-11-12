@@ -11,7 +11,8 @@ import { DataTable } from '@/components/common/DataTable/DataTable';
 import { StatusBadge } from '@/components/common/StatusBadge/StatusBadge';
 import { KpiStrip } from './components/KpiStrip/KpiStrip';
 import { POCreateModal } from './components/POCreateModal/POCreateModal';
-import { mockPOs, PO_TAB_COUNTS, SUPPLIER_OPTIONS } from './mockData/ordersData';
+import { PO_TAB_COUNTS, SUPPLIER_OPTIONS } from './mockData/ordersData';
+import { createPurchaseOrder, usePOs } from './procurementStore';
 import { formatIndianCurrency } from '@/utils/formatters';
 import { procurementNav } from '@/config/procurementNav';
 import type { PurchaseOrder, POStatus } from '@/types/procurement';
@@ -20,6 +21,8 @@ import { usePermission } from '@/hooks/usePermission';
 import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './PurchaseOrders.module.css';
 
+import { useToast } from '@/components/common/Toast';
+import { useSearchParams } from 'react-router-dom';
 const PO_TABS = [
   { key: 'all',          label: 'All',               count: PO_TAB_COUNTS.all },
   { key: 'draft',        label: 'Draft',              count: PO_TAB_COUNTS.draft },
@@ -87,6 +90,10 @@ const STATUS_MAP: Record<string, POStatus> = {
 
 export default function PurchaseOrders() {
   const navigate = useNavigate();
+  const { addToast } = useToast();
+  const [mockPOs] = usePOs();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const prFromLink = searchParams.get('pr') ?? undefined;
 
   const [activeTab,   setActiveTab]   = useState('all');
   const [search,      setSearch]      = useState('');
@@ -94,11 +101,11 @@ export default function PurchaseOrders() {
   const [period,      setPeriod]      = useState<PeriodValue>('all');
   const [page,        setPage]        = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [showCreate,  setShowCreate]  = useState(false);
+  const [showCreate,  setShowCreate]  = useState(Boolean(prFromLink));
 
   const periodFiltered = useMemo(
     () => mockPOs.filter((p) => isDateInPeriod(p.createdDate, period)),
-    [period]
+    [period, mockPOs]
   );
 
   const tabFiltered = useMemo(() => {
@@ -183,8 +190,15 @@ export default function PurchaseOrders() {
 
       <POCreateModal
         isOpen={showCreate}
-        onClose={() => setShowCreate(false)}
-        onSubmit={() => setShowCreate(false)}
+        preselectedPrId={prFromLink}
+        onClose={() => { setShowCreate(false); if (prFromLink) setSearchParams({}); }}
+        onSubmit={(data) => {
+          const po = createPurchaseOrder(data);
+          setShowCreate(false);
+          if (prFromLink) setSearchParams({});
+          addToast(`${po.id} created as a draft for ${po.supplier}`, 'success');
+          navigate(`/procurement/orders/${po.id}`);
+        }}
       />
     </ModuleLayout>
   );

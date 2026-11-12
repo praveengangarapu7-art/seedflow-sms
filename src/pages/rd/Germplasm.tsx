@@ -14,7 +14,7 @@ import { rdNav } from '@/config/rdNav';
 import { useRealtimeMockStore } from '@/hooks/useRealtimeMockStore';
 import { accessions as mockAccessions, germplasmKpis } from './mockData/germplasmData';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
-import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
+import { RD_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import type { GermplasmAccession } from '@/types/rd';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
 import { usePermission } from '@/hooks/usePermission';
@@ -25,10 +25,11 @@ import { AccessionDetailModal } from './components/AccessionDetailModal/Accessio
 
 import styles from './Germplasm.module.css';
 
+import { pickFile } from '@/utils/fileExport';
 export default function Germplasm() {
   const { addToast } = useToast();
   const [period, setPeriod] = useState<PeriodValue>('all');
-  const { items: allAccessions } = useRealtimeMockStore<GermplasmAccession>(mockAccessions);
+  const { items: allAccessions, add: addAccession } = useRealtimeMockStore<GermplasmAccession>(mockAccessions, 'rd.accessions');
 
   const items = useMemo(
     () => allAccessions.filter((a) => isDateInPeriod(a.registeredDate, period, RD_TODAY)),
@@ -282,7 +283,30 @@ export default function Germplasm() {
                 variant="secondary" 
                 size="sm" 
                 leftIcon={Upload} 
-                onClick={() => addToast('Importing...', 'info')}
+                onClick={async () => {
+                  const file = await pickFile('.csv,text/csv');
+                  if (!file) return;
+                  const lines = (await file.text()).split(/\r?\n/).filter((l) => l.trim());
+                  const head = (lines.shift() ?? '').split(',').map((h) => h.trim().toLowerCase());
+                  const col = (row: string[], ...names: string[]) => { for (const n of names) { const i = head.indexOf(n); if (i >= 0 && row[i]) return row[i].trim(); } return ''; };
+                  let added = 0;
+                  lines.forEach((line, i) => {
+                    const row = line.split(',');
+                    const name = col(row, 'name', 'accession name');
+                    if (!name) return;
+                    addAccession({
+                      id: `GRM-${new Date().getFullYear()}-${Date.now().toString(36).toUpperCase()}${i}`,
+                      accessionNumber: col(row, 'accessionnumber', 'accession number', 'accession') || `IMP-${i + 1}`,
+                      name, crop: col(row, 'crop') || 'Unknown', type: (col(row, 'type') || 'Landrace') as GermplasmAccession['type'],
+                      species: col(row, 'species'), origin: { country: col(row, 'country') || 'India', state: col(row, 'state') || undefined },
+                      collectionDate: col(row, 'collectiondate', 'collection date') || new Date().toISOString().slice(0, 10),
+                      donor: col(row, 'donor') || undefined, custody: col(row, 'custody') || 'QMICS R&D', status: (col(row, 'status') || 'Active') as GermplasmAccession['status'],
+                      passportData: {}, traits: [], hasGenomicData: false, photos: [], documents: [], registeredDate: new Date().toISOString().slice(0, 10),
+                    });
+                    added += 1;
+                  });
+                  addToast(added ? `${added} accession(s) imported from ${file.name}` : 'No rows found. Use a CSV with columns: name, crop, accession number, species, country', added ? 'success' : 'warning');
+                }}
               >
                 Import accessions
               </Button>

@@ -5,6 +5,7 @@ import { Download } from 'lucide-react';
 import { AuditLogEntry } from '@/types/warehouse';
 import styles from './AuditLogDetailModal.module.css';
 
+import { downloadText } from '@/utils/fileExport';
 interface AuditLogDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -81,7 +82,7 @@ export const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({ isOpen
         </div>
 
         <div className={styles.footer}>
-          <Button variant="secondary" icon={<Download size={14} />}>Export entry</Button>
+          <Button variant="secondary" icon={<Download size={14} />} onClick={() => downloadText(`audit_${entry.id}.json`, JSON.stringify(entry, null, 2), 'application/json')}>Export entry</Button>
           <Button variant="primary" onClick={onClose}>Close</Button>
         </div>
       </div>

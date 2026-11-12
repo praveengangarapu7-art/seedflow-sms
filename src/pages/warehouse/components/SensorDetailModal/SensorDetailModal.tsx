@@ -19,6 +19,7 @@ import { LiveDot } from '../LiveDot/LiveDot';
 import { IoTSensor } from '@/types/warehouse';
 import styles from './SensorDetailModal.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
 interface SensorDetailModalProps {
   sensor: IoTSensor | null;
   isOpen: boolean;
@@ -52,6 +53,7 @@ export const SensorDetailModal: React.FC<SensorDetailModalProps> = ({
           {sensor.status === 'Online' && <LiveDot />}
         </div>
 
+        <RecordAiPanel recordType="warehouse.sensor" record={sensor} label={sensor.id} />
         <div className={styles.content}>
           <div className={styles.leftCol}>
             <div className={styles.card}>

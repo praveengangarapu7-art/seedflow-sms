@@ -2,12 +2,13 @@
    smallest possible carry-over of the panel's theme onto the form side, using
    the brand's own gold seed and green shoot rather than a decorative flourish. */
 .heading {
-  font-size: 26px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--color-text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 2px;
   position: relative;
-  padding-top: 18px;
+  padding-top: 16px;
 }
 
 .heading::before {
@@ -23,15 +24,15 @@
 }
 
 .subheading {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--color-text-muted);
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
 }
 
 .rememberRow {
@@ -62,6 +63,7 @@
 
 .forgotLink {
   font-size: 13px;
+  font-weight: 600;
   color: var(--color-primary);
 }
 
@@ -69,60 +71,54 @@
   text-align: center;
   font-size: 13px;
   color: var(--color-text-muted);
-  margin-top: 4px;
+  margin: 0;
 }
 
 .footer a {
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
+/* ---- Demo access card: pick a module and role, then one of its employees ---- */
 .demoRoleSelector {
-  background-color: var(--color-accent-light);
-  border: 1px solid var(--color-border-light);
-  border-radius: 8px;
-  padding: 12px;
+  background: linear-gradient(180deg, #F3F7EA 0%, #EDF3E4 100%);
+  border: 1px solid #D5DEC4;
+  border-radius: 12px;
+  padding: 10px 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .demoLabel {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
   text-transform: uppercase;
   color: var(--color-primary);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.demoSelect {
-  width: 100%;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-white);
-  color: var(--color-text-primary);
-  font-weight: 600;
-  font-size: 13px;
-  outline: none;
-  cursor: pointer;
-}
-
-.demoSelect:focus {
-  border-color: var(--color-primary);
+.demoLabel::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #D5DEC4;
 }
 
 .demoStepRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
-  flex-wrap: wrap;
 }
 
 .demoStep {
-  flex: 1 1 160px;
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .demoStepNumber {
@@ -139,19 +135,39 @@
   justify-content: center;
 }
 
+.demoSelect {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #CBD5B8;
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.demoSelect:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(14, 84, 103, 0.12);
+}
+
 .demoHint {
   font-size: 11px;
   color: var(--color-text-secondary);
+  margin: 0;
 }
 
-
 .demoCredentialsPanel {
-  margin-top: 10px;
-  border-top: 1px solid var(--color-border-light);
-  padding-top: 12px;
+  border-top: 1px dashed #CBD5B8;
+  padding-top: 8px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .demoCredentialsPanelHeader {
@@ -162,10 +178,10 @@
 }
 
 .demoCredentialsPanelTitle {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   color: var(--color-primary);
 }
 
@@ -177,92 +193,121 @@
   border: none;
   cursor: pointer;
   padding: 2px 6px;
+  border-radius: 6px;
 }
 
 .demoCredentialsHideBtn:hover {
   color: var(--color-primary);
+  background: rgba(14, 84, 103, 0.08);
 }
 
+/* Short, scrollable list so a role with many employees never pushes the
+   sign-in fields off the screen. */
 .demoCredentialsList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  max-height: 172px;
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
 }
 
 .demoCredentialRow {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'name pass' 'mail detail';
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 1px;
   width: 100%;
   text-align: left;
   background-color: var(--color-white);
-  border: 1px solid var(--color-border-light);
-  border-radius: 6px;
-  padding: 10px 12px;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  padding: 7px 10px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  box-shadow: 0 1px 2px rgba(11, 59, 58, 0.06);
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
 }
 
 .demoCredentialRow:hover {
-  border-color: var(--color-primary);
-  background-color: var(--color-accent-light);
+  border-color: #9DB887;
+  transform: translateY(-1px);
 }
 
-.demoCredentialRowActive {
+.demoCredentialRowActive,
+.demoCredentialRowActive:hover {
   border-color: var(--color-primary);
-  border-width: 2px;
-  background-color: var(--color-accent-light);
+  background-color: #F7FBF2;
+  box-shadow: 0 0 0 3px rgba(14, 84, 103, 0.1);
 }
 
 .demoCredentialNameRow {
+  grid-area: name;
   display: flex;
   align-items: baseline;
-  flex-wrap: wrap;
   gap: 6px;
+  min-width: 0;
 }
 
 .demoCredentialName {
   font-size: 13px;
   font-weight: 700;
   color: var(--color-text-primary);
+  white-space: nowrap;
 }
 
 .demoCredentialRole {
   font-size: 11px;
-  font-weight: 500;
   color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* The email and password become siblings of the grid so each sits in its own cell. */
 .demoCredentialMeta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+  display: contents;
 }
 
 .demoCredentialEmail {
+  grid-area: mail;
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 11.5px;
   color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .demoCredentialPassword {
+  grid-area: pass;
+  justify-self: end;
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--color-text-muted);
-  padding: 1px 6px;
-  border-radius: 4px;
-  background-color: var(--color-accent-light);
+  padding: 1px 7px;
+  border-radius: 50px;
+  background-color: #EDF3E4;
 }
 
 .demoCredentialDetail {
+  grid-area: detail;
+  justify-self: end;
   font-size: 10.5px;
   color: var(--color-text-muted);
-  letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 
 .demoCredentialsFooter {
   font-size: 11px;
   color: var(--color-text-secondary);
   margin: 0;
+}
+
+@media (max-width: 420px) {
+  .demoStepRow {
+    grid-template-columns: 1fr;
+  }
 }

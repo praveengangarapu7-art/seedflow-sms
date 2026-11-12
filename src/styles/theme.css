@@ -1,84 +1,108 @@
+/*
+ * SeedSphere design tokens — v2 (Oct 2026 refresh).
+ *
+ * Same token NAMES as v1, so every existing module picks up the refresh with
+ * no component changes. What changed:
+ *   - a light "canvas" behind module content so white cards lift off it,
+ *   - softer, layered shadows and slightly larger radii,
+ *   - a gold accent (from the SeedSphere logo) for highlights and AI surfaces,
+ *   - aliases for tokens components were already using but v1 never defined
+ *     (--color-text, --color-bg-light, --color-surface …), which previously
+ *     fell back to browser defaults and made some pages look inconsistent.
+ */
 :root {
-  /* Primary palette — Dark Azure */
+  /* Brand — deep azure, kept from v1 so the logo and auth pages still match */
   --color-primary: #0E5467;
-  --color-primary-hover: #0A3F4F;
+  --color-primary-hover: #0A4252;
+  --color-primary-dark: #08323E;
+  --color-primary-light: #E3F0F3;
+  --color-primary-bg: #EEF6F8;
+  --color-primary-rgb: 14, 84, 103;
   --color-secondary: #2D7A8F;
   --color-accent: #DCE9EE;
   --color-accent-light: #EEF4F6;
 
-  /* Surface */
+  /* Gold accent (logo) — highlights, AI surfaces, the active nav marker */
+  --color-gold: #D9A521;
+  --color-gold-soft: #FBF3DC;
+
+  /* Surfaces */
   --color-white: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-canvas: #F3F6F8;
+  --color-background: var(--color-canvas);
+  --color-background-subtle: #F7FAFB;
+  --color-background-soft: #F7FAFB;
+  --color-background-hover: #EEF4F6;
+  --color-bg-light: #EEF4F6;
+  --color-bg-subtle: #F7FAFB;
+  --color-bg-primary: var(--color-primary-bg);
 
   /* Text */
-  --color-text-primary: #1A2B33;
-  --color-text-secondary: #5A6E76;
-  --color-text-muted: #94A3AB;
+  --color-text-primary: #15262E;
+  --color-text: var(--color-text-primary);
+  --color-text-main: var(--color-text-primary);
+  --color-text-secondary: #526871;
+  --color-text-tertiary: #7C8F97;
+  --color-text-muted: #8DA0A8;
 
   /* Borders */
-  --color-border: #C8D7DD;
-  --color-border-light: #E4ECEF;
+  --color-border: #D3E0E5;
+  --color-border-light: #E6EEF1;
+  --color-border-dark: #B4C7CE;
 
-  /* Semantic state colors — chosen to harmonize with the azure/gold palette */
-  --color-success: #2E8B5C;
-  --color-warning: #e6bc42;
+  /* Semantic state colours */
+  --color-success: #23845A;
+  --color-success-bg: #E7F5EE;
+  --color-warning: #E0B23A;
+  --color-warning-bg: #FDF5E1;
   --color-danger: #C0392B;
+  --color-danger-bg: #FCECEA;
   --color-info: #2D7A8F;
+  --color-info-light: #E6F2F5;
 
-  /* Radii (unchanged) */
+  /* Radii */
   --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 
-  /* Shadows — updated to use the new primary color rgb (14, 84, 103) */
-  --shadow-sm: 0 1px 2px rgba(14, 84, 103, 0.06);
-  --shadow-md: 0 2px 8px rgba(14, 84, 103, 0.10);
-  --shadow-lg: 0 4px 16px rgba(14, 84, 103, 0.14);
+  /* Shadows — layered, tinted with the brand colour */
+  --shadow-sm: 0 1px 2px rgba(14, 84, 103, 0.05), 0 1px 1px rgba(14, 84, 103, 0.03);
+  --shadow-md: 0 4px 12px -2px rgba(14, 84, 103, 0.10), 0 2px 4px rgba(14, 84, 103, 0.04);
+  --shadow-lg: 0 12px 28px -8px rgba(14, 84, 103, 0.20), 0 4px 8px rgba(14, 84, 103, 0.05);
 
   /*
    * Navigation surface — the module sidebar. Deep brand azure so the shell
-   * reads as one system with the auth BrandPanel (which uses --color-primary),
-   * with white-alpha layers for text/hover/active so a single set of tokens
-   * works for every module and every role's filtered nav.
+   * reads as one system with the auth BrandPanel, with white-alpha layers for
+   * text/hover/active so one set of tokens works for every module and role.
    */
-  --sidebar-bg: var(--color-primary);
-  --sidebar-bg-deep: var(--color-primary-hover);
-  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-bg: #0F5A6E;
+  --sidebar-bg-deep: #08313D;
+  --sidebar-border: rgba(255, 255, 255, 0.09);
   --sidebar-text: rgba(255, 255, 255, 0.78);
   --sidebar-text-strong: #FFFFFF;
   --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
-  --sidebar-active-bg: rgba(255, 255, 255, 0.14);
-  --sidebar-accent: var(--color-warning);
+  --sidebar-active-bg: rgba(255, 255, 255, 0.15);
+  --sidebar-accent: var(--color-gold);
   --sidebar-scroll-thumb: rgba(255, 255, 255, 0.16);
 
-  /*
-   * Landing-page surfaces.
-   *
-   * The marketing page used to be plain white with one very pale band; it now
-   * reads as a tinted azure canvas drawn from the brand primary (#0E5467).
-   * Two tints alternate down the page so each section is legibly its own
-   * band, cards stay white so they lift off that band rather than dissolving
-   * into it, and the footer closes on the same deep azure as the CTA above it
-   * so the page is bookended rather than ending in a bright flash of white.
-   */
-  --landing-surface: #E7F0F3;
-  --landing-surface-alt: #D8E7EC;
-  --landing-hero-top: #F3F9FA;
-  --landing-hero-bottom: #DDEBEF;
-  --landing-nav-bg: rgba(240, 247, 249, 0.9);
-  --landing-nav-bg-scrolled: rgba(238, 246, 248, 0.97);
-  /* Card edges need more contrast on a tinted band than --color-border-light
-     gives on white, or the outline reads lighter than the surface behind it. */
-  --landing-border: #C3D6DD;
-  --landing-footer-bg: #0A3F4F;
-  /* Body copy that sits directly on a tinted band, rather than inside a
-     white card — a notch darker than --color-text-secondary so it keeps
-     its contrast once the band is no longer white. */
-  --landing-text-on-tint: #3F5A63;
+  /* Landing-page surfaces (unchanged from v1) */
+  --landing-surface: #F5F2E6;
+  --landing-surface-alt: #E9EFDD;
+  --landing-hero-top: #FCFAF1;
+  --landing-hero-bottom: #EEF2DF;
+  --landing-nav-bg: rgba(252, 250, 241, 0.9);
+  --landing-nav-bg-scrolled: rgba(251, 249, 238, 0.97);
+  --landing-border: #D5DABF;
+  --landing-footer-bg: #0B3B3A;
+  --landing-text-on-tint: #4B5A4F;
 
-  /* Typography (unchanged) */
+  /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Layout dimensions (unchanged) */
-  --sidebar-width: 240px;
+  /* Layout */
+  --sidebar-width: 248px;
   --header-height: 60px;
 }

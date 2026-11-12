@@ -42,14 +42,16 @@ export function TrackShipmentModal({ isOpen, onClose, order }: TrackShipmentModa
   const events = buildTimeline(order);
 
   const handleRefresh = () => {
-    console.log('refresh tracking', order.id);
-    addToast({ type: 'info', message: `Live tracking refreshed for ${order.id}` });
+    addToast({ type: 'info', message: `${order.id}: status ${order.status}${order.dispatchedAt ? `, dispatched ${new Date(order.dispatchedAt).toLocaleString('en-IN')}` : ''}. Live GPS needs the ${order.logisticsPartner ?? 'courier'} tracking integration.` });
   };
 
   const handleContactDriver = () => {
     const phone = order.consignee?.phone ?? '';
-    console.log('contact driver', phone);
-    addToast({ type: 'success', message: `Consignee phone ${phone || '—'} copied to clipboard` });
+    if (phone) {
+      void navigator.clipboard?.writeText(phone).catch(() => undefined);
+      window.location.href = `tel:${phone.replace(/\s+/g, '')}`;
+    }
+    addToast({ type: phone ? 'success' : 'warning', message: phone ? `Calling ${phone} (number copied to clipboard)` : 'No phone number on this order' });
   };
 
   return (

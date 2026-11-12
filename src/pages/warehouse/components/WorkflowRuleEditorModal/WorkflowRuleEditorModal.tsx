@@ -59,6 +59,16 @@ export const WorkflowRuleEditorModal: React.FC<WorkflowRuleEditorModalProps> = (
     setFormData(prev => ({ ...prev, actions: [...(prev.actions || []), newAction] }));
   };
 
+  const moveAction = (idx: number, dir: -1 | 1) => {
+    setFormData((prev) => {
+      const list = [...(prev.actions ?? [])];
+      const j = idx + dir;
+      if (j < 0 || j >= list.length) return prev;
+      [list[idx], list[j]] = [list[j], list[idx]];
+      return { ...prev, actions: list };
+    });
+  };
+
   const removeAction = (index: number) => {
     setFormData(prev => ({ ...prev, actions: prev.actions?.filter((_, i) => i !== index) }));
   };
@@ -222,8 +232,8 @@ export const WorkflowRuleEditorModal: React.FC<WorkflowRuleEditorModalProps> = (
                     {actionTypes.map(at => <option key={at} value={at}>{at}</option>)}
                   </select>
                   <div className={styles.rowControls}>
-                    <button className={styles.iconBtn}><ArrowUp size={14} /></button>
-                    <button className={styles.iconBtn}><ArrowDown size={14} /></button>
+                    <button type="button" className={styles.iconBtn} disabled={idx === 0} onClick={() => moveAction(idx, -1)} aria-label="Move up"><ArrowUp size={14} /></button>
+                    <button type="button" className={styles.iconBtn} disabled={idx === (formData.actions?.length ?? 0) - 1} onClick={() => moveAction(idx, 1)} aria-label="Move down"><ArrowDown size={14} /></button>
                     <button className={styles.removeBtn} onClick={() => removeAction(idx)}><Trash2 size={14} /></button>
                   </div>
                 </div>

@@ -8,6 +8,7 @@ import { useRealBackendSession } from './useRealBackendSession';
 import { deleteFarmer, fetchFarmerById, fetchOrganizationById, type FarmerRow } from '@/services/seedLotRealtimeClient';
 import styles from './master-data.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
 export default function FarmerDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -79,6 +80,8 @@ export default function FarmerDetail() {
           </Button>
         </div>
       </div>
+
+      {farmer ? <RecordAiPanel recordType="master.farmer" record={farmer} label={farmer.name} /> : null}
 
       <div className={styles.card}>
         {loading ? <div className={styles.emptyState}>Loading farmer…</div> : null}

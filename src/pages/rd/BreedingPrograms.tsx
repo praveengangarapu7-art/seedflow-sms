@@ -20,7 +20,7 @@ import { rdNav } from '@/config/rdNav';
 import { programs as initialPrograms } from './mockData/breedingData';
 import { BreedingProgram, BreedingObjective, GenerationStage } from '@/types/rd';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
-import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
+import { RD_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { BreedingProgramCard } from './components/BreedingProgramCard/BreedingProgramCard';
 import { NewProgramModal } from './components/NewProgramModal/NewProgramModal';
 import { usePermission } from '@/hooks/usePermission';
@@ -50,7 +50,7 @@ const OBJECTIVES: BreedingObjective[] = [
 export default function BreedingPrograms() {
   const { addToast } = useToast();
   const [period, setPeriod] = useState<PeriodValue>('all');
-  const { items: allPrograms, add, update, remove } = useRealtimeMockStore(initialPrograms);
+  const { items: allPrograms, add, update, remove } = useRealtimeMockStore(initialPrograms, 'rd.programs');
 
   const programs = useMemo(
     () => allPrograms.filter((p) => isDateInPeriod(p.startDate, period, RD_TODAY)),

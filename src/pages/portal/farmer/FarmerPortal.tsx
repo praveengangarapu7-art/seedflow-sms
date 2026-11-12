@@ -10,20 +10,22 @@ import { formatIndianCurrency } from '@/utils/formatters';
 import { Sprout, Truck, Wallet, Award, Clock } from 'lucide-react';
 import styles from './PortalPages.module.css';
 
+import { usePersistentCollection } from '@/hooks/persistentCollections';
+import { createRequisition } from '@/pages/procurement/procurementStore';
 // Mock Offers
-const MOCK_GROWER_OFFERS = [
+const MOCK_GROWER_OFFERS_START = [
   { id: 'OFF-2026-001', cropName: 'Pusa Basmati Hybrid Cotton', quantity: '5,000 kg', estPrice: '₹140/kg', status: 'Approved', period: 'Kharif 2026' },
   { id: 'OFF-2026-002', cropName: 'Pusa Basmati Rice Seed Batch', quantity: '10,000 kg', estPrice: '₹48/kg', status: 'Pending', period: 'Rabi 2026' },
 ];
 
 // Mock Deliveries
-const MOCK_GROWER_DELIVERIES = [
+const MOCK_GROWER_DELIVERIES_START = [
   { id: 'DEL-2026-0044', cropName: 'Pusa Basmati Hybrid Cotton', netQty: '4,850 kg', receivedDate: '2026-05-18', status: 'Accepted', moisture: '10.8%' },
   { id: 'DEL-2026-0022', cropName: 'Pusa Basmati Hybrid Cotton', netQty: '5,000 kg', receivedDate: '2026-05-02', status: 'Accepted', moisture: '11.2%' },
 ];
 
 // Mock Payouts
-const MOCK_GROWER_PAYOUTS = [
+const MOCK_GROWER_PAYOUTS_START = [
   { id: 'PAY-0089', deliveryRef: 'DEL-2026-0044', gross: 679000, deductions: 12000, net: 667000, status: 'Paid', date: '2026-05-24' },
   { id: 'PAY-0072', deliveryRef: 'DEL-2026-0022', gross: 700000, deductions: 15000, net: 685000, status: 'Paid', date: '2026-05-08' },
 ];
@@ -33,6 +35,9 @@ type FarmerTab = 'dashboard' | 'offers' | 'deliveries' | 'payouts' | 'profile';
 export default function FarmerPortal() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<FarmerTab>('dashboard');
+  const [MOCK_GROWER_OFFERS, setOffers] = usePersistentCollection('portal.grower_offers', MOCK_GROWER_OFFERS_START);
+  const [MOCK_GROWER_DELIVERIES] = usePersistentCollection('portal.grower_deliveries', MOCK_GROWER_DELIVERIES_START);
+  const [MOCK_GROWER_PAYOUTS] = usePersistentCollection('portal.grower_payouts', MOCK_GROWER_PAYOUTS_START);
 
   // Submit crop offer state
   const [offerModal, setOfferModal] = useState(false);
@@ -55,6 +60,9 @@ export default function FarmerPortal() {
       addToast('Please complete the crop offer values.', 'error');
       return;
     }
+    const offerId = `OFF-${new Date().getFullYear()}-${String(MOCK_GROWER_OFFERS.length + 1).padStart(3, '0')}`;
+    setOffers((prev) => [{ id: offerId, cropName, quantity: `${Number(cropQty).toLocaleString('en-IN')} kg`, estPrice: `₹${cropPrice}/kg`, status: 'Pending', period: season }, ...prev]);
+    addApprovalForOffer(offerId, cropName, Number(cropQty) * Number(cropPrice));
     addToast(`Seasonal crop offer for ${cropName} submitted successfully. SeedSphere Procurement will review.`, 'success');
     setOfferModal(false);
     setCropName('');
@@ -356,4 +364,14 @@ export default function FarmerPortal() {
       )}
     </PortalLayout>
   );
+}
+
+/** Grower offers appear in Procurement's approval queue as requisitions to review. */
+function addApprovalForOffer(offerId: string, crop: string, value: number): void {
+  createRequisition({
+    title: `Grower offer ${offerId}: ${crop}`, department: 'Procurement', priority: 'Medium',
+    requiredBy: new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10),
+    justification: `Seed production offer submitted through the grower portal (${offerId}).`,
+    lineItems: [{ description: crop, quantity: '1', unit: 'lot', estimatedPrice: String(Number.isFinite(value) ? value : 0) }],
+  });
 }

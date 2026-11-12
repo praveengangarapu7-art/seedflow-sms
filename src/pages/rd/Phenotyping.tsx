@@ -17,7 +17,7 @@ import { usePermission } from '@/hooks/usePermission';
 // Mock Data
 import { enhancedObservations as initialObservations } from './mockData/phenotypingData';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
-import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
+import { RD_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { trials as initialTrials } from './mockData/trialsData';
 
 // Modals
@@ -35,13 +35,13 @@ export default function Phenotyping() {
 
   // Stores
   const [period, setPeriod] = useState<PeriodValue>('all');
-  const { items: allObservations, add: addObservation, update: updateObservation } = useRealtimeMockStore(initialObservations);
+  const { items: allObservations, add: addObservation, update: updateObservation } = useRealtimeMockStore(initialObservations, 'rd.observations');
 
   const obsList = useMemo(
     () => allObservations.filter((o) => isDateInPeriod(o.date, period, RD_TODAY)),
     [allObservations, period]
   );
-  const { items: trialsList } = useRealtimeMockStore(initialTrials);
+  const { items: trialsList } = useRealtimeMockStore(initialTrials, 'rd.trials');
 
   // States
   const [activeTab, setActiveTab] = useState<string>('all');

@@ -35,6 +35,9 @@ import { ActionMenu } from '@/components/common/ActionMenu';
 
 import styles from './WarehouseReports.module.css';
 
+import { usePersistentCollection } from '@/hooks/persistentCollections';
+import { createRequisition } from '@/pages/procurement/procurementStore';
+import { whAdd, whNextId, whRead } from './warehouseStore';
 const WarehouseReports: React.FC = () => {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState('library');
@@ -44,9 +47,9 @@ const WarehouseReports: React.FC = () => {
   const [period, setPeriod] = useState<PeriodValue>('month');
   const [showDismissed, setShowDismissed] = useState(false);
   
-  const [reports, setReports] = useState<ReportDefinition[]>(initialReports);
-  const [scheduled, setScheduled] = useState<ScheduledReport[]>(initialScheduled);
-  const [insights, setInsights] = useState<AIInsight[]>(initialInsights);
+  const [reports, setReports] = usePersistentCollection<ReportDefinition>('warehouse.reports', initialReports);
+  const [scheduled, setScheduled] = usePersistentCollection<ScheduledReport>('warehouse.scheduled', initialScheduled);
+  const [insights, setInsights] = usePersistentCollection<AIInsight>('warehouse.insights', initialInsights);
   
   const [selectedReport, setSelectedReport] = useState<ReportDefinition | null>(null);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
@@ -88,8 +91,23 @@ const WarehouseReports: React.FC = () => {
   };
 
   const handleInsightAction = (id: string, action: string) => {
-    console.log('insight action', id, action);
-    addToast({ type: 'success', message: action === 'Generate PR' ? 'Purchase requisitions generated' : action === 'Schedule cycle count' ? 'Cycle count scheduled' : `Action "${action}" triggered` });
+    const insight = insights.find((i) => i.id === id);
+    if (action === 'Generate PR') {
+      const pr = createRequisition({
+        title: `Replenishment — ${insight?.title ?? 'warehouse insight'}`, department: 'Warehouse', priority: 'High',
+        requiredBy: new Date(Date.now() + 14 * 86_400_000).toISOString().slice(0, 10),
+        justification: (insight as { description?: string } | undefined)?.description ?? 'Raised from a warehouse AI insight',
+        lineItems: [{ description: insight?.title ?? 'Replenishment stock', quantity: '1', unit: 'lot', estimatedPrice: '0' }],
+      });
+      addToast({ type: 'success', message: `${pr.id} raised in Procurement for approval` });
+    } else if (action === 'Schedule cycle count') {
+      const d = new Date(Date.now() + 2 * 86_400_000).toISOString().slice(0, 10);
+      whAdd('counts', { id: whNextId('CC', whRead('counts').map((c) => c.id)), name: `Insight follow-up: ${insight?.title ?? id}`, strategy: 'Specific items', frequency: 'Ad-hoc', scheduledDate: d, status: 'Scheduled', warehouse: 'Telangana Main', zonesScope: [], assignedCounters: [], totalLines: 0, countedLines: 0, variancesFound: 0, totalVarianceValue: 0, lines: [] });
+      addToast({ type: 'success', message: `Cycle count scheduled for ${d}` });
+    } else {
+      setInsights((prev) => prev.map((i) => (i.id === id ? { ...i, saved: true } : i)));
+      addToast({ type: 'success', message: `"${action}" noted on the insight` });
+    }
   };
 
   const handleScheduleToggle = (id: string) => {

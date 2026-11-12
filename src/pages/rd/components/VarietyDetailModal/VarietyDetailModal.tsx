@@ -14,6 +14,7 @@ import { useToast } from '@/components/common/Toast/ToastContext';
 import { Variety } from '@/types/rd';
 import styles from './VarietyDetailModal.module.css';
 
+import { printDocument } from '@/utils/fileExport';
 interface VarietyDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -420,7 +421,7 @@ export function VarietyDetailModal({ isOpen, onClose, variety, hasRegistration =
                       <span className={styles.docName}>Release_Certificate_{variety.id}.pdf</span>
                       <span className={styles.docDate}>Uploaded: 12 Jan 2025</span>
                     </div>
-                    <Button variant="secondary" size="sm" leftIcon={FileDown} onClick={() => addToast('Downloading Release Certificate...', 'success')}>
+                    <Button variant="secondary" size="sm" leftIcon={FileDown} onClick={() => printDocument(`Release certificate — ${variety.name}`, [{ fields: Object.entries(variety).filter(([, v]) => v === null || typeof v !== 'object') as [string, unknown][] }], 'Generated from the variety record')}>
                       Download
                     </Button>
                   </div>
@@ -431,7 +432,7 @@ export function VarietyDetailModal({ isOpen, onClose, variety, hasRegistration =
                       <span className={styles.docName}>Technical_Descriptor_ISTA.pdf</span>
                       <span className={styles.docDate}>Uploaded: 18 Jan 2025</span>
                     </div>
-                    <Button variant="secondary" size="sm" leftIcon={FileDown} onClick={() => addToast('Downloading Technical Descriptor...', 'success')}>
+                    <Button variant="secondary" size="sm" leftIcon={FileDown} onClick={() => printDocument(`Technical descriptor — ${variety.name}`, [{ fields: Object.entries(variety).filter(([, v]) => v === null || typeof v !== 'object') as [string, unknown][] }], 'Generated from the variety record')}>
                       Download
                     </Button>
                   </div>
@@ -442,7 +443,7 @@ export function VarietyDetailModal({ isOpen, onClose, variety, hasRegistration =
                       <span className={styles.docName}>Seed_Standards_Compliance.pdf</span>
                       <span className={styles.docDate}>Uploaded: 22 Jan 2025</span>
                     </div>
-                    <Button variant="secondary" size="sm" leftIcon={FileDown} onClick={() => addToast('Downloading Standards PDF...', 'success')}>
+                    <Button variant="secondary" size="sm" leftIcon={FileDown} onClick={() => printDocument(`Seed standards compliance — ${variety.name}`, [{ fields: Object.entries(variety).filter(([, v]) => v === null || typeof v !== 'object') as [string, unknown][] }], 'Generated from the variety record')}>
                       Download
                     </Button>
                   </div>

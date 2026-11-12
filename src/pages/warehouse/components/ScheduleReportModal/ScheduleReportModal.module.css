@@ -104,3 +104,5 @@
   padding-top: 20px;
   border-top: 1px solid var(--color-border-light);
 }
+
+.chipActive { background: var(--color-primary-soft, #E8F3EC); border-color: var(--color-primary); color: var(--color-primary); font-weight: 600; }

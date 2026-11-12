@@ -5,6 +5,8 @@ import type { MovementRecord } from '@/types/warehouse';
 import { formatIndianNumber } from '@/utils/formatters';
 import styles from './ApprovalModal.module.css';
 
+import { nowIso, whUpdate, whUser } from '../../warehouseStore';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface ApprovalModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -13,6 +15,7 @@ interface ApprovalModalProps {
 }
 
 export function ApprovalModal({ isOpen, onClose, record, decision }: ApprovalModalProps) {
+  const { addToast } = useToast();
   const [comment, setComment] = useState('');
 
   useEffect(() => {
@@ -25,7 +28,14 @@ export function ApprovalModal({ isOpen, onClose, record, decision }: ApprovalMod
   const canSubmit = !isReject || comment.trim() !== '';
 
   const submit = () => {
-    console.log(`${decision} movement`, record.id, comment);
+    const ok = decision === 'approve';
+    whUpdate('movements', record.id, (m) => ({
+      ...m,
+      status: ok ? (m.category === 'Transfer' ? 'In transit' : 'Approved') : 'Rejected',
+      approvedBy: ok ? whUser() : m.approvedBy,
+      approvalChain: (m.approvalChain ?? []).map((s) => (s.status === 'pending' ? { ...s, status: ok ? 'approved' : 'rejected', timestamp: nowIso(), comment: comment || undefined } : s)),
+    }));
+    addToast({ type: ok ? 'success' : 'warning', message: `${record.id} ${ok ? 'approved' : 'rejected'}` });
     onClose();
   };
 

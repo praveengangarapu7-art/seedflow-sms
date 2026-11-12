@@ -2,8 +2,8 @@ import { pool } from './pool';
 
 async function run(): Promise<void> {
   const parent = await pool.query(
-    `INSERT INTO seed_lots (lot_code, crop, variety, quantity_total, unit, source_farm_id)
-     VALUES ('SL-2026-001', 'Paddy', 'Paddy-1010', 5000, 'kg', 'farm-1')
+    `INSERT INTO seed_lots (lot_code, crop, variety, stage, production_date, quantity_total, unit, source_farm_id)
+     VALUES ('SL-2026-001', 'Paddy', 'Paddy-1010', 'Foundation', CURRENT_DATE - 60, 5000, 'kg', 'farm-1')
      ON CONFLICT (lot_code) DO NOTHING
      RETURNING id`,
   );
@@ -11,8 +11,8 @@ async function run(): Promise<void> {
   if (parent.rows[0]) {
     const parentId = parent.rows[0].id;
     await pool.query(
-      `INSERT INTO seed_lots (lot_code, crop, variety, parent_lot_id, quantity_total, unit, source_farm_id)
-       VALUES ('SL-2026-002', 'Paddy', 'Paddy-1010', $1, 1500, 'kg', 'farm-1')
+      `INSERT INTO seed_lots (lot_code, crop, variety, parent_lot_id, stage, production_date, quantity_total, unit, source_farm_id)
+       VALUES ('SL-2026-002', 'Paddy', 'Paddy-1010', $1, 'Certified', CURRENT_DATE - 20, 1500, 'kg', 'farm-1')
        ON CONFLICT (lot_code) DO NOTHING`,
       [parentId],
     );

@@ -55,6 +55,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         resolvedMessage = String(messageOrOptions ?? '');
       }
 
+      // An empty message is a deliberate "nothing to tell the user" (see the
+      // local-data fallback in services/api.ts), never a blank toast.
+      if (!resolvedMessage || !resolvedMessage.trim()) return;
+
       const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const item: ToastItem = { id, message: resolvedMessage, type: resolvedType, duration: resolvedDuration };
       setToasts((prev) => [...prev, item]);

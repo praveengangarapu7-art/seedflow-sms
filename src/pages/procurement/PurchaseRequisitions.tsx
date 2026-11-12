@@ -9,7 +9,7 @@ import { StatusBadge } from '@/components/common/StatusBadge/StatusBadge';
 import { KpiStrip } from './components/KpiStrip/KpiStrip';
 import { PRFormModal } from './components/PRFormModal/PRFormModal';
 import { PRDetailModal } from './components/PRDetailModal/PRDetailModal';
-import { mockPRs, PR_TAB_COUNTS } from './mockData/requisitionsData';
+import { PR_TAB_COUNTS } from './mockData/requisitionsData';
 import { formatIndianCurrency } from '@/utils/formatters';
 import { procurementNav } from '@/config/procurementNav';
 import type { PurchaseRequisition, PRStatus, Priority, Department } from '@/types/procurement';
@@ -18,6 +18,9 @@ import { usePermission } from '@/hooks/usePermission';
 import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './PurchaseRequisitions.module.css';
 
+import { useToast } from '@/components/common/Toast';
+import { createRequisition, usePRs } from './procurementStore';
+import { useNavigate } from 'react-router-dom';
 const PR_TABS = [
   { key: 'all',       label: 'All',              count: PR_TAB_COUNTS.all },
   { key: 'draft',     label: 'Draft',            count: PR_TAB_COUNTS.draft },
@@ -90,6 +93,9 @@ function buildKpiItems(prs: PurchaseRequisition[]) {
 }
 
 export default function PurchaseRequisitions() {
+  const navigate = useNavigate();
+  const { addToast } = useToast();
+  const [mockPRs] = usePRs();
   const [activeTab,   setActiveTab]   = useState('all');
   const [search,      setSearch]      = useState('');
   const [deptFilter,  setDeptFilter]  = useState('');
@@ -102,7 +108,7 @@ export default function PurchaseRequisitions() {
 
   const periodFiltered = useMemo(
     () => mockPRs.filter((p) => isDateInPeriod(p.createdDate, period)),
-    [period]
+    [period, mockPRs]
   );
 
   const tabFiltered = useMemo(() => {
@@ -211,13 +217,18 @@ export default function PurchaseRequisitions() {
       <PRFormModal
         isOpen={showNew}
         onClose={() => setShowNew(false)}
-        onSubmit={() => setShowNew(false)}
+        onSubmit={(data) => {
+          const pr = createRequisition(data);
+          setShowNew(false);
+          addToast(`${pr.id} submitted for approval`, 'success');
+        }}
       />
 
       <PRDetailModal
         pr={detailPR}
         isOpen={!!detailPR}
         onClose={() => setDetailPR(null)}
+        onCreatePO={(pr) => navigate(`/procurement/orders?pr=${encodeURIComponent(pr.id)}`)}
       />
     </ModuleLayout>
   );

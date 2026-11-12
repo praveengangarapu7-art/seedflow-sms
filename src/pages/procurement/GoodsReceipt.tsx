@@ -12,7 +12,8 @@ import { StatusBadge } from '@/components/common/StatusBadge/StatusBadge';
 import { useToast } from '@/components/common/Toast';
 import { GRNCreateModal } from './components/GRNCreateModal/GRNCreateModal';
 import { KpiStrip } from './components/KpiStrip/KpiStrip';
-import { mockGRNs, GRN_SUPPLIER_OPTIONS } from './mockData/grnsData';
+import { GRN_SUPPLIER_OPTIONS } from './mockData/grnsData';
+import { createGRN, useGRNs } from './procurementStore';
 import { procurementNav } from '@/config/procurementNav';
 import type { GRN, GRNStatus } from '@/types/procurement';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
@@ -111,13 +112,16 @@ export default function GoodsReceipt() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  const [mockGRNs] = useGRNs();
+
   const handleCreateGRN = (data: any) => {
-    addToast(`GRN created successfully for PO ${data.poReference}. Sent for quality inspection.`, 'success');
+    const grn = createGRN(data);
+    addToast(`${grn.id} created for PO ${data.poReference}. Sent for quality inspection.`, 'success');
   };
 
   const periodFiltered = useMemo(
     () => mockGRNs.filter((g) => isDateInPeriod(g.receivedDate, period)),
-    [period]
+    [period, mockGRNs]
   );
 
   const tabFiltered = useMemo(() => {

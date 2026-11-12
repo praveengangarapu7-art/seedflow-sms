@@ -24,6 +24,7 @@ export const MODULE_KEYS = [
   'processing',
   'production',
   'lab',
+  'quality',
   'admin',
 ] as const;
 

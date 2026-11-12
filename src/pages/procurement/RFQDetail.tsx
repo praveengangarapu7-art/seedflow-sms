@@ -10,13 +10,15 @@ import { StatusBadge } from '@/components/common/StatusBadge/StatusBadge';
 import { Modal } from '@/components/common/Modal/Modal';
 import { ScoreRing } from '@/components/common/ScoreRing/ScoreRing';
 import { useToast } from '@/components/common/Toast';
-import { mockRFQs } from './mockData/rfqsData';
+import { awardRFQ, nowStamp, currentUserName, updateRFQ, useRFQs, type RfqMessage } from './procurementStore';
 import { formatIndianCurrency } from '@/utils/formatters';
 import { procurementNav } from '@/config/procurementNav';
 import type { RFQBid } from '@/types/procurement';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './RFQDetail.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
+import { RecordEditModal } from '@/components/common/RecordEditModal/RecordEditModal';
 type DetailTab = 'overview' | 'comparison' | 'communications';
 
 const TABS: { key: DetailTab; label: string }[] = [
@@ -48,7 +50,14 @@ export default function RFQDetail() {
 
   const totalPct = pricePct + deliveryPct + qualityPct;
 
-  const rfq = mockRFQs.find((r) => r.id === id);
+  const [rfqs] = useRFQs();
+  const [dialog, setDialog] = useState<'deadline' | 'message' | 'cancel' | null>(null);
+  const rfq = rfqs.find((r) => r.id === id);
+  const messages: RfqMessage[] = ((rfq as unknown as { messages?: RfqMessage[] })?.messages) ?? [];
+  const addMessage = (text: string) => {
+    if (!rfq) return;
+    updateRFQ(rfq.id, { messages: [...messages, { time: nowStamp(), user: currentUserName(), text }] } as never);
+  };
 
   if (!rfq) {
     return (
@@ -98,8 +107,10 @@ export default function RFQDetail() {
 
   function handleAward(bid: RFQBid) {
     setConfirmAward(null);
-    addToast(`RFQ awarded to ${bid.supplierName}. PO created (PO-2026-0XXX)`, 'success');
-    setTimeout(() => navigate('/procurement/rfq'), 600);
+    if (!rfq) return;
+    const po = awardRFQ(rfq, bid);
+    addToast(`RFQ awarded to ${bid.supplierName}. ${po.id} created and sent for approval.`, 'success');
+    setTimeout(() => navigate(`/procurement/orders/${po.id}`), 600);
   }
 
   return (
@@ -112,6 +123,7 @@ export default function RFQDetail() {
         <span>{rfq.id}</span>
       </div>
 
+      <RecordAiPanel recordType="procurement.rfq" record={rfq} label={rfq.id} />
       <div className={styles.headerCard}>
         <div className={styles.headerTop}>
           <div>
@@ -120,9 +132,13 @@ export default function RFQDetail() {
           </div>
           <div className={styles.headerActions}>
             <StatusBadge status={rfq.status} type="rfq" />
-            <Button variant="ghost" size="sm" leftIcon={Send}>Send reminder</Button>
-            <Button variant="ghost" size="sm" leftIcon={Calendar}>Extend deadline</Button>
-            <Button variant="ghost" size="sm" leftIcon={X}>Cancel RFQ</Button>
+            <Button variant="ghost" size="sm" leftIcon={Send} onClick={() => {
+              const pending = Math.max(0, rfq.suppliersInvited - rfq.bids.length);
+              addMessage(`Reminder sent to ${pending || rfq.suppliersInvited} supplier(s) to submit bids before ${rfq.deadline || 'the deadline'}`);
+              addToast(`Reminder sent to ${pending || rfq.suppliersInvited} supplier(s)`, 'success');
+            }}>Send reminder</Button>
+            <Button variant="ghost" size="sm" leftIcon={Calendar} onClick={() => setDialog('deadline')}>Extend deadline</Button>
+            {rfq.status !== 'Closed' && <Button variant="ghost" size="sm" leftIcon={X} onClick={() => setDialog('cancel')}>Cancel RFQ</Button>}
           </div>
         </div>
 
@@ -339,7 +355,7 @@ export default function RFQDetail() {
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <p className={styles.cardTitle} style={{ marginBottom: 0 }}>Communication timeline</p>
-              <Button variant="primary" size="sm" leftIcon={MessageSquare}>Send message</Button>
+              <Button variant="primary" size="sm" leftIcon={MessageSquare} onClick={() => setDialog('message')}>Send message</Button>
             </div>
             <div className={styles.commTimeline}>
               {[
@@ -350,6 +366,7 @@ export default function RFQDetail() {
                   text: `Bid submitted: ${formatIndianCurrency(b.total)}, ${b.deliveryDays} days delivery${b.notes ? ` — "${b.notes}"` : ''}`,
                   icon: MessageSquare,
                 })),
+                ...messages.map((m) => ({ time: m.time, user: m.user, text: m.text, icon: Mail })),
               ].map((c, i) => {
                 const Icon = c.icon;
                 return (
@@ -370,6 +387,45 @@ export default function RFQDetail() {
         )}
 
       </div>
+
+      <RecordEditModal
+        isOpen={dialog === 'deadline'}
+        title={`Extend deadline — ${rfq.id}`}
+        fields={[{ key: 'deadline', label: 'New deadline', type: 'date', required: true }, { key: 'note', label: 'Note to suppliers', type: 'textarea' }]}
+        values={{}}
+        onClose={() => setDialog(null)}
+        onSave={(v) => {
+          const d = new Date(`${v.deadline}T00:00:00`).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+          updateRFQ(rfq.id, { deadline: d });
+          addMessage(`Deadline extended to ${d}${v.note ? ` — ${v.note}` : ''}`);
+          addToast(`Deadline extended to ${d}`, 'success');
+          setDialog(null);
+        }}
+      />
+      <RecordEditModal
+        isOpen={dialog === 'message'}
+        title="Message to invited suppliers"
+        fields={[{ key: 'text', label: 'Message', type: 'textarea', required: true }]}
+        values={{}}
+        submitLabel="Send"
+        onClose={() => setDialog(null)}
+        onSave={(v) => { addMessage(String(v.text)); addToast('Message sent to invited suppliers', 'success'); setDialog(null); }}
+      />
+      <RecordEditModal
+        isOpen={dialog === 'cancel'}
+        title={`Cancel ${rfq.id}`}
+        fields={[{ key: 'reason', label: 'Reason', type: 'textarea', required: true }]}
+        values={{}}
+        submitLabel="Cancel RFQ"
+        danger
+        onClose={() => setDialog(null)}
+        onSave={(v) => {
+          updateRFQ(rfq.id, { status: 'Closed' });
+          addMessage(`RFQ cancelled: ${v.reason}`);
+          addToast(`${rfq.id} cancelled`, 'warning');
+          setDialog(null);
+        }}
+      />
 
       {/* Award confirmation modal */}
       {confirmAward && (

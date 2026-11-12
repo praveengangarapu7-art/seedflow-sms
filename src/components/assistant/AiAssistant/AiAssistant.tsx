@@ -19,13 +19,14 @@ interface ChatMessage {
   source?: 'model' | 'rules';
   modelName?: string | null;
   citations?: AssistantCitation[];
+  sources?: NonNullable<AssistantAnswer['sources']>;
 }
 
 const OPENING_SUGGESTIONS = [
   'Which lots are low on stock?',
   'Any failing lab results?',
-  'Show inventory by crop',
-  'What is awaiting my approval?',
+  'What should I do about a failed germination test?',
+  'How does the NCR and CAPA process work?',
 ];
 
 function newId(): string {
@@ -63,14 +64,18 @@ export function AiAssistant() {
   // Connect lazily — only once the user actually opens the assistant, so it
   // costs nothing on pages where nobody uses it.
   useEffect(() => {
-    if (!open || token) return;
+    // Runs until the model label is known — not just until a token exists —
+    // because a question sent the moment the drawer opens (from the AI
+    // Center) can obtain the token first, which used to leave the header
+    // stuck on "Connecting…".
+    if (!open || modelLabel) return;
     let cancelled = false;
     (async () => {
       try {
         const account = DEMO_ACCOUNTS[0];
         const { accessToken } = await login(account.email, account.password);
         if (cancelled) return;
-        setToken(accessToken);
+        if (!token) setToken(accessToken);
         try {
           const status = await fetchAssistantStatus(accessToken);
           if (!cancelled) {
@@ -90,7 +95,7 @@ export function AiAssistant() {
     return () => {
       cancelled = true;
     };
-  }, [open, token]);
+  }, [open, token, modelLabel]);
 
   useEffect(() => {
     if (open) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -121,7 +126,10 @@ export function AiAssistant() {
           activeToken = accessToken;
           setToken(accessToken);
         }
-        const result: AssistantAnswer = await askAssistant(activeToken, trimmed, location.pathname);
+        const history = messages
+          .filter((m) => m.role === 'user' || m.role === 'assistant')
+          .map((m) => ({ role: m.role as 'user' | 'assistant', text: m.text }));
+        const result: AssistantAnswer = await askAssistant(activeToken, trimmed, location.pathname, history);
         setMessages((prev) => [
           ...prev,
           {
@@ -131,6 +139,7 @@ export function AiAssistant() {
             source: result.source,
             modelName: result.modelName,
             citations: result.citations,
+            sources: result.sources,
           },
         ]);
         if (result.suggestions?.length) setSuggestions(result.suggestions);
@@ -154,8 +163,28 @@ export function AiAssistant() {
         setBusy(false);
       }
     },
-    [busy, token, location.pathname],
+    [busy, token, location.pathname, messages],
   );
+
+  // Other surfaces (the AI Center) open the drawer, optionally with a
+  // question, by dispatching `seedsphere:open-assistant` with { question }.
+  const pendingQuestion = useRef<string | null>(null);
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const question = (e as CustomEvent<{ question?: string }>).detail?.question;
+      setOpen(true);
+      if (question) pendingQuestion.current = question;
+    };
+    window.addEventListener('seedsphere:open-assistant', handler);
+    return () => window.removeEventListener('seedsphere:open-assistant', handler);
+  }, []);
+  useEffect(() => {
+    if (open && pendingQuestion.current && !busy) {
+      const q = pendingQuestion.current;
+      pendingQuestion.current = null;
+      void send(q);
+    }
+  }, [open, busy, send]);
 
   const goTo = (path: string) => {
     setOpen(false);
@@ -201,8 +230,9 @@ export function AiAssistant() {
               {messages.length === 0 && (
                 <div className={styles.emptyState}>
                   <div className={styles.emptyTitle}>Ask about anything in SeedSphere</div>
-                  I read your live seed lots, lab results, storage, requests and demand data — and I always show you which
-                  records an answer came from.
+                  I read your live seed lots, lab results, storage, requests and demand data, and search the knowledge base
+                  (SOPs, compliance register, quality records and seed-science guides) — and I always show which records and
+                  sources an answer came from.
                 </div>
               )}
 
@@ -229,6 +259,23 @@ export function AiAssistant() {
                         {m.source === 'model' ? m.modelName ?? 'AI model' : 'built-in engine'}
                       </span>
                     </div>
+                    {m.sources && m.sources.length > 0 && (
+                      <div className={styles.citations}>
+                        <span className={styles.citationsLabel}>Sources</span>
+                        {m.sources.map((src, i) => (
+                          <button
+                            key={`${m.id}-src-${src.id}`}
+                            className={styles.citationLink}
+                            title={src.excerpt}
+                            onClick={() => goTo(src.path)}
+                          >
+                            <ArrowRight size={13} />
+                            [K{i + 1}] {src.title}
+                            <span className={styles.citationDetail}>({src.module})</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     {m.citations && m.citations.length > 0 && (
                       <div className={styles.citations}>
                         <span className={styles.citationsLabel}>Based on</span>
@@ -245,7 +292,7 @@ export function AiAssistant() {
                 );
               })}
 
-              {busy && <div className={styles.typing}>Checking your data…</div>}
+              {busy && <div className={styles.typing}>Checking your data and knowledge base…</div>}
               <div ref={messagesEndRef} />
             </div>
 
@@ -264,7 +311,7 @@ export function AiAssistant() {
                 ref={inputRef}
                 className={styles.input}
                 rows={1}
-                placeholder="Ask about lots, lab results, storage, requests…"
+                placeholder="Ask about lots, lab results, SOPs, how-to…"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {

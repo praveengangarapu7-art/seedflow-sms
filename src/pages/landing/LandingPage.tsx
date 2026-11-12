@@ -5,8 +5,11 @@ import AboutSection from './sections/AboutSection/AboutSection';
 import ModulesShowcase from './sections/ModulesShowcase/ModulesShowcase';
 import HowItWorks from './sections/HowItWorks/HowItWorks';
 import IndustriesSection from './sections/IndustriesSection/IndustriesSection';
+import FeaturedSection from './sections/FeaturedSection/FeaturedSection';
 import LandingCTA from './sections/LandingCTA/LandingCTA';
 import LandingFooter from './sections/LandingFooter/LandingFooter';
+import SeedField from './seed/SeedField';
+import SeedBand from './seed/SeedBand';
 import styles from './LandingPage.module.css';
 
 export default function LandingPage() {
@@ -42,9 +45,15 @@ export default function LandingPage() {
         <div className={`${styles.blob} ${styles.blob2}`} />
       </div>
 
+      {/* Drifting seeds behind the hero */}
+      <div className={styles.seedLayer}>
+        <SeedField />
+      </div>
+
       {/* Main Sections */}
       <LandingNav />
       <LandingHero />
+      <SeedBand />
 
       {/* Rebuilt 4 Content Sections in correct order */}
       <div id="about">
@@ -61,6 +70,10 @@ export default function LandingPage() {
 
       <div id="industries">
         <IndustriesSection />
+      </div>
+
+      <div id="featured">
+        <FeaturedSection />
       </div>
 
       <LandingCTA />

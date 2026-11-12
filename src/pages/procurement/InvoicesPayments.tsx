@@ -14,7 +14,7 @@ import { Stepper } from '@/components/common/Stepper/Stepper';
 import { useToast } from '@/components/common/Toast';
 import { KpiStrip } from './components/KpiStrip/KpiStrip';
 import {
-  mockInvoices, INVOICE_TAB_COUNTS, INVOICE_SUPPLIER_OPTIONS, INVOICE_STATUS_OPTIONS,
+  INVOICE_TAB_COUNTS, INVOICE_SUPPLIER_OPTIONS, INVOICE_STATUS_OPTIONS,
 } from './mockData/invoicesData';
 import { formatIndianCurrency } from '@/utils/formatters';
 import { procurementNav } from '@/config/procurementNav';
@@ -24,6 +24,7 @@ import { usePermission } from '@/hooks/usePermission';
 import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import styles from './InvoicesPayments.module.css';
 
+import { recordInvoice, updateInvoice, useGRNs, useInvoices, usePOs } from './procurementStore';
 const TABS = [
   { key: 'all',      label: 'All',                  count: INVOICE_TAB_COUNTS.all },
   { key: 'pending',  label: 'Pending 3-Way Match',  count: INVOICE_TAB_COUNTS.pending },
@@ -108,9 +109,15 @@ function ThreeWayMatchModal({ invoice, onClose }: { invoice: Invoice; onClose: (
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button variant="ghost" size="sm" onClick={onClose}>Close</Button>
-          {!allMatched && canApprove && <Button variant="ghost" size="sm" leftIcon={X}>Reject invoice</Button>}
+          {!allMatched && canApprove && (
+            <Button variant="ghost" size="sm" leftIcon={X} onClick={() => {
+              updateInvoice(invoice.id, { paymentStatus: 'Disputed' });
+              addToast(`${invoice.id} rejected and marked disputed`, 'warning'); onClose();
+            }}>Reject invoice</Button>
+          )}
           {canApprove && (
             <Button variant="primary" size="sm" onClick={() => {
+              updateInvoice(invoice.id, { paymentStatus: 'Approved' });
               addToast(`${invoice.id} approved for payment`, 'success'); onClose();
             }}>Approve for payment</Button>
           )}
@@ -251,13 +258,19 @@ function RecordInvoiceModal({ onClose }: { onClose: () => void }) {
   const { addToast } = useToast();
   const [step, setStep] = useState(0);
   const [grnId, setGrnId] = useState('');
-
-  const recentGrns = [
-    { id: 'GRN-2026-0099', supplier: 'Pioneer Packaging Co', amount: 645000 },
-    { id: 'GRN-2026-0098', supplier: 'Mahyco Seeds Ltd',     amount: 1900000 },
-    { id: 'GRN-2026-0095', supplier: 'Nuziveedu Seeds Ltd',  amount: 1500000 },
-    { id: 'GRN-2026-0094', supplier: 'UPL Limited',          amount: 637200 },
-  ];
+  const [invNo, setInvNo] = useState('');
+  const [subtotal, setSubtotal] = useState('');
+  const [taxRate, setTaxRate] = useState('18');
+  const [grns] = useGRNs();
+  const [pos] = usePOs();
+  const [invoices] = useInvoices();
+  const invoiced = new Set(invoices.map((i) => i.grnReference));
+  const recentGrns = grns
+    .filter((g) => !invoiced.has(g.id) && g.status !== 'Rejected')
+    .slice(0, 12)
+    .map((g) => ({ id: g.id, supplier: g.supplier, amount: pos.find((p) => p.id === g.poReference)?.totalAmount ?? 0 }));
+  const sub = Number(subtotal) || recentGrns.find((g) => g.id === grnId)?.amount || 0;
+  const tax = Math.round((sub * (Number(taxRate) || 0)) / 100);
 
   return (
     <Modal
@@ -272,7 +285,10 @@ function RecordInvoiceModal({ onClose }: { onClose: () => void }) {
             <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
             {step < 3
               ? <Button variant="primary" size="sm" onClick={() => setStep(step + 1)} disabled={step === 0 && !grnId}>Next →</Button>
-              : <Button variant="primary" size="sm" onClick={() => { addToast('Invoice recorded', 'success'); onClose(); }}>Submit</Button>}
+              : <Button variant="primary" size="sm" onClick={() => {
+                  const inv = recordInvoice({ grnId, invoiceNumber: invNo.trim() || undefined, amount: sub + tax, taxAmount: tax });
+                  addToast(`Invoice ${inv.id} recorded — 3-way match: ${inv.matchStatus}`, inv.matchStatus === 'matched' ? 'success' : 'warning'); onClose();
+                }}>Submit</Button>}
           </div>
         </div>
       }
@@ -315,7 +331,7 @@ function RecordInvoiceModal({ onClose }: { onClose: () => void }) {
           <div className={styles.grid2}>
             <div className={styles.field}>
               <label className={styles.label}>Invoice number</label>
-              <input className={styles.input} placeholder="INV-XXX-2026-0000" />
+              <input className={styles.input} placeholder="INV-XXX-2026-0000" value={invNo} onChange={(e) => setInvNo(e.target.value)} />
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Invoice date</label>
@@ -323,7 +339,7 @@ function RecordInvoiceModal({ onClose }: { onClose: () => void }) {
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Subtotal (₹)</label>
-              <input type="number" className={styles.input} placeholder="0" />
+              <input type="number" className={styles.input} placeholder={String(sub || 0)} value={subtotal} onChange={(e) => setSubtotal(e.target.value)} />
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Tax type</label>
@@ -334,7 +350,7 @@ function RecordInvoiceModal({ onClose }: { onClose: () => void }) {
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Tax rate (%)</label>
-              <input type="number" className={styles.input} placeholder="18" defaultValue={18} />
+              <input type="number" className={styles.input} placeholder="18" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} />
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Due date</label>
@@ -378,10 +394,11 @@ export default function InvoicesPayments() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [detailInvoice, setDetailInvoice] = useState<Invoice | null>(null);
   const [showRecord, setShowRecord] = useState(false);
+  const [mockInvoices] = useInvoices();
 
   const periodFiltered = useMemo(
     () => mockInvoices.filter((i) => isDateInPeriod(i.invoiceDate, period)),
-    [period]
+    [period, mockInvoices]
   );
 
   const tabsWithCounts = TABS.map((t) => {

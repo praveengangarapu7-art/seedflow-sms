@@ -5,6 +5,7 @@ import { FileUpload } from '@/components/common/FileUpload/FileUpload';
 import { Download, CheckCircle2 } from 'lucide-react';
 import styles from './BulkImportLocationsModal.module.css';
 
+import { downloadText } from '@/utils/fileExport';
 interface BulkImportLocationsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -16,7 +17,6 @@ export const BulkImportLocationsModal: React.FC<BulkImportLocationsModalProps> =
   const [file, setFile] = useState<File | null>(null);
 
   const handleImport = () => {
-    console.log('Importing locations', file);
     onImport(file);
     setStep(4);
     setTimeout(() => {
@@ -36,7 +36,7 @@ export const BulkImportLocationsModal: React.FC<BulkImportLocationsModalProps> =
               <p>Download our standardized CSV template to ensure your location data is correctly formatted.</p>
             </div>
             <div className={styles.actionBox}>
-              <Button variant="secondary" icon={<Download size={16} />}>
+              <Button variant="secondary" icon={<Download size={16} />} onClick={() => downloadText('locations_template.csv', 'zone_name,capacity_bags\nCold Zone D,2000\nAmbient Zone 3,5000\n', 'text/csv')}>
                 Download Template.csv
               </Button>
             </div>

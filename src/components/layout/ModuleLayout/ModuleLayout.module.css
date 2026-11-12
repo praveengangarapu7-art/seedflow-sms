@@ -12,7 +12,7 @@
 .content {
   flex: 1;
   padding: 32px;
-  background-color: var(--color-white);
+  background-color: var(--color-canvas);
   min-width: 0;
 }
 

@@ -6,6 +6,8 @@ import type { DispatchOrder, DispatchLineItem } from '@/types/warehouse';
 import { formatIndianNumber } from '@/utils/formatters';
 import styles from './PickingListModal.module.css';
 
+import { whUpdate, whUser } from '../../warehouseStore';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface PickingListModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -18,6 +20,7 @@ function getZoneFromLocation(loc: string): string {
 }
 
 export function PickingListModal({ isOpen, onClose, order }: PickingListModalProps) {
+  const { addToast } = useToast();
   const [pickedMap, setPickedMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -52,13 +55,24 @@ export function PickingListModal({ isOpen, onClose, order }: PickingListModalPro
     setPickedMap((m) => ({ ...m, [li.sku]: li.orderedQty }));
   };
 
+  const savePicked = (complete: boolean) => {
+    whUpdate('dispatch', order.id, (o) => ({
+      ...o,
+      status: o.status === 'Pending' || complete ? 'Picking' : o.status,
+      pickerAssigned: o.pickerAssigned ?? whUser(),
+      lineItems: o.lineItems.map((li) => ({ ...li, pickedQty: pickedMap[li.sku] ?? li.pickedQty })),
+    }));
+  };
+
   const completePicking = () => {
-    console.log('complete picking', order.id, pickedMap);
+    savePicked(true);
+    addToast({ type: 'success', message: `Picking complete for ${order.id}; ready for packing` });
     onClose();
   };
 
   const saveProgress = () => {
-    console.log('save picking progress', order.id, pickedMap);
+    savePicked(false);
+    addToast({ type: 'info', message: `Picking progress saved for ${order.id}` });
     onClose();
   };
 

@@ -1,0 +1,25 @@
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* Fade toward the bottom of the hero band, and keep seeds faint behind the
+     headline column so they never compete with the text. */
+  -webkit-mask-image:
+    linear-gradient(180deg, #000 0%, #000 70%, transparent 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.3) 42%, #000 58%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(180deg, #000 0%, #000 70%, transparent 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.3) 42%, #000 58%);
+  mask-composite: intersect;
+}
+
+@media (max-width: 991px) {
+  .canvas {
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
+    opacity: 0.6;
+  }
+}

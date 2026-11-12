@@ -117,3 +117,5 @@
   display: flex;
   gap: 12px;
 }
+
+.chipActive { background: var(--color-primary-soft, #E8F3EC); border-color: var(--color-primary); color: var(--color-primary); font-weight: 600; }

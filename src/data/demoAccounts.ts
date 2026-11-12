@@ -1,5 +1,5 @@
 import type { UserRole } from '@/types';
-import { PROCUREMENT_ROLES, WAREHOUSE_ROLES, RD_ROLES, PROCESSING_ROLES, LAB_ROLES, ADMIN_ROLES } from '@/types';
+import { PROCUREMENT_ROLES, WAREHOUSE_ROLES, RD_ROLES, PROCESSING_ROLES, LAB_ROLES, QUALITY_ROLES, ADMIN_ROLES } from '@/types';
 
 /**
  * The demo staff directory, shared rather than owned by the login screen.
@@ -110,6 +110,15 @@ export const DEMO_ACCOUNTS_BY_ROLE: Record<UserRole, DemoAccount[]> = {
     { name: 'Aisha Fernandes', empId: 'EMP-LAB-202', location: 'Coimbatore', email: 'labtechnician2@seedsphere.com' },
     { name: 'Gaurav Sinha', empId: 'EMP-LAB-203', location: 'Raipur', email: 'labtechnician3@seedsphere.com' },
   ],
+  quality_manager: [
+    { name: 'Dr. Sunita Deshmukh', empId: 'EMP-QMS-101', location: 'Pune', email: 'qualitymanager@seedsphere.com' },
+    { name: 'Harish Kulkarni', empId: 'EMP-QMS-102', location: 'Nashik', email: 'qualitymanager2@seedsphere.com' },
+  ],
+  quality_officer: [
+    { name: 'Rekha Jadhav', empId: 'EMP-QMS-201', location: 'Pune', email: 'qualityofficer@seedsphere.com' },
+    { name: 'Omkar Shinde', empId: 'EMP-QMS-202', location: 'Nashik', email: 'qualityofficer2@seedsphere.com' },
+    { name: 'Vaishali More', empId: 'EMP-QMS-203', location: 'Aurangabad', email: 'qualityofficer3@seedsphere.com' },
+  ],
   lab_quality_analyst: [
     { name: 'Pooja Bhatt', empId: 'EMP-LAB-301', location: 'Bengaluru', email: 'labanalyst@seedsphere.com' },
     { name: 'Sridhar Acharya', empId: 'EMP-LAB-302', location: 'Vijayawada', email: 'labanalyst2@seedsphere.com' },
@@ -135,6 +144,7 @@ export function getPostLoginRoute(role: UserRole): string {
   if (RD_ROLES.includes(role)) return '/rd/dashboard';
   if (PROCESSING_ROLES.includes(role)) return '/processing/dashboard';
   if (LAB_ROLES.includes(role)) return '/lab/dashboard';
+  if (QUALITY_ROLES.includes(role)) return '/quality/dashboard';
   if (ADMIN_ROLES.includes(role)) return '/admin/dashboard';
   return '/modules';
 }
@@ -152,6 +162,7 @@ export const DEMO_MODULES: DemoModule[] = [
   { key: 'rd', label: 'R&D Module', roles: RD_ROLES },
   { key: 'processing', label: 'Processing Module', roles: PROCESSING_ROLES },
   { key: 'lab', label: 'Laboratory Module', roles: LAB_ROLES },
+  { key: 'quality', label: 'Quality Module', roles: QUALITY_ROLES },
   { key: 'admin', label: 'Administration Module', roles: ADMIN_ROLES },
 ];
 
@@ -179,6 +190,7 @@ export function moduleForPath(pathname: string | undefined | null): DemoModule |
     rd: 'rd',
     processing: 'processing',
     lab: 'lab',
+    quality: 'quality',
     admin: 'admin',
     production: 'processing',
   };

@@ -17,6 +17,7 @@ import {
 } from '@/services/seedLotRealtimeClient';
 import styles from './master-data.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
 export default function VarietyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -136,6 +137,8 @@ export default function VarietyDetail() {
           ) : null}
         </div>
       </div>
+
+      {variety ? <RecordAiPanel recordType="master.variety" record={variety} label={variety.name} /> : null}
 
       <div className={styles.card}>
         {loading ? <div className={styles.emptyState}>Loading variety…</div> : null}

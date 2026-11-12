@@ -17,6 +17,8 @@ import { PackageRun } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './Packaging.module.css';
 
+import { createRequisition } from '@/pages/procurement/procurementStore';
+import { useNavigate } from 'react-router-dom';
 const MOCK_MATERIALS = [
   { id: 'MAT-001', name: 'HDPE Laminated Bags (1 kg)', type: 'Bag', stock: 12450, unit: 'pcs', status: 'In Stock' },
   { id: 'MAT-002', name: 'HDPE Laminated Bags (5 kg)', type: 'Bag', stock: 8200, unit: 'pcs', status: 'In Stock' },
@@ -30,7 +32,8 @@ const MOCK_MATERIALS = [
 
 export default function PackagingPage() {
   const { addToast } = useToast();
-  const { items: allPackages, add, update } = useRealtimeMockStore<PackageRun>(mockPackages);
+  const { items: allPackages, add, update } = useRealtimeMockStore<PackageRun>(mockPackages, 'processing.packages');
+  const navigate = useNavigate();
   const [period, setPeriod] = useState<PeriodValue>('all');
 
   const items = useMemo(
@@ -240,7 +243,7 @@ export default function PackagingPage() {
         <Button
           variant="secondary"
           size="sm"
-          onClick={() => addToast(`Reorder request submitted for ${r.name}`, 'success')}
+          onClick={() => { const pr = createRequisition({ title: `Reorder packaging: ${r.name}`, department: 'Processing', priority: 'Medium', requiredBy: new Date(Date.now() + 10 * 86_400_000).toISOString().slice(0, 10), justification: `Packaging material running low (${r.stock ?? r.current ?? ''} in stock)`, lineItems: [{ description: r.name, quantity: String(r.reorderQty ?? r.reorder ?? 1000), unit: r.unit ?? 'units', estimatedPrice: String(r.unitCost ?? 0) }] }); addToast(`Reorder ${pr.id} raised in Procurement for ${r.name}`, 'success'); }}
         >
           Reorder
         </Button>
@@ -265,7 +268,7 @@ export default function PackagingPage() {
             </Button>
           )}
           {canVerify && (
-            <Button variant="secondary" onClick={() => addToast('Batch package verification queue loaded.', 'success')}>
+            <Button variant="secondary" onClick={() => navigate('/processing/certification')}>
               Verify Final Quality
             </Button>
           )}

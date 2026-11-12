@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 40px;
+  padding: 28px 40px;
   position: relative;
   background-color: var(--color-white);
   background-image:
@@ -45,7 +45,7 @@
 
 .formContainer {
   width: 100%;
-  max-width: 480px;
+  max-width: 460px;
   position: relative;
   z-index: 1;
 }

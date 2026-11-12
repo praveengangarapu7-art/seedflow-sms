@@ -12,6 +12,11 @@ import type { GermplasmAccession } from '@/types/rd';
 import { PedigreeViewerModal } from '../PedigreeViewerModal/PedigreeViewerModal';
 import styles from './AccessionDetailModal.module.css';
 
+import { setCollection } from '@/hooks/persistentCollections';
+import { accessions as accessionStarter } from '../../mockData/germplasmData';
+import type { GermplasmTrait } from '@/types/rd';
+import { downloadText, pickFile } from '@/utils/fileExport';
+import { useNavigate } from 'react-router-dom';
 interface AccessionDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,6 +26,7 @@ interface AccessionDetailModalProps {
 
 export function AccessionDetailModal({ isOpen, onClose, accession, allAccessions }: AccessionDetailModalProps) {
   const { addToast } = useToast();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Overview');
   const [showPedigreeViewer, setShowPedigreeViewer] = useState(false);
 
@@ -63,8 +69,8 @@ export function AccessionDetailModal({ isOpen, onClose, accession, allAccessions
               </div>
             </div>
             <div className={styles.headerActions}>
-              <Button variant="ghost" onClick={() => addToast('Edit mode', 'info')}>Edit accession</Button>
-              <Button variant="ghost" onClick={() => addToast('Create cross flow', 'info')}>Create breeding cross</Button>
+              <Button variant="ghost" onClick={() => { const notes = window.prompt(`Notes for ${accession.name}`, accession.notes ?? ''); if (notes === null) return; const status = window.prompt('Status: Active, Archived, Quarantine or Restricted', accession.status) ?? accession.status; setCollection<GermplasmAccession>('rd.accessions', accessionStarter, (prev) => prev.map((a) => (a.id === accession.id ? { ...a, notes, status: (['Active', 'Archived', 'Quarantine', 'Restricted'].includes(status) ? status : a.status) as GermplasmAccession['status'] } : a))); addToast('Accession updated', 'success'); }}>Edit accession</Button>
+              <Button variant="ghost" onClick={() => { onClose(); navigate('/rd/nurseries'); addToast(`Add ${accession.accessionNumber} as a parent in a crossing-block nursery`, 'info'); }}>Create breeding cross</Button>
               <ActionMenu 
                 items={[
                   { label: 'Archive', onClick: () => addToast('Archived', 'success'), variant: 'danger' },
@@ -144,7 +150,15 @@ export function AccessionDetailModal({ isOpen, onClose, accession, allAccessions
               <div className={styles.traitsTab}>
                 <div className={styles.tableHeader}>
                   <h3>Recorded traits</h3>
-                  <Button variant="secondary" size="sm">+ Add trait</Button>
+                  <Button variant="secondary" size="sm" onClick={() => {
+                    const name = window.prompt('Trait name (e.g. Days to maturity)');
+                    if (!name?.trim()) return;
+                    const value = window.prompt(`Value for ${name.trim()}`) ?? '';
+                    const unit = window.prompt('Unit (optional)') ?? '';
+                    const trait: GermplasmTrait = { name: name.trim(), category: 'Agronomic', value: value.trim(), unit: unit.trim() || undefined, measuredDate: new Date().toISOString().slice(0, 10), measuredBy: 'You' };
+                    setCollection<GermplasmAccession>('rd.accessions', accessionStarter, (prev) => prev.map((a) => (a.id === accession.id ? { ...a, traits: [...a.traits, trait] } : a)));
+                    addToast(`Trait ${trait.name} added`, 'success');
+                  }}>+ Add trait</Button>
                 </div>
                 {accession.traits.length > 0 ? (
                   <table className={styles.traitsTable}>
@@ -187,8 +201,8 @@ export function AccessionDetailModal({ isOpen, onClose, accession, allAccessions
                       </div>
                     </div>
                     <div className={styles.genomicActions}>
-                      <Button variant="secondary" onClick={() => addToast('Genomic viewer coming soon', 'info')}>View markers</Button>
-                      <Button variant="secondary" onClick={() => addToast('Downloading...', 'success')} icon={<Download size={16}/>}>Download VCF</Button>
+                      <Button variant="secondary" onClick={() => addToast('Marker data is stored with the genotyping provider; connect the genomics integration to browse markers here.', 'info')}>View markers</Button>
+                      <Button variant="secondary" onClick={() => addToast('VCF files are held by the genotyping provider; request the file through the genomics integration.', 'info')} icon={<Download size={16}/>}>Download VCF</Button>
                     </div>
                   </div>
                 ) : (
@@ -219,7 +233,12 @@ export function AccessionDetailModal({ isOpen, onClose, accession, allAccessions
               <div className={styles.docsTab}>
                 <div className={styles.tableHeader}>
                   <h3>Media & Files</h3>
-                  <Button variant="secondary" size="sm">+ Upload</Button>
+                  <Button variant="secondary" size="sm" onClick={async () => {
+                    const f = await pickFile();
+                    if (!f) return;
+                    setCollection<GermplasmAccession>('rd.accessions', accessionStarter, (prev) => prev.map((a) => (a.id === accession.id ? { ...a, documents: [...a.documents, f.name] } : a)));
+                    addToast(`${f.name} attached`, 'success');
+                  }}>+ Upload</Button>
                 </div>
                 <div className={styles.photosGrid}>
                   {[1, 2, 3].map(i => (
@@ -235,7 +254,7 @@ export function AccessionDetailModal({ isOpen, onClose, accession, allAccessions
                       <div key={i} className={styles.docItem}>
                         <FileText size={16} className={styles.docIcon} />
                         <span className={styles.docName}>{doc}</span>
-                        <Button variant="ghost" size="sm" icon={<Download size={14}/>}>Download</Button>
+                        <Button variant="ghost" size="sm" icon={<Download size={14}/>} onClick={() => downloadText(`${doc}.txt`, `Accession ${accession.accessionNumber} (${accession.id})\nDocument: ${doc}\n\nOnly the document name is stored for this record. Attach the file in the document store to download its contents.`)}>Download</Button>
                       </div>
                     ))
                   ) : (

@@ -16,7 +16,7 @@ import { varieties as mockVarieties } from './mockData/varietiesData';
 import { registrations as mockRegistrations } from './mockData/registrationsData';
 import { Variety, AgroClimaticZone } from '@/types/rd';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
-import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
+import { RD_TODAY, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { VarietyCard } from './components/VarietyCard/VarietyCard';
 import { VarietyDetailModal } from './components/VarietyDetailModal/VarietyDetailModal';
 import { NewVarietyModal } from './components/NewVarietyModal/NewVarietyModal';
@@ -26,7 +26,7 @@ import styles from './Varieties.module.css';
 export default function Varieties() {
   const { addToast } = useToast();
   const [period, setPeriod] = useState<PeriodValue>('all');
-  const { items: allVarietyItems, add, update } = useRealtimeMockStore<Variety>(mockVarieties);
+  const { items: allVarietyItems, add, update } = useRealtimeMockStore<Variety>(mockVarieties, 'rd.varieties');
 
   // A variety records a release year and nothing finer, so the period filters
   // at year resolution (see isYearInPeriod).
@@ -34,7 +34,7 @@ export default function Varieties() {
     () => allVarietyItems.filter((v) => isYearInPeriod(v.releaseYear, period, RD_TODAY)),
     [allVarietyItems, period]
   );
-  const { items: allRegistrations } = useRealtimeMockStore(mockRegistrations);
+  const { items: allRegistrations } = useRealtimeMockStore(mockRegistrations, 'rd.registrations');
 
   const canPropose = usePermission('propose_variety_advancement');
   const canApprove = usePermission('approve_variety_advancement');

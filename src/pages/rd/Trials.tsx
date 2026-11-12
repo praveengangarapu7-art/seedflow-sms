@@ -15,11 +15,12 @@ import { rdNav } from '@/config/rdNav';
 import { trials as initialTrials } from './mockData/trialsData';
 import { Trial, TrialType, TrialDesign } from '@/types/rd';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
-import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
+import { RD_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { NewTrialModal } from './components/NewTrialModal/NewTrialModal';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './Trials.module.css';
 
+import { downloadCsv } from '@/utils/fileExport';
 const TYPES: TrialType[] = ['Single-location', 'Multi-location', 'On-farm', 'Demonstration'];
 const DESIGNS: TrialDesign[] = ['RCBD', 'CRD', 'Alpha-lattice', 'Augmented', 'Split-plot'];
 const SEASONS = ['Kharif 2025', 'Rabi 2025-26', 'Zaid 2026', 'Kharif 2026'];
@@ -28,7 +29,7 @@ export default function Trials() {
   const navigate = useNavigate();
   const { addToast } = useToast();
   const [period, setPeriod] = useState<PeriodValue>('all');
-  const { items: allTrials, add, update, remove } = useRealtimeMockStore(initialTrials);
+  const { items: allTrials, add, update, remove } = useRealtimeMockStore(initialTrials, 'rd.trials');
 
   const trialsList = useMemo(
     () => allTrials.filter((t) => isDateInPeriod(t.startDate, period, RD_TODAY)),
@@ -285,7 +286,7 @@ export default function Trials() {
             variant="secondary"
             size="sm"
             leftIcon={Download}
-            onClick={() => addToast('Exporting trials dataset summary...', 'info')}
+            onClick={() => { downloadCsv(`trials_${new Date().toISOString().slice(0, 10)}.csv`, allTrials.map((t) => ({ id: t.id, name: t.name, crop: t.crop, type: t.type, design: t.design, season: t.season, status: t.status, start: t.startDate, expectedHarvest: t.expectedHarvest, lead: t.leadResearcher, entries: t.entries.length, locations: t.locations.length, replications: t.replications, plots: t.totalPlots }))); addToast(`${allTrials.length} trials exported`, 'success'); }}
           >
             Export
           </Button>

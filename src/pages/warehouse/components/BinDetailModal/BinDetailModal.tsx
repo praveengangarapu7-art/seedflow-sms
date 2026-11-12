@@ -7,6 +7,8 @@ import { buildBinCode } from '../../mockData/storageData';
 import { formatIndianNumber } from '@/utils/formatters';
 import styles from './BinDetailModal.module.css';
 
+import { useNavigate } from 'react-router-dom';
+import { queuePrint, whUpdate } from '../../warehouseStore';
 interface BinDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,6 +25,7 @@ function statusClass(s: StorageLocation['status']): string {
 }
 
 export function BinDetailModal({ isOpen, onClose, bin }: BinDetailModalProps) {
+  const navigate = useNavigate();
   const { addToast } = useToast();
   if (!bin) return null;
 
@@ -73,9 +76,9 @@ export function BinDetailModal({ isOpen, onClose, bin }: BinDetailModalProps) {
       </div>
 
       <div className={styles.footer}>
-        <Button variant="ghost" size="sm" leftIcon={ArrowRightLeft} onClick={() => { console.log('move stock from', bin.id); addToast({ type: 'info', message: `Move stock flow started from ${code}` }); }}>Move stock</Button>
-        <Button variant="ghost" size="sm" leftIcon={Ban} onClick={() => { console.log('block bin', bin.id); addToast({ type: 'warning', message: `Bin ${code} marked as blocked` }); onClose(); }}>Mark as blocked</Button>
-        <Button variant="primary" size="sm" leftIcon={Printer} onClick={() => { console.log('print bin label', code); addToast({ type: 'success', message: `Bin label ${code} queued for printing` }); }}>Print bin label</Button>
+        <Button variant="ghost" size="sm" leftIcon={ArrowRightLeft} onClick={() => { onClose(); navigate('/warehouse/movements'); addToast({ type: 'info', message: `Move stock flow started from ${code}` }); }}>Move stock</Button>
+        <Button variant="ghost" size="sm" leftIcon={Ban} onClick={() => { whUpdate('bins', bin.id, { status: bin.status === 'Blocked' ? 'Available' : 'Blocked' }); addToast({ type: 'warning', message: `Bin ${code} marked as blocked` }); onClose(); }}>Mark as blocked</Button>
+        <Button variant="primary" size="sm" leftIcon={Printer} onClick={() => { queuePrint('Bin', 1); addToast({ type: 'success', message: `Bin label ${code} queued for printing` }); }}>Print bin label</Button>
       </div>
     </Modal>
   );

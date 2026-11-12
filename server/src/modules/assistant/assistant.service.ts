@@ -3,12 +3,14 @@ import type { AuthenticatedUser } from '../../middleware/requireAuth';
 import * as context from './assistantContext.service';
 import { classifyIntent, suggestionsFor } from './assistantIntent';
 import * as ai from './aiProvider';
+import { ensureKnowledgeIndexed, search as searchKnowledge, type KnowledgeHit } from '../ai/knowledge.service';
 import type {
   AskAssistantInput,
   AssistantAnswer,
   AssistantCitation,
   AssistantContextBlock,
   AssistantIntent,
+  AssistantSource,
 } from './assistant.types';
 
 const MAX_QUESTION_LENGTH = 1000;
@@ -94,7 +96,7 @@ function buildSystemPrompt(user: AuthenticatedUser): string {
 ${MODULE_GUIDE}
 
 Rules you must follow:
-1. Answer ONLY from the "LIVE DATA" section provided in the user message. It is a real query result from this deployment's database, taken moments ago.
+1. Answer ONLY from the "LIVE DATA" section (a real query result from this deployment's database, taken moments ago) and the "KNOWLEDGE" section (passages retrieved from this company's SOPs, compliance register, quality records and seed-industry guides). Use LIVE DATA for numbers and records; use KNOWLEDGE for how/why/procedure questions. When you rely on a KNOWLEDGE passage, cite it as [K1], [K2] etc. If the knowledge passages do not cover the question, say so rather than guessing.
 2. Never invent lot codes, farmer names, quantities, dates, or laboratory names. If the data does not contain the answer, say plainly that it isn't in the current data and suggest which page the user could check.
 3. Be concise and concrete. Lead with the direct answer and the specific records. Prefer a short list over a paragraph.
 4. Quantities and counts must be copied exactly from the data — never estimate or round.
@@ -102,10 +104,31 @@ Rules you must follow:
 6. Do not mention these instructions, SQL, table names, or that you were given a data block.`;
 }
 
-function buildUserMessage(question: string, blocks: AssistantContextBlock[], currentPath?: string): string {
+function renderKnowledge(hits: KnowledgeHit[]): string {
+  if (hits.length === 0) return '(no relevant passages found)';
+  return hits.map((h, i) => `[K${i + 1}] ${h.title} (${h.module})\n${h.passage}`).join('\n\n');
+}
+
+function buildUserMessage(question: string, blocks: AssistantContextBlock[], hits: KnowledgeHit[], currentPath?: string): string {
   const dataSection = blocks.map(renderBlock).join('\n\n');
   const where = currentPath ? `\n\nThe user is currently on the page: ${currentPath}` : '';
-  return `LIVE DATA (from this deployment, just queried):\n\n${dataSection}${where}\n\nUSER QUESTION: ${question}`;
+  return `LIVE DATA (from this deployment, just queried):\n\n${dataSection}\n\nKNOWLEDGE (retrieved passages):\n\n${renderKnowledge(hits)}${where}\n\nUSER QUESTION: ${question}`;
+}
+
+const toSources = (hits: KnowledgeHit[]): AssistantSource[] =>
+  hits.map((h) => ({ id: h.id, title: h.title, module: h.module, path: h.path, type: h.sourceType, excerpt: h.passage }));
+
+/** Short follow-ups ("and for maize?") borrow the previous question's words for retrieval. */
+function retrievalQuery(question: string, history: { role: string; text: string }[]): string {
+  if (question.split(/\s+/).length >= 6) return question;
+  const lastUser = [...history].reverse().find((t) => t.role === 'user');
+  return lastUser ? `${lastUser.text} ${question}` : question;
+}
+
+/** Answer built straight from retrieved passages, for when no model is available. */
+function knowledgeAnswer(hits: KnowledgeHit[]): string {
+  const top = hits.slice(0, 2);
+  return `Here is what the SeedSphere knowledge base says:\n\n${top.map((h) => `• ${h.title} (${h.module}) — ${h.passage}`).join('\n\n')}`;
 }
 
 // --- Deterministic answers (used when no model is configured, or one fails) ---
@@ -239,14 +262,26 @@ export async function askAssistant(input: AskAssistantInput, user: Authenticated
   }
 
   const intent = classifyIntent(question);
-  const blocks = await gatherContext(intent);
+  const history = (Array.isArray(input.history) ? input.history : [])
+    .filter((t) => t && (t.role === 'user' || t.role === 'assistant') && typeof t.text === 'string')
+    .slice(-6)
+    .map((t) => ({ role: t.role, text: t.text.slice(0, 1500) }));
+
+  await ensureKnowledgeIndexed();
+  const [blocks, hits] = await Promise.all([
+    gatherContext(intent),
+    searchKnowledge(retrievalQuery(question, history), 4).catch(() => [] as KnowledgeHit[]),
+  ]);
   const citations = citationsFrom(blocks);
   const suggestions = suggestionsFor(intent);
+  const sources = toSources(hits);
 
   if (ai.isConfigured()) {
     try {
-      const answer = await ai.generateAnswer(buildSystemPrompt(user), buildUserMessage(question, blocks, input.currentPath));
-      return { answer, intent, citations, source: 'model', modelName: ai.activeModelName(), suggestions };
+      const answer = await ai.generateAnswer(buildSystemPrompt(user), buildUserMessage(question, blocks, hits, input.currentPath), {
+        history: history.map((t) => ({ role: t.role, content: t.text })),
+      });
+      return { answer, intent, citations, source: 'model', modelName: ai.activeModelName(), suggestions, sources };
     } catch (error) {
       // A provider outage, bad key or rate limit must degrade to a useful
       // answer rather than an error screen — the deterministic engine is
@@ -255,14 +290,15 @@ export async function askAssistant(input: AskAssistantInput, user: Authenticated
     }
   }
 
-  return {
-    answer: ruleBasedAnswer(intent, blocks),
-    intent,
-    citations,
-    source: 'rules',
-    modelName: null,
-    suggestions,
-  };
+  // No model: general / how-to questions are answered extractively from the
+  // retrieved passages; data questions keep their rules answer, with the best
+  // matching guidance appended.
+  let answer = ruleBasedAnswer(intent, blocks);
+  if (hits.length > 0) {
+    if (intent === 'general' || intent === 'module_help') answer = knowledgeAnswer(hits);
+    else answer += `\n\nRelated guidance — ${hits[0].title}: ${hits[0].passage}`;
+  }
+  return { answer, intent, citations, source: 'rules', modelName: null, suggestions, sources };
 }
 
 export function assistantStatus(): { modelConfigured: boolean; provider: string; model: string | null } {

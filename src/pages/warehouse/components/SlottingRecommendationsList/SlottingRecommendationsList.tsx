@@ -5,6 +5,7 @@ import { useToast } from '@/components/common/Toast/ToastContext';
 import type { SlottingRecommendation } from '@/types/warehouse';
 import styles from './SlottingRecommendationsList.module.css';
 
+import { logMovement } from '../../warehouseStore';
 interface SlottingRecommendationsListProps {
   data: SlottingRecommendation[];
 }
@@ -16,19 +17,18 @@ export function SlottingRecommendationsList({ data }: SlottingRecommendationsLis
   const [applied, setApplied] = useState<Set<string>>(new Set());
 
   const handleApply = (id: string) => {
-    console.log('apply slotting', id);
+    const rec = data.find((r) => r.id === id);
+    if (rec) logMovement({ category: 'Transfer', subType: 'Bin-to-bin (slotting)', itemName: rec.itemName, sku: rec.sku, batch: '', quantity: 0, uom: '', fromLocation: rec.currentLocation, toLocation: rec.suggestedLocation, reasonNotes: rec.reasoning, status: 'Pending approval', approvalChain: [{ approver: 'Warehouse manager', role: 'Warehouse manager', status: 'pending' }] });
     setApplied((prev) => new Set([...prev, id]));
     addToast({ type: 'success', message: 'Slotting suggestion applied — transfer task created' });
   };
 
   const handleSchedule = (id: string) => {
-    console.log('schedule slotting', id);
     setScheduled((prev) => new Set([...prev, id]));
     addToast({ type: 'info', message: 'Slotting scheduled for next maintenance window' });
   };
 
   const handleDismiss = (id: string) => {
-    console.log('dismiss slotting', id);
     setDismissed((prev) => new Set([...prev, id]));
     addToast({ message: 'Recommendation dismissed' });
   };

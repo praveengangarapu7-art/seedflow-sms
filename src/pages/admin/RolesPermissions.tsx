@@ -7,6 +7,7 @@ import { adminNav } from '@/config/adminNav';
 import {
   ADMIN_ROLES,
   LAB_ROLES,
+  QUALITY_ROLES,
   PROCESSING_ROLES,
   PROCUREMENT_ROLES,
   RD_ROLES,
@@ -34,6 +35,7 @@ const ROLE_MODULES: { module: string; roles: UserRole[] }[] = [
   { module: 'R&D', roles: RD_ROLES },
   { module: 'Processing', roles: PROCESSING_ROLES },
   { module: 'Laboratory', roles: LAB_ROLES },
+  { module: 'Quality', roles: QUALITY_ROLES },
   { module: 'Administration', roles: ADMIN_ROLES },
 ];
 

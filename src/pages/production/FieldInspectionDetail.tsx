@@ -7,6 +7,7 @@ import { seedFarmers, seedFarms } from './cropPlanningData';
 import { healthScoreClass, seedFieldInspections } from './fieldInspectionData';
 import styles from './production.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
 export default function FieldInspectionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -62,6 +63,8 @@ export default function FieldInspectionDetail() {
           Back to list
         </Button>
       </div>
+
+      {inspection ? <RecordAiPanel recordType="production.field_inspection" record={{ ...inspection, farm }} label={inspection.inspectionCode} /> : null}
 
       <div className={styles.card}>
         {loading ? <div className={styles.emptyState}>Loading inspection…</div> : null}

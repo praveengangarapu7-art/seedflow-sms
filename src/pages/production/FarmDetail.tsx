@@ -7,6 +7,7 @@ import { seedCropPlans, seedFarmers, seedFarms, statusBadgeClass } from './cropP
 import { googleMapsUrl, parseGpsCoordinates, seedInspections } from './farmManagementData';
 import styles from './production.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
 export default function FarmDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -76,6 +77,8 @@ export default function FarmDetail() {
           </Button>
         </div>
       </div>
+
+      {farm ? <RecordAiPanel recordType="production.farm" record={{ ...farm, inspections: inspections.filter((i) => i.farmId === farm.id) }} label={farm.name} /> : null}
 
       <div className={styles.card}>
         {loading ? <div className={styles.emptyState}>Loading farm…</div> : null}

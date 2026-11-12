@@ -21,13 +21,14 @@ import { nurseries as initialNurseries } from './mockData/nurseriesData';
 import { programs as initialPrograms } from './mockData/breedingData';
 import { Nursery, NurseryType } from '@/types/rd';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
-import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
+import { RD_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { NurseryCard } from './components/NurseryCard/NurseryCard';
 import { NurseryDetailModal } from './components/NurseryDetailModal/NurseryDetailModal';
 import { NewNurseryModal } from './components/NewNurseryModal/NewNurseryModal';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './Nurseries.module.css';
 
+import { downloadCsv } from '@/utils/fileExport';
 const TYPES: NurseryType[] = [
   'Crossing block',
   'Selection nursery',
@@ -40,7 +41,7 @@ const SEASONS = ['Kharif 2026', 'Rabi 2026-27', 'Zaid 2027'];
 export default function Nurseries() {
   const { addToast } = useToast();
   const [period, setPeriod] = useState<PeriodValue>('all');
-  const { items: allNurseries, add, update, remove } = useRealtimeMockStore(initialNurseries);
+  const { items: allNurseries, add, update, remove } = useRealtimeMockStore(initialNurseries, 'rd.nurseries');
 
   const nurseries = useMemo(
     () => allNurseries.filter((n) => isDateInPeriod(n.sownDate, period, RD_TODAY)),
@@ -213,7 +214,7 @@ export default function Nurseries() {
             variant="secondary"
             size="sm"
             leftIcon={Download}
-            onClick={() => addToast('Exporting nursery layouts...', 'info')}
+            onClick={() => { downloadCsv(`nurseries_${new Date().toISOString().slice(0, 10)}.csv`, allNurseries.flatMap((n) => (n.entriesPlanted.length ? n.entriesPlanted : [null]).map((e) => ({ nursery: n.id, name: n.name, type: n.type, crop: n.crop, season: n.season, status: n.status, facility: n.location.facility, block: n.location.block, rows: n.location.rows, plantsPerRow: n.location.plants, entry: e?.entryCode ?? '', female: e?.parentFemale ?? '', male: e?.parentMale ?? '', plots: e?.plotsAssigned ?? '', survived: e?.survived ?? '' })))); addToast('Nursery layouts exported', 'success'); }}
           >
             Export
           </Button>
@@ -222,7 +223,16 @@ export default function Nurseries() {
               variant="secondary"
               size="sm"
               leftIcon={ShieldCheck}
-              onClick={() => addToast('Starting field inspection...', 'info')}
+              onClick={() => {
+                const active = allNurseries.filter((n) => n.status !== 'Completed' && n.status !== 'Planned');
+                const pickName = window.prompt(`Inspect which nursery?\n${active.map((n) => `${n.id} — ${n.name}`).join('\n')}`, active[0]?.id ?? '');
+                const n = active.find((x) => x.id === pickName?.trim()) ?? null;
+                if (!n) return;
+                const obs = window.prompt(`Inspection notes for ${n.name} (stand, off-types, disease)`);
+                if (!obs?.trim()) return;
+                update(n.id, { notes: [n.notes, `[Inspection ${new Date().toLocaleDateString('en-IN')}] ${obs.trim()}`].filter(Boolean).join('\n') });
+                addToast(`Inspection recorded for ${n.name}`, 'success');
+              }}
             >
               Start inspection
             </Button>

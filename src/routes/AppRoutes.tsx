@@ -7,6 +7,7 @@ const SignUp = lazy(() => import('@/pages/auth/SignUp/SignUp'));
 const ModuleSelection = lazy(() => import('@/pages/dashboard/ModuleSelection/ModuleSelection'));
 const LandingPage = lazy(() => import('../pages/landing/LandingPage'));
 const SearchResults = lazy(() => import('@/pages/search/SearchResults'));
+const AiCenter = lazy(() => import('@/pages/ai/AiCenter'));
 
 // Account — global, not scoped to any one module
 const Profile = lazy(() => import('@/pages/account/Profile'));
@@ -78,6 +79,19 @@ const LabCertificates = lazy(() => import('@/pages/lab/Certificates'));
 const LabPerformance = lazy(() => import('@/pages/lab/LabPerformance'));
 const LabPlaceholder = lazy(() => import('@/pages/lab/Placeholder'));
 
+// Quality module
+const QualityDashboard = lazy(() => import('@/pages/quality/QualityDashboard'));
+const SopRegister = lazy(() => import('@/pages/quality/SopRegister'));
+const SopDetail = lazy(() => import('@/pages/quality/SopDetail'));
+const NonConformances = lazy(() => import('@/pages/quality/NonConformances'));
+const NcrDetail = lazy(() => import('@/pages/quality/NcrDetail'));
+const CapaBoard = lazy(() => import('@/pages/quality/CapaBoard'));
+const QualityComplaints = lazy(() => import('@/pages/quality/Complaints'));
+const ComplaintDetail = lazy(() => import('@/pages/quality/ComplaintDetail'));
+const LotHolds = lazy(() => import('@/pages/quality/LotHolds'));
+const ComplianceRegister = lazy(() => import('@/pages/quality/ComplianceRegister'));
+const ComplianceDetail = lazy(() => import('@/pages/quality/ComplianceDetail'));
+
 // Administration — the cross-module admin console (users, roles, audit trail,
 // system health, governance, privacy, workflows, alerts, module registry).
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
@@ -88,6 +102,7 @@ const AdminAuditLogs = lazy(() => import('@/pages/admin/AuditLogs'));
 const AdminSystemHealth = lazy(() => import('@/pages/admin/SystemHealth'));
 const AdminDataGovernance = lazy(() => import('@/pages/admin/AdminDataGovernance'));
 const AdminDataPrivacy = lazy(() => import('@/pages/admin/AdminDataPrivacy'));
+const AdminCustomFields = lazy(() => import('@/pages/admin/AdminCustomFields'));
 const AdminWorkflows = lazy(() => import('@/pages/admin/AdminWorkflows'));
 const AdminNotifications = lazy(() => import('@/pages/admin/AdminNotifications'));
 const AdminModuleRegistry = lazy(() => import('@/pages/admin/ModuleRegistry'));
@@ -205,6 +220,7 @@ export function AppRoutes() {
         {/* Protected */}
         <Route element={<ProtectedRoute />}>
           <Route path="/modules" element={<ModuleSelection />} />
+          <Route path="/ai" element={<AiCenter />} />
 
           {/* Account — reached from the user menu in TopHeader on every module page */}
           <Route path="/profile" element={<Profile />} />
@@ -280,6 +296,28 @@ export function AppRoutes() {
           <Route element={<ProtectedRoute permission="view_lab_certificates" />}><Route path="/lab/certificates" element={<LabCertificates />} /></Route>
           <Route element={<ProtectedRoute permission="view_lab_performance" />}><Route path="/lab/performance" element={<LabPerformance />} /></Route>
 
+          {/* ------------------------------ Quality ------------------------------ */}
+          <Route path="/quality" element={<Navigate to="/quality/dashboard" replace />} />
+          <Route element={<ProtectedRoute permission="view_quality_dashboard" />}><Route path="/quality/dashboard" element={<QualityDashboard />} /></Route>
+          <Route element={<ProtectedRoute permission="view_sop_register" />}>
+            <Route path="/quality/sops" element={<SopRegister />} />
+            <Route path="/quality/sops/:id" element={<SopDetail />} />
+          </Route>
+          <Route element={<ProtectedRoute permission="view_ncrs" />}>
+            <Route path="/quality/ncrs" element={<NonConformances />} />
+            <Route path="/quality/ncrs/:id" element={<NcrDetail />} />
+          </Route>
+          <Route element={<ProtectedRoute permission="view_capas" />}><Route path="/quality/capas" element={<CapaBoard />} /></Route>
+          <Route element={<ProtectedRoute permission="view_complaints" />}>
+            <Route path="/quality/complaints" element={<QualityComplaints />} />
+            <Route path="/quality/complaints/:id" element={<ComplaintDetail />} />
+          </Route>
+          <Route element={<ProtectedRoute permission="view_lot_holds" />}><Route path="/quality/holds" element={<LotHolds />} /></Route>
+          <Route element={<ProtectedRoute permission="view_compliance" />}>
+            <Route path="/quality/compliance" element={<ComplianceRegister />} />
+            <Route path="/quality/compliance/:id" element={<ComplianceDetail />} />
+          </Route>
+
           {/* --------------------------- Administration --------------------------
               The only module that is not a business domain: it administers the
               others. Read surfaces (audit trail, governance, workflows) are
@@ -296,6 +334,7 @@ export function AppRoutes() {
           <Route element={<ProtectedRoute permission="view_admin_system_health" />}><Route path="/admin/system-health" element={<AdminSystemHealth />} /></Route>
           <Route element={<ProtectedRoute permission="view_admin_data_governance" />}><Route path="/admin/data-governance" element={<AdminDataGovernance />} /></Route>
           <Route element={<ProtectedRoute permission="view_admin_data_privacy" />}><Route path="/admin/data-privacy" element={<AdminDataPrivacy />} /></Route>
+          <Route element={<ProtectedRoute permission="view_admin_settings" />}><Route path="/admin/custom-fields" element={<AdminCustomFields />} /></Route>
           <Route element={<ProtectedRoute permission="view_admin_workflows" />}><Route path="/admin/workflows" element={<AdminWorkflows />} /></Route>
           <Route element={<ProtectedRoute permission="view_admin_notifications" />}><Route path="/admin/notifications" element={<AdminNotifications />} /></Route>
           <Route element={<ProtectedRoute permission="view_admin_modules" />}><Route path="/admin/modules" element={<AdminModuleRegistry />} /></Route>

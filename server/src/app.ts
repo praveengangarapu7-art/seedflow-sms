@@ -25,12 +25,15 @@ import { govProgramsRouter } from './modules/govPrograms/govPrograms.routes';
 import { marketIntelligenceRouter } from './modules/marketIntelligence/marketIntelligence.routes';
 import { labTestingRouter } from './modules/labTesting/labTesting.routes';
 import { assistantRouter } from './modules/assistant/assistant.routes';
+import { aiRouter } from './modules/ai/ai.routes';
+import { moduleRecordsRouter } from './modules/moduleRecords/moduleRecords.routes';
 import { monitoringRouter } from './modules/monitoring/monitoring.routes';
 import { organizationsRouter } from './modules/organizations/organizations.routes';
 import { packagingRouter } from './modules/packaging/packaging.routes';
 import { partnersRouter } from './modules/partners/partners.routes';
 import { performanceRatingsRouter } from './modules/performanceRatings/performanceRatings.routes';
 import { privacyRouter } from './modules/privacy/privacy.routes';
+import { qualityRouter } from './modules/quality/quality.routes';
 import { reconciliationRouter } from './modules/reconciliation/reconciliation.routes';
 import { pushNotificationsRouter } from './modules/pushNotifications/pushNotifications.routes';
 import { seedLotsRouter } from './modules/seedLots/seedLots.routes';
@@ -38,16 +41,23 @@ import { seedRequestsRouter } from './modules/seedRequests/seedRequests.routes';
 import { storageRouter } from './modules/storage/storage.routes';
 import { usersRouter } from './modules/users/users.routes';
 import { varietiesRouter } from './modules/varieties/varieties.routes';
+import { customFieldsRouter } from './modules/customFields/customFields.routes';
 import { workflowsRouter } from './modules/workflows/workflows.routes';
 
 export function createApp() {
   const app = express();
 
+  // Behind Vercel's (or any) proxy, trust the first hop so rate limiting and
+  // logs see the real client IP instead of the proxy's.
+  if (process.env.VERCEL || process.env.TRUST_PROXY === 'true') app.set('trust proxy', 1);
+
   // credentials:true requires a specific origin (not '*') so the browser
   // will actually send/accept the httpOnly refresh-token cookie cross-port.
   app.use(cors({ origin: env.frontendOrigin, credentials: true }));
   app.use(cookieParser());
-  app.use(express.json());
+  // 6mb: the AI Center posts compressed photos (~0.3-1 MB base64). Vercel caps
+  // a function request body at 4.5 MB, so the client resizes before upload.
+  app.use(express.json({ limit: '6mb' }));
   app.use(apiMetricsMiddleware);
 
   app.get('/api/v1/health', (_req, res) => {
@@ -89,6 +99,10 @@ export function createApp() {
   app.use('/api/v1/financing', financingRouter);
   app.use('/api/v1/farmer-education', farmerEducationRouter);
   app.use('/api/v1/assistant', assistantRouter);
+  app.use('/api/v1/ai', aiRouter);
+  app.use('/api/v1/quality', qualityRouter);
+  app.use('/api/v1/custom-fields', customFieldsRouter);
+  app.use('/api/v1/module-records', moduleRecordsRouter);
 
   app.use((_req, res) => {
     res.status(404).json({ success: false, message: 'Not found' });

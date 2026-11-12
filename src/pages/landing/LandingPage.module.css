@@ -17,8 +17,9 @@
   /* Tinted canvas, with a taller gradient wash behind the nav and hero so the
      top of the page lightens toward the headline instead of sitting flat. */
   background-color: var(--landing-surface);
-  background-image: linear-gradient(180deg, var(--landing-hero-top) 0%, var(--landing-hero-bottom) 100%);
-  background-size: 100% 760px;
+  /* Ends on the page surface colour so there is no visible seam under the hero. */
+  background-image: linear-gradient(180deg, var(--landing-hero-top) 0%, var(--landing-hero-bottom) 55%, var(--landing-surface) 100%);
+  background-size: 100% 1150px;
   background-repeat: no-repeat;
   color: var(--color-text-primary);
   min-height: 100vh;
@@ -118,4 +119,22 @@
   100% {
     transform: translate(-30px, 50px) scale(0.9);
   }
+}
+
+/* v2: canvas of drifting seeds behind the nav, hero and seed band */
+.seedLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1100px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* v2: one official typeface (Inter) across the landing page; headings bold. */
+.landingContainer h2 {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }

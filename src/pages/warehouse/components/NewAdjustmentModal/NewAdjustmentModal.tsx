@@ -3,7 +3,8 @@ import { Camera, Upload, AlertTriangle } from 'lucide-react';
 import { Modal } from '@/components/common/Modal/Modal';
 import { Button } from '@/components/common/Button/Button';
 import { useToast } from '@/components/common/Toast/ToastContext';
-import { inventoryItems } from '../../mockData/inventoryData';
+import { adjustStock, logMovement, nowIso, useWh, whAdd, whNextId, whRead, whUser } from '../../warehouseStore';
+import type { StockAdjustment } from '@/types/warehouse';
 import { buildBinCode } from '../../mockData/storageData';
 import type { AdjustmentReason, AdjustmentDirection, AdjustmentSource } from '@/types/warehouse';
 import { formatIndianNumber, formatRupees } from '@/utils/formatters';
@@ -34,6 +35,7 @@ const STRONG_PHOTO_REASONS: AdjustmentReason[] = ['Damaged goods', 'Theft / shri
 
 export function NewAdjustmentModal({ isOpen, onClose, prefillSource, prefillCycleCountRef }: NewAdjustmentModalProps) {
   const { addToast } = useToast();
+  const [inventoryItems] = useWh('items');
   const [sku, setSku] = useState('');
   const [direction, setDirection] = useState<AdjustmentDirection>('Decrease');
   const [actualQty, setActualQty] = useState('');
@@ -54,7 +56,7 @@ export function NewAdjustmentModal({ isOpen, onClose, prefillSource, prefillCycl
     }
   }, [isOpen, prefillSource]);
 
-  const item = useMemo(() => inventoryItems.find((i) => i.sku === sku) ?? null, [sku]);
+  const item = useMemo(() => inventoryItems.find((i) => i.sku === sku) ?? null, [sku, inventoryItems]);
   const currentBin = item ? buildBinCode(item.location.zone, item.location.rack, item.location.shelf, item.location.bin) : '';
   const actualQtyNum = parseInt(actualQty, 10);
   const validActual = Number.isFinite(actualQtyNum) && actualQtyNum >= 0;
@@ -69,15 +71,36 @@ export function NewAdjustmentModal({ isOpen, onClose, prefillSource, prefillCycl
   const varianceValue = item ? variance * item.unitCost : 0;
   const requiresApproval = Math.abs(varianceValue) > 10_000;
 
+  const buildAdjustment = (status: StockAdjustment['status']): StockAdjustment | null => {
+    if (!item) return null;
+    return {
+      id: whNextId('ADJ', whRead('adjustments').map((a) => a.id)),
+      itemSku: item.sku, itemName: item.name, batch: item.batchNumber, location: currentBin, direction,
+      systemQty: item.quantity, actualQty: newQty ?? item.quantity, varianceQty: variance, uom: item.uom,
+      unitCost: item.unitCost, varianceValue,
+      reason: (reason || 'Other') as StockAdjustment['reason'], reasonNotes: reasonNotes || undefined,
+      photos: Array.from({ length: photoCount }, (_, i) => `photo-${i + 1}.jpg`),
+      initiatedBy: whUser(), initiatedAt: nowIso(), status,
+      approvalChain: status === 'Pending approval' ? [{ approver: 'Warehouse manager', role: 'Warehouse manager', status: 'pending' }] : [],
+      source, cycleCountRef: prefillCycleCountRef,
+      postedAt: status === 'Posted' ? nowIso() : undefined,
+      warehouse: item.location.warehouse,
+    };
+  };
+
   const reasonRequired = reason === '';
   const notesRequired = reason === 'Other' && reasonNotes.trim() === '';
   const canSubmit = !reasonRequired && !notesRequired && sku !== '' && validActual && actualQtyNum > 0;
 
   const handleSubmit = (autoPost: boolean) => {
-    console.log(autoPost ? 'submit & post adjustment' : 'submit for approval', {
-      sku, direction, actualQty: actualQtyNum, reason, reasonNotes, source, photoCount, prefillCycleCountRef,
-      newQty, variance, varianceValue,
-    });
+    const adj = buildAdjustment(autoPost ? 'Posted' : 'Pending approval');
+    if (!adj) return;
+    whAdd('adjustments', adj);
+    if (autoPost && item) {
+      adjustStock(item.sku, adj.varianceQty);
+      logMovement({ category: 'Adjustment', subType: direction, itemName: item.name, sku: item.sku, batch: item.batchNumber, quantity: Math.abs(adj.varianceQty), uom: item.uom, fromLocation: adj.location, reason: adj.reason, reasonNotes: adj.reasonNotes, reference: adj.id, status: 'Completed', completedAt: nowIso() });
+    }
+    addToast({ type: 'success', message: autoPost ? `${adj.id} posted; stock updated` : `${adj.id} submitted for approval` });
     onClose();
   };
 
@@ -210,7 +233,7 @@ export function NewAdjustmentModal({ isOpen, onClose, prefillSource, prefillCycl
       <div className={styles.footer}>
         <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
         <div className={styles.footerRight}>
-          <Button variant="secondary" size="sm" onClick={() => { console.log('save adjustment draft', { sku, direction, actualQty, reason, source }); addToast({ type: 'success', message: 'Saved as draft' }); onClose(); }}>Save as draft</Button>
+          <Button variant="secondary" size="sm" onClick={() => { const adj = buildAdjustment('Draft'); if (adj) { whAdd('adjustments', adj); addToast({ type: 'success', message: `${adj.id} saved as draft` }); } onClose(); }}>Save as draft</Button>
           {!requiresApproval && validActual && (
             <Button variant="secondary" size="sm" disabled={!canSubmit} onClick={() => handleSubmit(true)}>
               Submit & post

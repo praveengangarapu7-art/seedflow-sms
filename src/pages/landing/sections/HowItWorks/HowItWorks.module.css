@@ -1,5 +1,5 @@
 .section {
-  padding: 72px 24px;
+  padding: 44px 24px;
   background-color: var(--landing-surface);
   position: relative;
   overflow: hidden;
@@ -15,7 +15,7 @@
 .header {
   text-align: center;
   max-width: 720px;
-  margin: 0 auto 64px auto;
+  margin: 0 auto 32px auto;
 }
 
 .label {
@@ -47,8 +47,8 @@
 .journeyBoard {
   position: relative;
   width: 100%;
-  margin: 0 auto 80px auto;
-  min-height: 380px;
+  margin: 0 auto 40px auto;
+  min-height: 340px;
 }
 
 /* Desktop horizontal wrapper */
@@ -56,7 +56,7 @@
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 32px 0 56px 0;
+  padding: 16px 0 32px 0;
 }
 
 .svgTimeline {
@@ -214,7 +214,7 @@
   align-items: center;
   gap: 20px;
   margin-top: -10px;
-  margin-bottom: 64px;
+  margin-bottom: 36px;
 }
 
 .replayLink {

@@ -8,7 +8,7 @@ import { FlaskConical, Download, Sprout, TrendingUp, FlaskConical as FlaskIcon, 
 import { rdNav } from '@/config/rdNav';
 import { rdKpis } from './mockData/dashboardData';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
-import { RD_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
+import { type PeriodValue } from '@/utils/periodFilter';
 
 import { BreedingPipelineFunnel } from './components/BreedingPipelineFunnel/BreedingPipelineFunnel';
 import { ActiveTrialsMap } from './components/ActiveTrialsMap/ActiveTrialsMap';

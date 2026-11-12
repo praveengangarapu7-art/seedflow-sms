@@ -16,7 +16,6 @@ import {
   kpiData,
   spendByCategory,
   poStatusData,
-  recentPOs,
   pendingApprovals,
   topSuppliers,
   activeAlerts,
@@ -26,6 +25,8 @@ import { PERIOD_OPTIONS, isDateInPeriod, type PeriodValue } from '@/utils/period
 import type { KpiData } from '@/types/procurement';
 import styles from './ProcurementDashboard.module.css';
 
+import { usePOs, useSuppliers } from './procurementStore';
+import type { PoStatus, RecentPO, TopSupplier } from '@/types/procurement';
 // Period-aware variants of the top KPI strip. 'month' matches the dashboard's
 // original always-on figures; the rest are plausible period-scaled variants.
 const KPI_DATA_BY_PERIOD: Record<PeriodValue, KpiData[]> = {
@@ -68,9 +69,29 @@ export default function ProcurementDashboard() {
   const dashboardRef = useRef<HTMLDivElement>(null);
 
   const displayedKpis = KPI_DATA_BY_PERIOD[period];
-  const displayedRecentPOs = useMemo(
-    () => recentPOs.filter((po) => isDateInPeriod(po.date, period)),
-    [period]
+  const [livePOs] = usePOs();
+  const [liveSuppliers] = useSuppliers();
+  // Live figures from the saved purchase orders and suppliers.
+  const displayedRecentPOs = useMemo(() => {
+    const live: RecentPO[] = livePOs.map((p) => ({
+      poNumber: p.id, supplier: p.supplier, amount: p.totalAmount,
+      status: (p.status === 'Partially Received' ? 'Acknowledged' : p.status) as RecentPO['status'], date: p.createdDate,
+    }));
+    const inPeriod = live.filter((po) => isDateInPeriod(po.date, period));
+    return (inPeriod.length ? inPeriod : live).slice(0, 8);
+  }, [period, livePOs]);
+  const livePoStatus = useMemo<PoStatus[]>(() => {
+    const groups: PoStatus['status'][] = ['Draft', 'Sent', 'Acknowledged', 'Received', 'Closed'];
+    const total = livePOs.length || 1;
+    return groups.map((status) => {
+      const count = livePOs.filter((p) => (p.status === 'Partially Received' ? 'Acknowledged' : p.status) === status).length;
+      return { status, count, percentage: Math.round((count / total) * 100) };
+    });
+  }, [livePOs]);
+  const liveTopSuppliers = useMemo<TopSupplier[]>(
+    () => [...liveSuppliers].filter((s) => s.classification !== 'Blacklisted').sort((a, b) => b.totalSpend - a.totalSpend).slice(0, 5)
+      .map((s, i) => ({ rank: i + 1, name: s.name, score: Math.round(s.overallScore) / 20, poCount: s.totalPOs, totalSpend: s.totalSpend })),
+    [liveSuppliers],
   );
 
   const canApprove = usePermission('approve_order') || usePermission('approve_requisition') || usePermission('approve_invoice_payment');
@@ -156,7 +177,7 @@ export default function ProcurementDashboard() {
       {/* Charts */}
       <div className={`${styles.section} ${styles.chartsGrid}`}>
         <SpendByCategoryChart data={spendByCategory} />
-        <PoStatusDonut data={poStatusData} />
+        <PoStatusDonut data={livePOs.length ? livePoStatus : poStatusData} />
       </div>
 
       {/* Tables */}
@@ -176,7 +197,7 @@ export default function ProcurementDashboard() {
 
       {/* Bottom row */}
       <div className={`${styles.section} ${styles.bottomGrid}`}>
-        <TopSuppliersList data={topSuppliers} />
+        <TopSuppliersList data={liveTopSuppliers.length ? liveTopSuppliers : topSuppliers} />
         {!isManagement && <AlertsList data={activeAlerts} />}
       </div>
       </div>

@@ -12,6 +12,9 @@ import styles from './ProcessingDashboard.module.css';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
 import { type PeriodValue } from '@/utils/periodFilter';
 
+import { setCollection } from '@/hooks/persistentCollections';
+import { machines as machineStarter } from '@/data/processing/machines';
+import type { Machine } from '@/types/processing';
 const trendData = [
   { day: '01 Jun', volume: 4.2, recovery: 81.5 },
   { day: '02 Jun', volume: 5.1, recovery: 82.0 },
@@ -221,7 +224,7 @@ export default function ProcessingDashboard() {
                 variant="primary"
                 size="sm"
                 leftIcon={Activity}
-                onClick={() => addToast('Cleaner-03 calibration request sent to maintenance team.', 'success')}
+                onClick={() => { const due = new Date(Date.now() + 2 * 86_400_000).toISOString().slice(0, 10); setCollection<Machine>('processing.machines', machineStarter, (prev) => prev.map((m) => (/cleaner-?03/i.test(m.name) || /cleaner-?03/i.test(m.id) ? { ...m, nextServiceDue: due } : m))); addToast(`Cleaner-03 calibration scheduled for ${due}`, 'success'); }}
               >
                 Schedule Calibration
               </Button>

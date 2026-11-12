@@ -38,14 +38,14 @@ import type { WarehouseConfig } from '@/types/warehouse';
 
 import { 
   warehouses as mockWarehouses,
-  itemCategories as mockCategories,
-  uomList as mockUomList,
-  workflowRules as mockRules,
-  warehouseRoles as mockRoles,
+  itemCategories as categoriesStarter,
+  uomList as uomStarter,
+  workflowRules as rulesStarter,
+  warehouseRoles as rolesStarter,
   warehousePermissions as mockPermissions,
-  rolePermissionMappings as mockMappings,
-  notificationPreferences as mockNotifs,
-  integrations as mockIntegrations,
+  rolePermissionMappings as mappingsStarter,
+  notificationPreferences as notifsStarter,
+  integrations as integrationsStarter,
   auditLogEntries as mockAuditLogs
 } from './mockData/settingsData';
 
@@ -55,8 +55,51 @@ import { warehouseNav } from '@/config/warehouseNav';
 import { NotificationChannel } from '@/types/warehouse';
 import { usePermission } from '@/hooks/usePermission';
 
+import { usePersistentCollection } from '@/hooks/persistentCollections';
+import type { WarehouseRole, RolePermissionMapping, NotificationPreference, Integration } from '@/types/warehouse';
+const locationStarter: LocationNode[] = [
+  {
+    id: 'WH-001',
+    label: 'Telangana Main',
+    type: 'warehouse',
+    capacity: 48000,
+    occupied: 38400,
+    children: [
+      {
+        id: 'Z-01',
+        label: 'Cold Zone A',
+        type: 'zone',
+        capacity: 5000,
+        occupied: 4600,
+        children: [
+          { id: 'R-01', label: 'Rack 01', type: 'rack', capacity: 1000, occupied: 900 },
+          { id: 'R-02', label: 'Rack 02', type: 'rack', capacity: 1000, occupied: 850 }
+        ]
+      },
+      { id: 'Z-02', label: 'Ambient Zone 1', type: 'zone', capacity: 8000, occupied: 6800 }
+    ]
+  }
+];
+
 const WarehouseSettings: React.FC = () => {
   const { addToast } = useToast();
+  const [mockCategories, setCategories] = usePersistentCollection<any>('warehouse.categories', categoriesStarter);
+  const [mockUomList, setUomList] = usePersistentCollection<any>('warehouse.uom', uomStarter);
+  const [mockRules, setRules] = usePersistentCollection<any>('warehouse.workflow_rules', rulesStarter);
+  const [mockRoles, setRoles] = usePersistentCollection<WarehouseRole>('warehouse.roles', rolesStarter);
+  const [mockMappings, setMappings] = usePersistentCollection<RolePermissionMapping>('warehouse.role_permissions', mappingsStarter);
+  const [mockNotifs, setNotifs] = usePersistentCollection<NotificationPreference>('warehouse.notifications', notifsStarter);
+  const [mockIntegrations, setIntegrations] = usePersistentCollection<Integration>('warehouse.integrations', integrationsStarter);
+  const [locationData, setLocationData] = usePersistentCollection<LocationNode>('warehouse.location_tree', locationStarter);
+  const [nodeForm, setNodeForm] = useState<{ label: string; capacity: string; zoneType: string }>({ label: '', capacity: '', zoneType: 'Cold' });
+  const [roleFilter, setRoleFilter] = useState<string | null>(null);
+  const [integrationFilter, setIntegrationFilter] = useState<'All' | 'Accounting' | 'Logistics' | 'Hardware'>('All');
+  const [notifPaused, setNotifPaused] = useState(false);
+  const upsert = <T extends { id?: string }>(set: (fn: (prev: T[]) => T[]) => void, data: T, prefix: string) => {
+    set((prev) => (data.id && prev.some((x) => x.id === data.id) ? prev.map((x) => (x.id === data.id ? { ...x, ...data } : x)) : [{ ...data, id: data.id || `${prefix}-${Date.now().toString(36).toUpperCase()}` }, ...prev]));
+  };
+  const mapTree = (nodes: LocationNode[], fn: (n: LocationNode) => LocationNode | null): LocationNode[] =>
+    nodes.map((n) => fn(n)).filter((n): n is LocationNode => n !== null).map((n) => (n.children ? { ...n, children: mapTree(n.children, fn) } : n));
   const canManageSettings = usePermission('manage_warehouse_settings');
 
   const [activeTab, setActiveTab] = useState('warehouses');
@@ -87,7 +130,7 @@ const WarehouseSettings: React.FC = () => {
   const [auditSearch, setAuditSearch] = useState('');
   const [auditAction, setAuditAction] = useState<'all' | string>('all');
 
-  const { items: warehousesStore, update: updateWh, add: addWh } = useRealtimeMockStore<WarehouseConfig>(mockWarehouses);
+  const { items: warehousesStore, update: updateWh, add: addWh } = useRealtimeMockStore<WarehouseConfig>(mockWarehouses, 'warehouse.warehouses');
 
   const filteredWarehouses = React.useMemo(() => {
     return warehousesStore.filter((w) => {
@@ -124,29 +167,6 @@ const WarehouseSettings: React.FC = () => {
     { key: 'audit', label: 'Audit logs', icon: History }
   ];
 
-  const locationData: LocationNode[] = [
-    {
-      id: 'WH-001',
-      label: 'Telangana Main',
-      type: 'warehouse',
-      capacity: 48000,
-      occupied: 38400,
-      children: [
-        {
-          id: 'Z-01',
-          label: 'Cold Zone A',
-          type: 'zone',
-          capacity: 5000,
-          occupied: 4600,
-          children: [
-            { id: 'R-01', label: 'Rack 01', type: 'rack', capacity: 1000, occupied: 900 },
-            { id: 'R-02', label: 'Rack 02', type: 'rack', capacity: 1000, occupied: 850 }
-          ]
-        },
-        { id: 'Z-02', label: 'Ambient Zone 1', type: 'zone', capacity: 8000, occupied: 6800 }
-      ]
-    }
-  ];
 
   const renderWarehouses = () => (
     <div className={styles.tabContent}>
@@ -200,7 +220,15 @@ const WarehouseSettings: React.FC = () => {
           </select>
         </div>
         <div className={styles.headerActions}>
-          <Button variant="secondary" icon={<Plus size={16} />}>Add zone</Button>
+          <Button variant="secondary" icon={<Plus size={16} />} onClick={() => {
+            const parent = selectedNode?.type === 'warehouse' ? selectedNode : locationData[0];
+            if (!parent) return;
+            const name = window.prompt(`New zone name in ${parent.label}`);
+            if (!name?.trim()) return;
+            const zone: LocationNode = { id: `${parent.id}-Z${Date.now().toString(36).slice(-4).toUpperCase()}`, label: name.trim(), type: 'zone', capacity: 0, occupied: 0, children: [] };
+            setLocationData((prev) => mapTree(prev, (n) => (n.id === parent.id ? { ...n, children: [...(n.children ?? []), zone] } : n)));
+            addToast({ type: 'success', message: `Zone ${zone.label} added to ${parent.label}` });
+          }}>Add zone</Button>
           <Button variant="secondary" icon={<Download size={16} />} onClick={() => setIsImportModalOpen(true)}>Bulk import</Button>
         </div>
       </div>
@@ -209,8 +237,15 @@ const WarehouseSettings: React.FC = () => {
           <LocationTree 
             data={locationData} 
             selectedId={selectedNode?.id}
-            onSelect={setSelectedNode}
-            onAction={(n, a) => console.log('Tree action', n, a)}
+            onSelect={(n) => { setSelectedNode(n); setNodeForm({ label: n.label, capacity: String(n.capacity ?? ''), zoneType: 'Cold' }); }}
+            onAction={(n) => {
+              if (n.type === 'warehouse') { setSelectedNode(n); return; }
+              if (window.confirm(`Delete ${n.type} "${n.label}"${n.children?.length ? ` and its ${n.children.length} child location(s)` : ''}?`)) {
+                setLocationData((prev) => mapTree(prev, (x) => (x.id === n.id ? null : x)));
+                if (selectedNode?.id === n.id) setSelectedNode(null);
+                addToast({ type: 'warning', message: `${n.label} deleted` });
+              }
+            }}
           />
         </div>
         <div className={styles.detailPanel}>
@@ -218,24 +253,24 @@ const WarehouseSettings: React.FC = () => {
             <div className={styles.nodeForm}>
               <h3 className={styles.nodeTitle}>Edit {selectedNode.type}: {selectedNode.label}</h3>
               <div className={styles.formRow}>
-                <Input label="Name" value={selectedNode.label} />
+                <Input label="Name" value={nodeForm.label} onChange={(e) => setNodeForm({ ...nodeForm, label: e.target.value })} />
                 <Input label="Identifier" value={selectedNode.id} />
               </div>
               {selectedNode.type === 'zone' && (
                 <div className={styles.formRow}>
                   <div className={styles.inputGroup}>
                     <label className={styles.label}>Zone type</label>
-                    <select className={styles.select}>
+                    <select className={styles.select} value={nodeForm.zoneType} onChange={(e) => setNodeForm({ ...nodeForm, zoneType: e.target.value })}>
                       <option>Cold</option>
                       <option>Ambient</option>
                       <option>Controlled</option>
                     </select>
                   </div>
-                  <Input label="Capacity (bags)" value={selectedNode.capacity} type="number" />
+                  <Input label="Capacity (bags)" value={nodeForm.capacity} type="number" onChange={(e) => setNodeForm({ ...nodeForm, capacity: e.target.value })} />
                 </div>
               )}
               <div className={styles.formFooter}>
-                <Button variant="primary" onClick={() => { console.log('save zone changes', selectedNode); addToast({ type: 'success', message: 'Location updated' }); }}>Save changes</Button>
+                <Button variant="primary" onClick={() => { const cap = Number(nodeForm.capacity); setLocationData((prev) => mapTree(prev, (n) => (n.id === selectedNode.id ? { ...n, label: nodeForm.label.trim() || n.label, capacity: Number.isFinite(cap) && nodeForm.capacity !== '' ? cap : n.capacity } : n))); setSelectedNode({ ...selectedNode, label: nodeForm.label.trim() || selectedNode.label }); addToast({ type: 'success', message: 'Location updated' }); }}>Save changes</Button>
               </div>
             </div>
           ) : (
@@ -307,7 +342,7 @@ const WarehouseSettings: React.FC = () => {
           { key: 'trigger', label: 'Trigger', render: (r: any) => <Badge variant="info">{r.trigger}</Badge> },
           { key: 'actions', label: 'Actions', render: (r: any) => <div className={styles.actionsList}>{r.actions.map((a: any, i: number) => <Badge key={i} variant="neutral">{a.action}</Badge>)}</div> },
           { key: 'usage', label: 'Usage', render: (r: any) => <div className={styles.usage}><Activity size={12} /> {r.triggerCount}</div> },
-          { key: 'active', label: 'Active', render: (r: any) => <div className={`${styles.toggle} ${r.active ? styles.active : ''}`}><div className={styles.toggleHandle} /></div> },
+          { key: 'active', label: 'Active', render: (r: any) => <div role="switch" aria-checked={r.active} style={{ cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); setRules((prev) => prev.map((x: any) => (x.id === r.id ? { ...x, active: !x.active } : x))); }} className={`${styles.toggle} ${r.active ? styles.active : ''}`}><div className={styles.toggleHandle} /></div> },
           { key: 'controls', label: 'Actions', render: (r: any) => <Button variant="ghost" size="sm" onClick={() => { setSelectedRule(r); setIsRuleModalOpen(true); }}>Edit</Button> }
         ]}
         data={mockRules}
@@ -322,20 +357,20 @@ const WarehouseSettings: React.FC = () => {
         <div className={styles.headerFilters}>
           <div className={styles.roleChips}>
             {mockRoles.map(role => (
-              <button key={role.id} className={`${styles.roleChip} ${role.isSystemRole ? styles.systemRole : ''}`}>
+              <button key={role.id} className={`${styles.roleChip} ${role.isSystemRole ? styles.systemRole : ''}`} style={roleFilter === role.id ? { outline: '2px solid var(--color-primary)' } : undefined} onClick={() => setRoleFilter((r) => (r === role.id ? null : role.id))}>
                 {role.name}
                 <span className={styles.count}>{role.userCount}</span>
               </button>
             ))}
-            <button className={styles.addRoleBtn}><Plus size={14} /> Custom Role</button>
+            <button className={styles.addRoleBtn} onClick={() => { const name = window.prompt('Custom role name'); if (name?.trim()) { setRoles((prev) => [...prev, { id: `ROLE-${Date.now().toString(36).toUpperCase()}`, name: name.trim(), description: 'Custom role', isSystemRole: false, userCount: 0 }]); addToast({ type: 'success', message: `Role ${name.trim()} added` }); } }}><Plus size={14} /> Custom Role</button>
           </div>
         </div>
       </div>
       <RolePermissionsTable 
-        roles={mockRoles}
+        roles={roleFilter ? mockRoles.filter((r) => r.id === roleFilter) : mockRoles}
         permissions={mockPermissions}
         mappings={mockMappings}
-        onToggle={(r, p) => console.log('Toggle permission', r, p)}
+        onToggle={(r, p) => setMappings((prev) => (prev.some((m) => m.roleId === r && m.permissionId === p) ? prev.map((m) => (m.roleId === r && m.permissionId === p ? { ...m, granted: !m.granted } : m)) : [...prev, { roleId: r, permissionId: p, granted: true }]))}
       />
     </div>
   );
@@ -348,10 +383,10 @@ const WarehouseSettings: React.FC = () => {
           <p className={styles.masterDesc}>Manage how you receive alerts across the warehouse module.</p>
         </div>
         <div className={styles.masterActions}>
-          <button className={styles.resetLink}>Reset to defaults</button>
+          <button className={styles.resetLink} onClick={() => { setNotifs(notifsStarter.slice()); setNotifPaused(false); addToast({ type: 'info', message: 'Notification preferences reset to defaults' }); }}>Reset to defaults</button>
           <div className={styles.pauseControl}>
             <span className={styles.label}>Pause all</span>
-            <div className={styles.toggle}><div className={styles.toggleHandle} /></div>
+            <div className={`${styles.toggle} ${notifPaused ? styles.active : ''}`} role="switch" aria-checked={notifPaused} style={{ cursor: 'pointer' }} onClick={() => setNotifPaused((v) => !v)}><div className={styles.toggleHandle} /></div>
           </div>
         </div>
       </div>
@@ -368,7 +403,7 @@ const WarehouseSettings: React.FC = () => {
                   </div>
                   <div className={styles.notifToggles}>
                     {['Email', 'SMS', 'In-app'].map(channel => (
-                      <label key={channel} className={styles.notifToggleLabel}>
+                      <label key={channel} className={styles.notifToggleLabel} style={{ cursor: 'pointer', opacity: notifPaused ? 0.5 : 1 }} onClick={(e) => { e.preventDefault(); setNotifs((prev) => prev.map((n) => (n.id === notif.id ? { ...n, channels: { ...n.channels, [channel]: !n.channels[channel as NotificationChannel] } } : n))); }}>
                         <span className={styles.channelName}>{channel}</span>
                         <div className={`${styles.toggle} ${styles.smallToggle} ${notif.channels[channel as NotificationChannel] ? styles.active : ''}`}>
                           <div className={styles.toggleHandle} />
@@ -383,7 +418,7 @@ const WarehouseSettings: React.FC = () => {
         ))}
       </div>
       <div className={styles.stickyFooter}>
-        <Button variant="primary" onClick={() => { console.log('save notification preferences'); addToast({ type: 'success', message: 'Notification preferences saved' }); }}>Save preferences</Button>
+        <Button variant="primary" onClick={() => { if (notifPaused) setNotifs((prev) => prev.map((n) => ({ ...n, channels: { Email: false, SMS: false, 'In-app': false } }))); addToast({ type: 'success', message: notifPaused ? 'All notifications paused' : 'Notification preferences saved' }); }}>Save preferences</Button>
       </div>
     </div>
   );
@@ -393,21 +428,20 @@ const WarehouseSettings: React.FC = () => {
       <div className={styles.contentHeader}>
         <div className={styles.headerFilters}>
           <div className={styles.filterChips}>
-            <button className={`${styles.chip} ${styles.activeChip}`}>All</button>
-            <button className={styles.chip}>Accounting</button>
-            <button className={styles.chip}>Logistics</button>
-            <button className={styles.chip}>Hardware</button>
+            {(['All', 'Accounting', 'Logistics', 'Hardware'] as const).map((c) => (
+              <button key={c} className={`${styles.chip} ${integrationFilter === c ? styles.activeChip : ''}`} onClick={() => setIntegrationFilter(c)}>{c}</button>
+            ))}
           </div>
         </div>
       </div>
       <div className={styles.integrationsGrid}>
-        {mockIntegrations.map(int => (
+        {mockIntegrations.filter((i) => integrationFilter === 'All' || i.category === integrationFilter).map(int => (
           <IntegrationCard 
             key={int.id} 
             integration={int} 
-            onConfigure={() => {}}
-            onConnect={() => {}}
-            onDisconnect={() => {}}
+            onConfigure={(i) => { const v = window.prompt(`${i.name}: endpoint or account ID`, ''); if (v !== null) { setIntegrations((prev) => prev.map((x) => (x.id === i.id ? { ...x, status: 'Connected', lastSync: 'just now' } : x))); addToast({ type: 'success', message: `${i.name} configuration saved` }); } }}
+            onConnect={(id) => { setIntegrations((prev) => prev.map((x) => (x.id === id ? { ...x, status: 'Connected', lastSync: 'just now' } : x))); addToast({ type: 'success', message: 'Integration connected' }); }}
+            onDisconnect={(id) => { setIntegrations((prev) => prev.map((x) => (x.id === id ? { ...x, status: 'Not connected' } : x))); addToast({ type: 'warning', message: 'Integration disconnected' }); }}
           />
         ))}
       </div>
@@ -504,28 +538,38 @@ const WarehouseSettings: React.FC = () => {
       <BulkImportLocationsModal 
         isOpen={isImportModalOpen} 
         onClose={() => setIsImportModalOpen(false)} 
-        onImport={(data) => console.log('Import data', data)}
+        onImport={(file) => {
+          if (!(file instanceof File)) return;
+          void file.text().then((text) => {
+            const rows = text.split(/\r?\n/).slice(1).map((l) => l.split(',').map((c) => c.trim())).filter((r) => r.length >= 2 && r[0]);
+            const parent = locationData[0];
+            if (!parent || rows.length === 0) { addToast({ type: 'warning', message: 'No rows found in the file' }); return; }
+            const zones: LocationNode[] = rows.map((r, i) => ({ id: `${parent.id}-IMP${Date.now().toString(36).slice(-3)}${i}`, label: r[0], type: 'zone', capacity: Number(r[1]) || 0, occupied: 0, children: [] }));
+            setLocationData((prev) => mapTree(prev, (n) => (n.id === parent.id ? { ...n, children: [...(n.children ?? []), ...zones] } : n)));
+            addToast({ type: 'success', message: `${zones.length} location(s) imported into ${parent.label}` });
+          });
+        }}
       />
 
       <CategoryFormModal 
         isOpen={isCatModalOpen} 
         onClose={() => setIsCatModalOpen(false)} 
         category={selectedCat}
-        onSave={(data) => console.log('Save category', data)}
+        onSave={(data) => { upsert(setCategories, data, 'CAT'); setIsCatModalOpen(false); addToast({ type: 'success', message: 'Category saved' }); }}
       />
 
       <UoMFormModal 
         isOpen={isUomModalOpen} 
         onClose={() => setIsUomModalOpen(false)} 
         uom={selectedUom}
-        onSave={(data) => console.log('Save UoM', data)}
+        onSave={(data) => { upsert(setUomList, data, 'UOM'); setIsUomModalOpen(false); addToast({ type: 'success', message: 'Unit saved' }); }}
       />
 
       <WorkflowRuleEditorModal 
         isOpen={isRuleModalOpen} 
         onClose={() => setIsRuleModalOpen(false)} 
         rule={selectedRule}
-        onSave={(data) => console.log('Save rule', data)}
+        onSave={(data) => { upsert(setRules, { triggerCount: 0, actions: [], conditions: [], ...data }, 'RULE'); setIsRuleModalOpen(false); addToast({ type: 'success', message: 'Workflow rule saved' }); }}
       />
 
       <AuditLogDetailModal

@@ -6,7 +6,7 @@ import { DataTable } from '@/components/common/DataTable/DataTable';
 import { Modal } from '@/components/common/Modal/Modal';
 import { Button } from '@/components/common/Button/Button';
 import { useToast } from '@/components/common/Toast';
-import { mockCostCenters } from './mockData/costCentersData';
+import { useCostCenters } from './procurementStore';
 import { formatIndianCurrency } from '@/utils/formatters';
 import { procurementNav } from '@/config/procurementNav';
 import type { CostCenter } from '@/types/procurement';
@@ -122,13 +122,25 @@ function SpendVsBudgetChart({ data }: { data: CostCenter[] }) {
 }
 
 // Manage Budgets Modal
+function recalc(cc: CostCenter, allocated: number): CostCenter {
+  const available = allocated - cc.committed - cc.spent;
+  const utilization = allocated > 0 ? Math.round(((cc.committed + cc.spent) / allocated) * 100) : 0;
+  const status: CostCenter['status'] = utilization > 100 ? 'Over Budget' : utilization >= 90 ? 'Critical' : utilization >= 75 ? 'Warning' : utilization < 30 ? 'Underutilized' : 'On Track';
+  return { ...cc, allocated, available, utilization, status };
+}
+
 function ManageBudgetsModal({ onClose }: { onClose: () => void }) {
   const { addToast } = useToast();
+  const [mockCostCenters, setCostCenters] = useCostCenters();
+  const [edits, setEdits] = useState<Record<string, string>>({});
   return (
     <Modal isOpen onClose={onClose} title="Manage budgets" size="lg" footer={
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
         <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" size="sm" onClick={() => { addToast('Budget allocations saved', 'success'); onClose(); }}>Save changes</Button>
+        <Button variant="primary" size="sm" onClick={() => {
+          setCostCenters((prev) => prev.map((cc) => (edits[cc.id] !== undefined && edits[cc.id] !== '' ? recalc(cc, Number(edits[cc.id]) || 0) : cc)));
+          addToast('Budget allocations saved', 'success'); onClose();
+        }}>Save changes</Button>
       </div>
     }>
       <table className={styles.manageGrid}>
@@ -139,7 +151,7 @@ function ManageBudgetsModal({ onClose }: { onClose: () => void }) {
               <td>{cc.costCenter}</td>
               <td>{cc.department}</td>
               <td>{cc.period}</td>
-              <td><input className={styles.manageInput} type="number" defaultValue={cc.allocated} /></td>
+              <td><input className={styles.manageInput} type="number" value={edits[cc.id] ?? String(cc.allocated)} onChange={(e) => setEdits({ ...edits, [cc.id]: e.target.value })} /></td>
             </tr>
           ))}
         </tbody>
@@ -149,25 +161,32 @@ function ManageBudgetsModal({ onClose }: { onClose: () => void }) {
 }
 
 // Allocate Budget Modal
-function AllocateBudgetModal({ onClose }: { onClose: () => void }) {
+function AllocateBudgetModal({ onClose, initialCostCenter }: { onClose: () => void; initialCostCenter?: string }) {
   const { addToast } = useToast();
+  const [mockCostCenters, setCostCenters] = useCostCenters();
+  const [ccId, setCcId] = useState(initialCostCenter ?? mockCostCenters[0]?.id ?? '');
+  const [amount, setAmount] = useState('');
   return (
     <Modal isOpen onClose={onClose} title="Allocate budget" size="md" footer={
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
         <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" size="sm" onClick={() => { addToast('Budget allocated', 'success'); onClose(); }}>Allocate</Button>
+        <Button variant="primary" size="sm" disabled={!ccId || !(Number(amount) > 0)} onClick={() => {
+          const add = Number(amount) || 0;
+          setCostCenters((prev) => prev.map((cc) => (cc.id === ccId ? recalc(cc, cc.allocated + add) : cc)));
+          addToast(`₹${add.toLocaleString('en-IN')} allocated`, 'success'); onClose();
+        }}>Allocate</Button>
       </div>
     }>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div>
           <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)' }}>Cost center</label>
-          <select style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--color-border)', borderRadius: 4, marginTop: 5 }}>
-            {mockCostCenters.map((cc) => <option key={cc.id}>{cc.costCenter}</option>)}
+          <select value={ccId} onChange={(e) => setCcId(e.target.value)} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--color-border)', borderRadius: 4, marginTop: 5 }}>
+            {mockCostCenters.map((cc) => <option key={cc.id} value={cc.id}>{cc.costCenter}</option>)}
           </select>
         </div>
         <div>
           <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)' }}>Amount (₹)</label>
-          <input type="number" placeholder="0" style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--color-border)', borderRadius: 4, marginTop: 5 }} />
+          <input type="number" placeholder="0" value={amount} onChange={(e) => setAmount(e.target.value)} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--color-border)', borderRadius: 4, marginTop: 5 }} />
         </div>
         <div>
           <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)' }}>Period</label>
@@ -188,6 +207,7 @@ export default function BudgetCostControl() {
   const [showManage, setShowManage]     = useState(false);
   const [showAllocate, setShowAllocate] = useState(false);
   const canAllocate = usePermission('allocate_budget');
+  const [mockCostCenters] = useCostCenters();
 
   const totalBudget    = mockCostCenters.reduce((s, c) => s + c.allocated, 0);
   const totalCommitted = mockCostCenters.reduce((s, c) => s + c.committed, 0);
@@ -292,7 +312,7 @@ export default function BudgetCostControl() {
                 <div className={styles.alertTitle}>{a.title}</div>
                 <div className={styles.alertDesc}>{a.desc}</div>
               </div>
-              {canAllocate && <Button variant="ghost" size="sm">Take action</Button>}
+              {canAllocate && <Button variant="ghost" size="sm" onClick={() => setShowAllocate(true)}>Take action</Button>}
             </div>
           );
         })}

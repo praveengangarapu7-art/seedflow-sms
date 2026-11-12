@@ -19,6 +19,7 @@ export type SearchModule =
   | 'Processing'
   | 'Production'
   | 'Laboratory'
+  | 'Quality'
   | 'Administration'
   | 'Master Data'
   | 'Portals';
@@ -53,6 +54,7 @@ export const MODULE_ORDER: SearchModule[] = [
   'Processing',
   'Production',
   'Laboratory',
+  'Quality',
   'Administration',
   'Master Data',
   'Portals',
@@ -1273,6 +1275,87 @@ export const SEARCH_INDEX: SearchEntry[] = [
     keywords: ['lab', 'laboratory', 'performance', 'turnaround', 'pass rate', 'overdue', 'partner'],
     requiresAuth: true,
     permission: 'view_lab_performance',
+  },
+
+  /* ------------------------------------------------------------------ */
+  /* Quality                                                            */
+  /* ------------------------------------------------------------------ */
+  {
+    id: 'quality-dashboard',
+    title: 'Quality Dashboard',
+    description: 'Open non-conformances, overdue CAPAs, complaints, SOP coverage by department and lots on hold.',
+    path: '/quality/dashboard',
+    module: 'Quality',
+    kind: 'page',
+    keywords: ['quality', 'qms', 'dashboard', 'ncr', 'capa', 'compliance', 'sop coverage'],
+    requiresAuth: true,
+    permission: 'view_quality_dashboard',
+  },
+  {
+    id: 'quality-sops',
+    title: 'SOP Register',
+    description: 'Controlled procedures for every department — versions, approval, review dates and who has read them.',
+    path: '/quality/sops',
+    module: 'Quality',
+    kind: 'page',
+    keywords: ['sop', 'standard operating procedure', 'procedure', 'document control', 'version', 'review', 'acknowledge', 'training'],
+    requiresAuth: true,
+    permission: 'view_sop_register',
+  },
+  {
+    id: 'quality-ncrs',
+    title: 'Non-conformances',
+    description: 'Raise and track NCRs — deviations, failed inspections and out-of-spec results — through to closure.',
+    path: '/quality/ncrs',
+    module: 'Quality',
+    kind: 'page',
+    keywords: ['ncr', 'non conformance', 'nonconformance', 'deviation', 'defect', 'root cause', 'raise', 'report a problem'],
+    requiresAuth: true,
+    permission: 'view_ncrs',
+  },
+  {
+    id: 'quality-capas',
+    title: 'CAPA',
+    description: 'Corrective and preventive actions with owners, due dates and independent effectiveness verification.',
+    path: '/quality/capas',
+    module: 'Quality',
+    kind: 'page',
+    keywords: ['capa', 'corrective action', 'preventive action', 'effectiveness', 'verification', 'overdue'],
+    requiresAuth: true,
+    permission: 'view_capas',
+  },
+  {
+    id: 'quality-complaints',
+    title: 'Complaints',
+    description: 'Farmer, dealer and distributor complaints linked to seed lots, escalated automatically when serious.',
+    path: '/quality/complaints',
+    module: 'Quality',
+    kind: 'page',
+    keywords: ['complaint', 'farmer', 'dealer', 'customer', 'feedback', 'recall', 'germination complaint'],
+    requiresAuth: true,
+    permission: 'view_complaints',
+  },
+  {
+    id: 'quality-holds',
+    title: 'Lot Holds',
+    description: 'Stop-sale and quarantine for seed lots, with the downstream impact of each held lot.',
+    path: '/quality/holds',
+    module: 'Quality',
+    kind: 'page',
+    keywords: ['hold', 'quarantine', 'stop sale', 'recall', 'impact', 'traceability', 'withdraw'],
+    requiresAuth: true,
+    permission: 'view_lot_holds',
+  },
+  {
+    id: 'quality-compliance',
+    title: 'Compliance Register',
+    description: 'Regulatory requirements, the gap assessment against each, evidence, and the gap report for audits.',
+    path: '/quality/compliance',
+    module: 'Quality',
+    kind: 'page',
+    keywords: ['compliance', 'regulation', 'seeds act', 'licence', 'gap assessment', 'gap report', 'audit', 'evidence', 'requirement'],
+    requiresAuth: true,
+    permission: 'view_compliance',
   },
 
   /* ------------------------------------------------------------------ */

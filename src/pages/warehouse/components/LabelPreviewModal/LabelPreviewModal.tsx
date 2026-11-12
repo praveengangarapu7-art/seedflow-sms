@@ -6,6 +6,7 @@ import { BarcodeRenderer } from '../BarcodeRenderer/BarcodeRenderer';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import styles from './LabelPreviewModal.module.css';
 
+import { whUpdate } from '../../warehouseStore';
 interface LabelPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -47,8 +48,8 @@ export function LabelPreviewModal({ isOpen, onClose, job }: LabelPreviewModalPro
       <div className={styles.footer}>
         <Button variant="ghost" size="sm" onClick={onClose}>Close</Button>
         <div className={styles.footerRight}>
-          <Button variant="secondary" size="sm" onClick={() => { console.log('print selected', job.id); addToast({ type: 'success', message: `Printing selected labels from ${job.id}` }); }}>Print selected</Button>
-          <Button variant="primary" size="sm" leftIcon={Printer} onClick={() => { console.log('print all', job.id); addToast({ type: 'success', message: `Printing all ${job.codeCount} labels from ${job.id}` }); onClose(); }}>Print all</Button>
+          <Button variant="secondary" size="sm" onClick={() => { whUpdate('printJobs', job.id, { status: 'Printing' }); addToast({ type: 'success', message: `Printing selected labels from ${job.id}` }); }}>Print selected</Button>
+          <Button variant="primary" size="sm" leftIcon={Printer} onClick={() => { whUpdate('printJobs', job.id, { status: 'Completed' }); addToast({ type: 'success', message: `Printing all ${job.codeCount} labels from ${job.id}` }); onClose(); }}>Print all</Button>
         </div>
       </div>
     </Modal>

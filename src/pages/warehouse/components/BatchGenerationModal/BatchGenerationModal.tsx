@@ -8,6 +8,9 @@ import { inventoryItems } from '../../mockData/inventoryData';
 import { BarcodeRenderer } from '../BarcodeRenderer/BarcodeRenderer';
 import styles from './BatchGenerationModal.module.css';
 
+import { printDocument } from '@/utils/fileExport';
+import { queuePrint } from '../../warehouseStore';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface BatchGenerationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -32,6 +35,7 @@ interface IncludeFlags {
 }
 
 export function BatchGenerationModal({ isOpen, onClose }: BatchGenerationModalProps) {
+  const { addToast } = useToast();
   const [step, setStep] = useState(0);
   const [source, setSource] = useState<Source>('inventory');
   const [selectedSkus, setSelectedSkus] = useState<string[]>([]);
@@ -69,9 +73,18 @@ export function BatchGenerationModal({ isOpen, onClose }: BatchGenerationModalPr
   const totalCount = itemsForPreview.length * (parseInt(labelsPerItem, 10) || 1);
 
   const submit = (download: boolean) => {
-    console.log(download ? 'generate & download PDF' : 'add batch to print queue', {
-      source, selectedSkus, pasted, customList, format, labelsPerItem, size, include, totalCount,
-    });
+    const per = parseInt(labelsPerItem, 10) || 1;
+    if (download) {
+      printDocument(`Labels — ${itemsForPreview.length} item(s) × ${per}`, [{
+        table: {
+          columns: ['Code', 'Item', ...(include.batch ? ['Batch'] : []), ...(include.expiry ? ['Expiry'] : []), ...(include.bin ? ['Bin'] : []), 'Copies'],
+          rows: itemsForPreview.map((i) => [i.sku, include.itemName ? i.name : '', ...(include.batch ? [i.batchNumber] : []), ...(include.expiry ? [i.expiryDate] : []), ...(include.bin ? [`${i.location.zone}-${i.location.bin}`] : []), per]),
+        },
+      }], `${format} · ${size}`);
+    } else {
+      queuePrint('Item', totalCount, format);
+    }
+    addToast({ type: 'success', message: download ? `Label sheet for ${totalCount} labels opened — save as PDF from the print dialog` : `${totalCount} labels added to the print queue` });
     onClose();
   };
 

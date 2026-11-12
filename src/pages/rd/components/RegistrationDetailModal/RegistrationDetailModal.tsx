@@ -16,6 +16,9 @@ import { formatIndianCurrency } from '@/utils/formatters';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './RegistrationDetailModal.module.css';
 
+import { setCollection } from '@/hooks/persistentCollections';
+import { registrations as registrationStarter } from '../../mockData/registrationsData';
+import { pickFile, printDocument } from '@/utils/fileExport';
 interface RegistrationDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -32,6 +35,10 @@ export const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = (
   onAction,
 }) => {
   const { addToast } = useToast();
+  const saveReg = (patch: Partial<VarietyRegistration>) => {
+    if (!registration) return;
+    setCollection<VarietyRegistration>('rd.registrations', registrationStarter, (prev) => prev.map((r) => (r.id === registration.id ? { ...r, ...patch } : r)));
+  };
   const [activeTab, setActiveTab] = useState('details');
   const [isDUSModalOpen, setIsDUSModalOpen] = useState(false);
   const [selectedDUSLoc, setSelectedDUSLoc] = useState<string>('');
@@ -127,7 +134,7 @@ export const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = (
             {registration.status === 'Granted' && (
               <Button 
                 variant="primary"
-                onClick={() => addToast('Generating compliance certificate...', 'success')}
+                onClick={() => printDocument(`Registration certificate — ${registration.varietyName}`, [{ fields: [['Registration', registration.id], ['Application number', registration.applicationNumber ?? '—'], ['Application type', registration.applicationType], ['Applicant', registration.applicant], ['Status', registration.status], ['Filed', registration.filedDate ?? '—'], ['Decision', registration.decisionDate ?? '—'], ['Validity (years)', registration.validityYears ?? '—'], ['DUS status', registration.dusStatus]] }, { heading: 'Timeline', table: { columns: ['Stage', 'Date', 'By'], rows: registration.timeline.map((t) => [t.stage, t.date, t.user]) } }])}
               >
                 Generate Certificate
               </Button>
@@ -374,7 +381,7 @@ export const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = (
                   variant="secondary" 
                   size="sm" 
                   leftIcon={Plus}
-                  onClick={() => addToast('Opening file upload wizard...', 'info')}
+                  onClick={async () => { const f = await pickFile('.pdf,.doc,.docx,.jpg,.png'); if (!f) return; saveReg({ documents: [...registration.documents, { name: f.name, uploadedAt: new Date().toISOString().slice(0, 10), type: 'Supporting document' }] }); addToast(`${f.name} added to the filing`, 'success'); }}
                 >
                   Upload Document
                 </Button>
@@ -423,7 +430,7 @@ export const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = (
                     >
                       Download
                     </Button>
-                    <button type="button" className={styles.deleteBtn}>
+                    <button type="button" className={styles.deleteBtn} onClick={() => addToast('Document deletion requires admin rights.', 'warning')}>
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -441,7 +448,7 @@ export const RegistrationDetailModal: React.FC<RegistrationDetailModalProps> = (
                   variant="secondary" 
                   size="sm" 
                   leftIcon={CreditCard}
-                  onClick={() => addToast('Filing authority payments module offline.', 'info')}
+                  onClick={() => { const kind = window.prompt('Fee type: application, testing or renewal', 'application'); const key = kind?.trim().toLowerCase(); if (!key || !['application', 'testing', 'renewal'].includes(key)) return; const amt = Number(window.prompt('Amount paid (₹)') ?? ''); if (!Number.isFinite(amt) || amt <= 0) return; saveReg({ fees: { ...registration.fees, [`${key}Fee`]: amt }, timeline: [...registration.timeline, { stage: `${key} fee paid`, date: new Date().toISOString().slice(0, 10), user: 'You', comment: `₹${amt.toLocaleString('en-IN')}` }] }); addToast(`₹${amt.toLocaleString('en-IN')} ${key} fee recorded`, 'success'); }}
                 >
                   Add Payment Receipt
                 </Button>

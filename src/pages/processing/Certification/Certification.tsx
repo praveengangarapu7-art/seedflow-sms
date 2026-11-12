@@ -19,7 +19,7 @@ import { PROCESSING_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/peri
 
 export default function CertificationPage() {
   const { addToast } = useToast();
-  const { items: allCertifications, add, update } = useRealtimeMockStore<CertificationRecord>(mockCertifications);
+  const { items: allCertifications, add, update } = useRealtimeMockStore<CertificationRecord>(mockCertifications, 'processing.certifications');
   const [period, setPeriod] = useState<PeriodValue>('all');
 
   const items = useMemo(

@@ -9,6 +9,7 @@ import { appendHashChainEntry } from '../authenticity/authenticity.service';
 import { sendPushToAllDevices } from '../pushNotifications/pushNotifications.service';
 import { withAvailability, type SeedLot } from '../seedLots/seedLots.types';
 import type { AllocateInput, AllocationHistoryEntry, ReleaseInput, SeedLotAllocation } from './allocations.types';
+import { assertLotNotOnHold } from '../quality/quality.common';
 
 // Warehouse Manager distributes stock across organizations, so it isn't
 // subject to the ownership check; Breeder/Producer may only touch their own
@@ -85,6 +86,8 @@ export async function allocate(
     if (!OWNERSHIP_EXEMPT_ROLES.includes(user.role)) {
       assertOwnsOrganization(user, lot.organization_id, 'You can only allocate from seed lots owned by your organization');
     }
+    // Stop-sale: a lot under quality hold cannot be allocated out.
+    await assertLotNotOnHold(client, seedLotId);
 
     const quantity = Number(input.quantity);
     const available = Number(lot.quantity_total) - Number(lot.quantity_allocated);

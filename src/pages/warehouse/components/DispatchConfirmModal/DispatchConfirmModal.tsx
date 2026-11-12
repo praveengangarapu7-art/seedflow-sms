@@ -6,6 +6,8 @@ import type { DispatchOrder } from '@/types/warehouse';
 import { formatIndianCurrency, formatIndianNumber } from '@/utils/formatters';
 import styles from './DispatchConfirmModal.module.css';
 
+import { adjustStock, logMovement, nowIso, whUpdate } from '../../warehouseStore';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface DispatchConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -13,6 +15,7 @@ interface DispatchConfirmModalProps {
 }
 
 export function DispatchConfirmModal({ isOpen, onClose, order }: DispatchConfirmModalProps) {
+  const { addToast } = useToast();
   const [confirmed, setConfirmed] = useState(false);
 
   useEffect(() => {
@@ -22,7 +25,12 @@ export function DispatchConfirmModal({ isOpen, onClose, order }: DispatchConfirm
   if (!order) return null;
 
   const submit = () => {
-    console.log('confirm dispatch', order.id);
+    whUpdate('dispatch', order.id, { status: 'Dispatched', dispatchedAt: nowIso() });
+    order.lineItems.forEach((li) => {
+      adjustStock(li.sku, -(li.packedQty || li.pickedQty || li.orderedQty));
+      logMovement({ category: 'Material issue', subType: 'Dispatch', itemName: li.itemName, sku: li.sku, batch: li.batch, quantity: li.packedQty || li.pickedQty || li.orderedQty, uom: li.uom, fromLocation: li.pickFrom, toLocation: order.consignee.city, reference: order.id, status: 'Completed', completedAt: nowIso() });
+    });
+    addToast({ type: 'success', message: `${order.id} dispatched; stock reduced` });
     onClose();
   };
 

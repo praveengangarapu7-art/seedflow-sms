@@ -26,10 +26,7 @@ import { DevicePairingModal } from './components/DevicePairingModal/DevicePairin
 import { PrintQueueModal } from './components/PrintQueueModal/PrintQueueModal';
 import {
   barcodeKpis,
-  barcodes,
-  printJobs,
   scanLog,
-  devices,
   type BarcodeKpiIcon,
 } from './mockData/barcodeData';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
@@ -38,6 +35,7 @@ import type { BarcodeRecord, ScanLogEntry, PrintJob, ScanDeviceRecord, LabelType
 import { usePermission } from '@/hooks/usePermission';
 import styles from './BarcodeRFID.module.css';
 
+import { nowIso, queuePrint, useWh, whUpdate } from './warehouseStore';
 const ICON_MAP: Record<BarcodeKpiIcon, LucideIcon> = { QrCode, ScanBarcode, Target, Printer };
 
 type BCTab = 'catalog' | 'jobs' | 'scans' | 'devices';
@@ -50,6 +48,9 @@ const DEVICE_ICON: Record<ScanDevice, LucideIcon> = {
 };
 
 export default function BarcodeRFID() {
+  const [barcodes] = useWh('barcodes');
+  const [printJobs] = useWh('printJobs');
+  const [devices] = useWh('devices');
   const [activeTab, setActiveTab] = useState<BCTab>('catalog');
   const [period, setPeriod] = useState<PeriodValue>('all');
 
@@ -69,7 +70,7 @@ export default function BarcodeRFID() {
   const [printQueueOpen, setPrintQueueOpen] = useState(false);
 
   // Labels are keyed on when they were generated, scans on when they happened.
-  const periodBarcodes = useMemo(() => barcodes.filter((b) => isDateInPeriod(b.generatedAt, period)), [period]);
+  const periodBarcodes = useMemo(() => barcodes.filter((b) => isDateInPeriod(b.generatedAt, period)), [period, barcodes]);
   const periodScans = useMemo(() => scanLog.filter((s) => isDateInPeriod(s.timestamp, period)), [period]);
 
   const tabCounts = useMemo(() => ({
@@ -363,9 +364,9 @@ function CodeCard({ record }: { record: BarcodeRecord }) {
       </div>
       {canPrint && (
         <div className={styles.codeActions}>
-          <button className={styles.codeActionBtn} onClick={() => { console.log('print', record.id); addToast({ type: 'success', message: `Sent ${record.code} to printer` }); }}>Print</button>
-          <button className={styles.codeActionBtn} onClick={() => { console.log('reprint', record.id); addToast({ type: 'info', message: `Reprint queued for ${record.code}` }); }}>Reprint</button>
-          <button className={styles.codeActionBtn} onClick={() => { console.log('edit', record.id); addToast({ message: `Edit dialog opened for ${record.code}` }); }}>Edit</button>
+          <button className={styles.codeActionBtn} onClick={() => { queuePrint(record.type, 1, record.format); whUpdate('barcodes', record.id, { printedCount: record.printedCount + 1, lastPrintedAt: nowIso() }); addToast({ type: 'success', message: `Sent ${record.code} to printer` }); }}>Print</button>
+          <button className={styles.codeActionBtn} onClick={() => { queuePrint(record.type, 1, record.format); whUpdate('barcodes', record.id, { printedCount: record.printedCount + 1, lastPrintedAt: nowIso() }); addToast({ type: 'info', message: `Reprint queued for ${record.code}` }); }}>Reprint</button>
+          <button className={styles.codeActionBtn} onClick={() => { const label = window.prompt(`Label for ${record.code}`, record.linkedTo.label); if (label !== null) { whUpdate('barcodes', record.id, { linkedTo: { ...record.linkedTo, label }, active: true }); addToast({ type: 'success', message: `${record.code} updated` }); } }}>Edit</button>
         </div>
       )}
     </div>
@@ -426,8 +427,8 @@ function DeviceCard({ device, icon: Icon }: { device: ScanDeviceRecord; icon: Lu
       </div>
       {canConfigure && (
         <div className={styles.deviceActions}>
-          <button className={styles.codeActionBtn} onClick={() => { console.log('reassign', device.id); addToast({ message: `Reassign dialog opened for ${device.name}` }); }}>Reassign</button>
-          <button className={styles.codeActionBtn} onClick={() => { console.log('view activity', device.id); addToast({ message: `Activity log opened for ${device.name}` }); }}>Activity</button>
+          <button className={styles.codeActionBtn} onClick={() => { const who = window.prompt(`Assign ${device.name} to`, device.assignedTo); if (who && who.trim()) { whUpdate('devices', device.id, { assignedTo: who.trim() }); addToast({ type: 'success', message: `${device.name} assigned to ${who.trim()}` }); } }}>Reassign</button>
+          <button className={styles.codeActionBtn} onClick={() => { const n = scanLog.filter((s) => s.device === device.type).length; addToast({ message: `${device.name}: ${device.scansToday} scans today, ${n} in the recent scan log; last seen ${device.lastSeen}` }); }}>Activity</button>
         </div>
       )}
     </div>

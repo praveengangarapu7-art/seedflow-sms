@@ -5,6 +5,8 @@ import { Button } from '@/components/common/Button/Button';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import styles from './PrintLabelsModal.module.css';
 
+import { printDocument } from '@/utils/fileExport';
+import { queuePrint } from '../../warehouseStore';
 interface PrintLabelsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,14 +32,15 @@ export function PrintLabelsModal({ isOpen, onClose }: PrintLabelsModalProps) {
   const estimatedCount = scope === 'all' ? 124 : scope === 'zones' ? zones.length * 18 : Math.max(1, bins.split(',').filter((b) => b.trim()).length) * parseInt(perBin, 10);
 
   const handleAddToQueue = () => {
-    console.log('add to print queue', { scope, zones, bins, format, perBin });
+    queuePrint('Bin', estimatedCount);
     addToast({ type: 'success', message: `Added ${estimatedCount} labels to print queue` });
     onClose();
   };
 
   const handleGeneratePdf = () => {
-    console.log('generate PDF', { scope, zones, bins, format, perBin });
-    addToast({ type: 'success', message: `PDF generated with ${estimatedCount} labels` });
+    const binList = scope === 'specific' ? bins.split(',').map((b) => b.trim()).filter(Boolean) : scope === 'zones' ? zones : ['All bins'];
+    printDocument(`Bin labels (${estimatedCount})`, [{ table: { columns: ['Bin / zone', 'Copies', 'Format'], rows: binList.map((b) => [b, perBin, String(format)]) } }]);
+    addToast({ type: 'success', message: `Label sheet with ${estimatedCount} labels opened — save as PDF from the print dialog` });
     onClose();
   };
 

@@ -1,0 +1,226 @@
+[
+ {
+  "id": "germination-testing",
+  "title": "How germination testing works",
+  "module": "Laboratory",
+  "path": "/lab/results",
+  "tags": "germination test lab sampling normal seedlings",
+  "body": "A germination test counts the percentage of seeds that produce normal seedlings under controlled temperature, moisture and light for a fixed number of days. Seeds are sampled from the lot, planted in replicates (commonly four replicates of 100 seeds), and each seedling is classified as normal, abnormal, hard/fresh ungerminated or dead. Only normal seedlings count towards the germination percentage. Results are compared with the minimum for the crop and class (foundation, certified) set by the applicable certification standard. A lot below the minimum should not be sold as certified; it may be re-tested, re-processed (re-cleaning or grading) or downgraded. Always verify the minimum for your crop against the current standard before acting."
+ },
+ {
+  "id": "physical-purity",
+  "title": "Physical purity and inert matter",
+  "module": "Laboratory",
+  "path": "/lab/results",
+  "tags": "purity inert matter weed seeds other crop seeds",
+  "body": "A purity test separates a working sample into pure seed, other crop seed, weed seed and inert matter, reported by weight percentage. Low purity usually points to a cleaning or grading problem in Processing, or contamination at harvest or threshing. Corrective actions include re-cleaning with the right screens or gravity separator, checking machine changeover cleaning between varieties, and reviewing the threshing and drying yard hygiene. Persistent purity failures across lots from the same grower or machine should be raised as a non-conformance (NCR)."
+ },
+ {
+  "id": "seed-vigour",
+  "title": "Seed vigour and why it matters beyond germination",
+  "module": "Laboratory",
+  "path": "/lab/results",
+  "tags": "vigour vigor accelerated ageing cold test field emergence",
+  "body": "Vigour describes how well a lot performs under stress or sub-optimal field conditions, not just under ideal laboratory ones. Two lots with the same germination percentage can emerge very differently in a cold, wet or crusted soil. Common vigour tests are accelerated ageing, cold test and conductivity. Falling vigour in stored lots is an early warning that germination will drop soon: prioritise those lots for sale (FEFO), check storage temperature and humidity, and re-test before dispatch."
+ },
+ {
+  "id": "seed-moisture-storage",
+  "title": "Seed moisture content and safe storage",
+  "module": "Warehouse",
+  "path": "/warehouse/dashboard",
+  "tags": "moisture storage humidity temperature shelf life packaging",
+  "body": "Seed moisture is the biggest driver of storage life. As a rule of thumb, each small rise in moisture or temperature roughly halves storage life, so seed should be dried to the safe level for its crop before bagging, and stored cool and dry. Moisture-proof packaging allows lower safe moisture than porous bags and should be sealed at the packaging step. Keep warehouses ventilated, stacks off the floor and away from walls, and monitor temperature and humidity (IoT sensors where installed). If moisture or humidity alarms trigger, move stock to a controlled zone and re-test germination. Use the crop-specific safe moisture from your QA standard."
+ },
+ {
+  "id": "fifo-fefo",
+  "title": "FIFO and FEFO stock rotation",
+  "module": "Warehouse",
+  "path": "/warehouse/inventory",
+  "tags": "FIFO FEFO rotation expiry first expired first out dispatch",
+  "body": "FIFO ships the oldest received stock first; FEFO ships the stock with the earliest expiry (or validity of the germination test) first. For seed, FEFO is usually the better rule because viability decays with age and storage conditions. Practically: sort dispatch candidates by test validity or expiry date, dispatch lots with the shortest remaining life first, and flag lots that are within 30–60 days of expiry for re-test or promotion. Never dispatch a lot on quality hold or with an expired test."
+ },
+ {
+  "id": "seed-treatment",
+  "title": "Seed treatment: purpose, records and safety",
+  "module": "Processing",
+  "path": "/processing/treatments",
+  "tags": "seed treatment fungicide insecticide coating biological safety records",
+  "body": "Seed treatment applies fungicides, insecticides, bio-stimulants or biological agents to protect seed and seedlings. Record the product, active ingredient, dose per 100 kg, batch number and operator for each lot so the treatment is traceable. Treated seed must be coloured and labelled as treated and must never enter the food or feed chain. Follow label rates, use protective equipment, calibrate the treater regularly and clean thoroughly between products. Biological treatments need cooler storage and a shorter shelf life than chemical ones."
+ },
+ {
+  "id": "seed-drying-conditioning",
+  "title": "Drying and conditioning (cleaning, grading)",
+  "module": "Processing",
+  "path": "/processing/dashboard",
+  "tags": "drying cleaning grading conditioning screens gravity separator",
+  "body": "Conditioning is the sequence of receiving, pre-cleaning, drying, cleaning, grading, treating and packing. Dry gently (limit drying air temperature to avoid heat damage and cracking) to the safe moisture level, then clean and grade by size and weight to lift germination and purity. Track yield and loss at each step: unusually high loss usually means screen settings or feed rate need review. Clean the whole line between varieties to protect genetic purity."
+ },
+ {
+  "id": "traceability-genealogy",
+  "title": "Lot traceability and genealogy",
+  "module": "Production Planning",
+  "path": "/seed-lot-inventory",
+  "tags": "traceability genealogy parent lot child lot batch recall chain of custody",
+  "body": "Every lot should link back to its parent lot (foundation to certified) and forward to the batches, packs and dispatches made from it. This chain of custody lets you answer, within minutes, which farmers or dealers received seed from a lot if a problem is found. Never merge lots without recording the merge; never split without recording the child lots. In SeedSphere the Seed Lot Detail page and the genealogy view show parents and children, and the quality hold list shows which lots are blocked."
+ },
+ {
+  "id": "lot-hold-recall",
+  "title": "Quality hold and recall process",
+  "module": "Quality",
+  "path": "/quality/holds",
+  "tags": "hold recall quarantine complaint withdraw market",
+  "body": "When a quality risk is found, place the lot on quality hold immediately so it cannot be allocated or dispatched. Then: identify all related lots through genealogy, find what has already been dispatched, assess risk with Quality, decide release / rework / destroy, and if seed is in the market decide on a recall and notify customers and the authority as required. Record decisions and the corrective and preventive actions (CAPA). Holds in SeedSphere are lifted only after the linked non-conformance is closed."
+ },
+ {
+  "id": "ncr-capa",
+  "title": "Non-conformance (NCR) and CAPA workflow",
+  "module": "Quality",
+  "path": "/quality/ncrs",
+  "tags": "NCR CAPA corrective preventive root cause 5 whys closure effectiveness",
+  "body": "An NCR records something that did not meet a requirement: a lab out-of-specification result, a process deviation, a supplier problem or a complaint. Steps: raise the NCR with severity (minor, major, critical), investigate and record the root cause, raise corrective actions (fix this) and preventive actions (stop it recurring) as CAPAs with owner and due date, implement, then verify effectiveness by someone other than the owner, then close. Critical NCRs on a lot place it on hold until closure. Use the 5-whys or fishbone method for root cause; avoid blaming individuals."
+ },
+ {
+  "id": "sop-management",
+  "title": "SOP control: versions, review and acknowledgement",
+  "module": "Quality",
+  "path": "/quality/sops",
+  "tags": "SOP standard operating procedure version review acknowledge effective",
+  "body": "An SOP is only useful if staff follow the current version. Each SOP has an owner, a review interval, and versions that move draft → in review → effective → superseded. When a new version becomes effective, the previous one is superseded and staff must acknowledge the new one. Overdue reviews and unacknowledged SOPs are audit findings. In SeedSphere the SOP register shows coverage, overdue reviews and pending acknowledgements."
+ },
+ {
+  "id": "compliance-register",
+  "title": "Regulatory compliance register and gap assessment",
+  "module": "Quality",
+  "path": "/quality/compliance",
+  "tags": "compliance regulation license seed act labelling record keeping gap audit",
+  "body": "The compliance register lists each regulatory requirement (licensing, certification, labelling and packaging, record keeping, quality testing, storage, dealer sales, customer or export) with a status: compliant, partially compliant, non-compliant, not assessed. Each gap should have a risk rating, corrective action, owner and target date, and evidence. Gaps feed the NCR and CAPA process rather than a separate tracker. Review the register before audits and after any regulatory change, and confirm the exact thresholds and clauses with your regulatory advisor."
+ },
+ {
+  "id": "sampling",
+  "title": "Representative sampling of seed lots",
+  "module": "Laboratory",
+  "path": "/lab/submissions",
+  "tags": "sampling sample lot size probe composite submitted working sample",
+  "body": "Test results are only as good as the sample. Draw primary samples from many points in the lot (top, middle, bottom of containers) using a probe, combine them into a composite, then reduce to the submitted sample by a divider. The sample must be labelled with the lot code, crop, variety, date and sampler, and sent promptly in moisture-proof packaging so it does not change before testing. A lot should be re-sampled if it has been re-processed or stored for longer than the validity of the test."
+ },
+ {
+  "id": "genetic-purity",
+  "title": "Genetic purity: grow-out and field inspection",
+  "module": "Production Planning",
+  "path": "/seed-farmer-program",
+  "tags": "genetic purity varietal purity grow out test off types roguing isolation distance",
+  "body": "Varietal purity is protected in the field before the lab ever sees the seed. Respect the isolation distance for the crop, rogue off-types and pollen shedders at the right growth stages, and keep field inspection records. Grow-out tests on a sample confirm varietal purity and are essential for hybrids. If off-types exceed the allowed limit, the field or lot may be rejected for certification. Field inspection scores and photos feed the feedback loop into production planning."
+ },
+ {
+  "id": "hybrid-seed-production",
+  "title": "Hybrid seed production basics",
+  "module": "Production Planning",
+  "path": "/crop-planning/new",
+  "tags": "hybrid male female parent synchronisation detasseling rouging",
+  "body": "Hybrid seed production needs the two parent lines planted in the right ratio and with synchronised flowering, with strict isolation. For crops like maize this includes detasselling the female rows on time. Poor nicking (flowering mismatch), pollen contamination and late roguing are the usual causes of low genetic purity. Plan sowing dates for both parents together and monitor flowering through the season."
+ },
+ {
+  "id": "seed-dormancy",
+  "title": "Seed dormancy and how it affects test results",
+  "module": "Laboratory",
+  "path": "/lab/results",
+  "tags": "dormancy dormant hard seed germination low pre-chill GA3 scarification",
+  "body": "Freshly harvested seed of some crops is dormant and will show low germination even though it is alive. Labs can break dormancy with pre-chilling, gibberellic acid, scarification or a warm after-ripening period before reading the test. If a new lot fails germination with a high count of fresh or dormant seed, ask the lab to apply the dormancy-breaking method for that crop and re-test before treating it as a failure."
+ },
+ {
+  "id": "phytosanitary-cert",
+  "title": "Phytosanitary certificates and export documents",
+  "module": "Laboratory",
+  "path": "/lab/certificates",
+  "tags": "phytosanitary export certificate import permit pest quarantine",
+  "body": "Exporting seed usually needs a phytosanitary certificate from the plant protection authority confirming the consignment is free of regulated pests, plus a lot test report and importing-country permits. Keep lot genealogy, treatment records and test reports ready, because they support the certificate. In SeedSphere, certificates are generated from a completed lab submission and versioned so reissues are traceable."
+ },
+ {
+  "id": "labelling-packaging",
+  "title": "Labelling and packaging requirements",
+  "module": "Processing",
+  "path": "/processing/packaging",
+  "tags": "label tag packaging net weight lot number test date treated variety",
+  "body": "A seed label should carry crop and variety, lot number, class (foundation, certified), germination and purity at test, test date or validity, net weight, treatment details, producer and a warning where treated. Packaging must be moisture-proof where required, sealed and tamper-evident, and traceable to the lot via barcode or QR. Mislabelling is a common complaint source; verify label proofs and run a line clearance before each pack run."
+ },
+ {
+  "id": "procurement-supplier-quality",
+  "title": "Supplier qualification and incoming inspection",
+  "module": "Procurement",
+  "path": "/procurement/suppliers",
+  "tags": "supplier qualification incoming inspection grn rating contract grower",
+  "body": "For contract growers and input suppliers, qualify them before first order (capability, track record, certifications), agree specifications in the purchase order, inspect on receipt (quantity, moisture, purity, visual quality) and record a goods receipt note (GRN). Rate suppliers on quality, delivery and responsiveness; repeated rejects should trigger a supplier NCR and corrective action. Raw material that fails inspection must be segregated and labelled, not mixed with accepted stock."
+ },
+ {
+  "id": "demand-planning",
+  "title": "Demand planning and crop planning",
+  "module": "Production Planning",
+  "path": "/demand-forecast",
+  "tags": "demand forecast crop plan seasonality buffer stock procurement gap",
+  "body": "Plan production backwards from expected sales: forecast demand by crop and variety with seasonality, add a buffer for germination loss and returns, compare against current stock and open production, and the gap is what must be planned or procured. Review forecasts monthly and after each season. The AI Center forecasts use recent allocation and request history and show the confidence of each projection."
+ },
+ {
+  "id": "climate-smart",
+  "title": "Climate-smart and resilient varieties",
+  "module": "R&D",
+  "path": "/rd/dashboard",
+  "tags": "climate drought heat salinity flood tolerant variety millets nutri-cereals trend",
+  "body": "Breeding priorities worldwide are shifting towards drought, heat, salinity and flood tolerance, disease and pest resistance, and shorter duration varieties, supported by marker-assisted selection and gene editing where permitted. Demand for millets and other nutri-cereals is growing, and seed companies are widening portfolios and certification volumes accordingly. Multi-location trials and farmer field days are how new varieties are validated before release."
+ },
+ {
+  "id": "storage-pests",
+  "title": "Storage pests and hygiene",
+  "module": "Warehouse",
+  "path": "/warehouse/dashboard",
+  "tags": "storage pest insect weevil rodent fumigation hygiene",
+  "body": "Storage insects and rodents cause both loss and contamination. Keep stores clean, remove spilled seed, inspect incoming stock, stack on pallets, and use approved fumigation or integrated pest management with records. Moisture and temperature control is the first line of defence because most storage insects are limited by cool, dry conditions. Re-test germination on any lot with confirmed infestation."
+ },
+ {
+  "id": "data-quality",
+  "title": "Data quality and master data",
+  "module": "Administration",
+  "path": "/admin/data-governance",
+  "tags": "master data governance reconciliation duplicate orphan lot count correction",
+  "body": "Accurate stock records need disciplined data entry: record every movement, reconcile physical counts against system quantity, investigate variances, and archive orphan lots only after confirming no activity. Quantity corrections are Admin-only and audited. Custom fields (Administration → Custom fields) let you capture company-specific attributes once and see them across the modules that use the same lot."
+ },
+ {
+  "id": "ai-rules",
+  "title": "How the SeedSphere AI works and what it will not do",
+  "module": "AI Center",
+  "path": "/ai",
+  "tags": "AI model rag knowledge assistant limits read only rules",
+  "body": "SeedSphere AI separates facts from language. Numbers (risk scores, forecasts, counts, expiry) are computed from your database by deterministic rules, so they are reproducible. The language model only explains and summarises them, and the assistant also retrieves passages from the knowledge base (SOPs, compliance register, NCRs, seed-science guides) and cites them. The assistant is read-only: it cannot create, edit or delete records. Without a model key, SeedSphere still answers from the rules engine and the knowledge base."
+ },
+ {
+  "id": "how-lab-submission",
+  "title": "How to submit a lab sample and record results",
+  "module": "Laboratory",
+  "path": "/lab/submissions",
+  "tags": "submit sample lab results certify testing status workflow",
+  "body": "Open Laboratory → Sample submissions to see samples sent to partner labs. Submit a sample from a seed lot and choose the tests (germination, purity, vigour and so on). Lab users record results against each test; when every requested test has a result, the lot testing status becomes certified if all passed or failed otherwise. Failures raise quality flags that should be resolved or turned into an NCR."
+ },
+ {
+  "id": "how-ai-center",
+  "title": "How to use the AI Center tabs",
+  "module": "AI Center",
+  "path": "/ai",
+  "tags": "overview across modules lab risk forecasts photo analysis assistant tabs",
+  "body": "Overview shows the headline AI findings. Across modules gives each module its own insights and a link to act on them. Lab quality risk ranks lots by computed germination and test risk. Forecasts projects demand and stock gaps. Photo analysis screens a field or seed photo. Assistant answers questions using live data and the knowledge base, with sources shown under each answer."
+ },
+ {
+  "id": "how-custom-fields",
+  "title": "How to add a custom field across modules",
+  "module": "Administration",
+  "path": "/admin/custom-fields",
+  "tags": "custom field attribute add create module lot show",
+  "body": "Open Administration → Custom fields, enter a name and type, tick every record type it should appear on, and create it. It then appears in a panel on those pages. Fields on Seed lot are stored on the lot so Lab, Quality, Warehouse and Processing show one shared value."
+ },
+ {
+  "id": "how-quality-module",
+  "title": "How to use the Quality module",
+  "module": "Quality",
+  "path": "/quality/dashboard",
+  "tags": "quality dashboard ncr capa complaints holds sop compliance",
+  "body": "The Quality dashboard summarises open NCRs, CAPAs, complaints, holds, SOP coverage and compliance gaps. From it open the register for each area. Raise an NCR when something fails a requirement, attach CAPAs with owners and dates, and release holds only after closure. Use the compliance register before audits."
+ }
+]

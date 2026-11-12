@@ -404,7 +404,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
             <Button 
               variant="secondary" 
               leftIcon={Share2}
-              onClick={() => addToast({ message: 'Sharing link copied to clipboard' })}
+              onClick={() => { void navigator.clipboard?.writeText(`${window.location.origin}/rd/reports`).catch(() => undefined); addToast({ message: 'Link to R&D reports copied to clipboard' }); }}
             >
               Share
             </Button>

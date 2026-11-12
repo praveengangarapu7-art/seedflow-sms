@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CustomFieldsPanel } from '@/components/customFields/CustomFieldsPanel';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, ChevronRight, Edit, Send, Ban, FileText, Upload,
@@ -11,8 +12,7 @@ import { StatusBadge } from '@/components/common/StatusBadge/StatusBadge';
 import { ScoreRing } from '@/components/common/ScoreRing/ScoreRing';
 import { DataTable } from '@/components/common/DataTable/DataTable';
 import { EmptyState } from '@/components/common/EmptyState/EmptyState';
-import { mockSuppliers } from './mockData/suppliersData';
-import { mockPOs } from './mockData/ordersData';
+import { createRFQ, today, updateSupplier, usePOs, useSuppliers } from './procurementStore';
 import { formatIndianCurrency } from '@/utils/formatters';
 import { procurementNav } from '@/config/procurementNav';
 import type { PurchaseOrder } from '@/types/procurement';
@@ -20,6 +20,10 @@ import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './SupplierDetail.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
+import { useToast } from '@/components/common/Toast';
+import { RecordEditModal } from '@/components/common/RecordEditModal/RecordEditModal';
+import { MAX_ATTACHMENT_BYTES, downloadDataUrl, pickFile, readFileAsDataUrl } from '@/utils/fileExport';
 type DetailTab = 'overview' | 'performance' | 'documents' | 'history' | 'activity';
 
 const TABS: { key: DetailTab; label: string }[] = [
@@ -95,7 +99,31 @@ export default function SupplierDetail() {
   const canEditSupplier = usePermission('edit_supplier');
   const canCreateRfq = usePermission('create_rfq');
 
-  const supplier = mockSuppliers.find((s) => s.id === id);
+  const { addToast } = useToast();
+  const [suppliers] = useSuppliers();
+  const [mockPOs] = usePOs();
+  const [dialog, setDialog] = useState<'edit' | 'blacklist' | null>(null);
+  const supplier = suppliers.find((s) => s.id === id);
+
+  type Doc = { name: string; uploadedDate: string; dataUrl?: string };
+  const uploadDoc = async () => {
+    if (!supplier) return;
+    const file = await pickFile('.pdf,.jpg,.jpeg,.png,.doc,.docx');
+    if (!file) return;
+    let dataUrl: string | undefined;
+    if (file.size <= MAX_ATTACHMENT_BYTES) dataUrl = await readFileAsDataUrl(file);
+    else addToast(`${file.name} is over 1.5 MB; only its name was recorded.`, 'warning');
+    updateSupplier(supplier.id, { documents: [...supplier.documents, { name: file.name, uploadedDate: today(), ...(dataUrl ? { dataUrl } : {}) } as Doc] });
+    addToast(`${file.name} uploaded`, 'success');
+  };
+  const openDoc = (doc: Doc, download: boolean) => {
+    if (!doc.dataUrl) {
+      addToast('This document has no file attached (sample record). Upload the file to view it.', 'info');
+      return;
+    }
+    if (download) downloadDataUrl(doc.name, doc.dataUrl);
+    else window.open(doc.dataUrl, '_blank', 'noopener');
+  };
 
   if (!supplier) {
     return (
@@ -112,9 +140,15 @@ export default function SupplierDetail() {
   }
 
   const supplierPOs = mockPOs.filter((p) => p.supplier === supplier.name);
+  const sendRfq = () => {
+    const rfq = createRFQ({ title: `RFQ to ${supplier.name}`, department: 'Procurement', deadline: '', expectedDelivery: '', paymentTerms: supplier.paymentTerms, lineItems: [], invitedSuppliers: [supplier.name] }, 'Draft');
+    addToast(`Draft ${rfq.id} created for ${supplier.name}; add line items and send.`, 'success');
+    navigate(`/procurement/rfq/${rfq.id}`);
+  };
 
   return (
     <ModuleLayout moduleName="Procurement" moduleIcon={ShoppingCart} navItems={procurementNav}>
+      <CustomFieldsPanel entityType="supplier" entityId={supplier.id} />
       {/* Breadcrumb */}
       <div className={styles.breadcrumb}>
         <button className={styles.breadcrumbLink} onClick={() => navigate('/procurement/suppliers')}>
@@ -124,6 +158,7 @@ export default function SupplierDetail() {
         <span>{supplier.name}</span>
       </div>
 
+      <RecordAiPanel recordType="procurement.supplier" record={supplier} label={supplier.name} />
       {/* Header */}
       <div className={styles.headerCard}>
         <div className={styles.headerTop}>
@@ -136,10 +171,13 @@ export default function SupplierDetail() {
           </div>
           <div className={styles.headerRight}>
             <StatusBadge status={supplier.classification} type="supplier" />
-            {canEditSupplier && <Button variant="ghost" size="sm" leftIcon={Edit}>Edit</Button>}
-            {canCreateRfq && <Button variant="ghost" size="sm" leftIcon={Send}>Send RFQ</Button>}
+            {canEditSupplier && <Button variant="ghost" size="sm" leftIcon={Edit} onClick={() => setDialog('edit')}>Edit</Button>}
+            {canCreateRfq && <Button variant="ghost" size="sm" leftIcon={Send} onClick={sendRfq}>Send RFQ</Button>}
             {supplier.classification !== 'Blacklisted' && canEditSupplier && (
-              <Button variant="ghost" size="sm" leftIcon={Ban}>Blacklist</Button>
+              <Button variant="ghost" size="sm" leftIcon={Ban} onClick={() => setDialog('blacklist')}>Blacklist</Button>
+            )}
+            {supplier.classification === 'Blacklisted' && canEditSupplier && (
+              <Button variant="ghost" size="sm" onClick={() => { updateSupplier(supplier.id, { classification: 'Registered', blacklistReason: null }); addToast(`${supplier.name} removed from the blacklist`, 'success'); }}>Remove from blacklist</Button>
             )}
           </div>
         </div>
@@ -301,7 +339,7 @@ export default function SupplierDetail() {
               <p className={styles.cardTitle} style={{ marginBottom: 0, borderBottom: 'none' }}>
                 Documents ({supplier.documents.length})
               </p>
-              <Button variant="primary" size="sm" leftIcon={Upload}>Upload document</Button>
+              <Button variant="primary" size="sm" leftIcon={Upload} onClick={() => void uploadDoc()}>Upload document</Button>
             </div>
             <div className={styles.docGrid}>
               {supplier.documents.map((doc, idx) => (
@@ -310,12 +348,12 @@ export default function SupplierDetail() {
                   <span className={styles.docName}>{doc.name}</span>
                   <span className={styles.docDate}>Uploaded {doc.uploadedDate}</span>
                   <div className={styles.docActions}>
-                    <Button variant="ghost" size="sm">View</Button>
-                    <Button variant="ghost" size="sm">Download</Button>
+                    <Button variant="ghost" size="sm" onClick={() => openDoc(doc as Doc, false)}>View</Button>
+                    <Button variant="ghost" size="sm" onClick={() => openDoc(doc as Doc, true)}>Download</Button>
                   </div>
                 </div>
               ))}
-              <div className={styles.docCardDashed}>
+              <div className={styles.docCardDashed} role="button" tabIndex={0} style={{ cursor: 'pointer' }} onClick={() => void uploadDoc()}>
                 <Upload size={20} color="var(--color-primary)" />
                 <span className={styles.docName}>Upload new</span>
                 <span className={styles.docDate}>PDF, JPG, PNG</span>
@@ -372,6 +410,47 @@ export default function SupplierDetail() {
         )}
 
       </div>
+      <RecordEditModal
+        isOpen={dialog === 'edit'}
+        title={`Edit ${supplier.name}`}
+        fields={[
+          { key: 'name', label: 'Name', required: true },
+          { key: 'category', label: 'Category' },
+          { key: 'classification', label: 'Classification', type: 'select', options: ['Preferred', 'Approved', 'Registered'] },
+          { key: 'person', label: 'Contact person' },
+          { key: 'email', label: 'Email', type: 'email' },
+          { key: 'phone', label: 'Phone' },
+          { key: 'gst', label: 'GSTIN' },
+          { key: 'pan', label: 'PAN' },
+          { key: 'paymentTerms', label: 'Payment terms' },
+          { key: 'notes', label: 'Notes', type: 'textarea' },
+        ]}
+        values={{ ...supplier, ...supplier.contact }}
+        onClose={() => setDialog(null)}
+        onSave={(v) => {
+          updateSupplier(supplier.id, {
+            name: String(v.name), category: String(v.category), classification: (String(v.classification) || supplier.classification) as typeof supplier.classification,
+            contact: { person: String(v.person), email: String(v.email), phone: String(v.phone) },
+            gst: String(v.gst), pan: String(v.pan), paymentTerms: String(v.paymentTerms), notes: String(v.notes),
+          });
+          addToast('Supplier updated', 'success');
+          setDialog(null);
+        }}
+      />
+      <RecordEditModal
+        isOpen={dialog === 'blacklist'}
+        title={`Blacklist ${supplier.name}`}
+        fields={[{ key: 'reason', label: 'Reason', type: 'textarea', required: true, placeholder: 'e.g. repeated germination failures, fake certificates' }]}
+        values={{}}
+        submitLabel="Blacklist supplier"
+        danger
+        onClose={() => setDialog(null)}
+        onSave={(v) => {
+          updateSupplier(supplier.id, { classification: 'Blacklisted', blacklistReason: String(v.reason) });
+          addToast(`${supplier.name} blacklisted`, 'warning');
+          setDialog(null);
+        }}
+      />
     </ModuleLayout>
   );
 }

@@ -1,0 +1,1317 @@
+{
+ "version": 1,
+ "users": {
+  "admin": "admin@seedsphere.com",
+  "inspector": "inspector@seedsphere.com",
+  "producer": "producer@seedsphere.com",
+  "warehouse": "warehouse@seedsphere.com",
+  "breeder": "breeder@seedsphere.com"
+ },
+ "lots": {
+  "cotton": {
+   "server": "SL-AI-CT-202",
+   "demo": "SL-WHEAT-0232"
+  },
+  "maize": {
+   "server": "SL-AI-MZ-104",
+   "demo": "SL-MAIZE-0089"
+  },
+  "chilli": {
+   "server": "SL-AI-CH-701",
+   "demo": "SL-SOY-0054"
+  },
+  "soy": {
+   "server": "SL-AI-SB-301",
+   "demo": "SL-SOY-0055"
+  },
+  "paddy": {
+   "server": "SL-AI-PD-402",
+   "demo": "SL-PADDY-0119"
+  },
+  "wheat": {
+   "server": "SL-AI-WH-502",
+   "demo": "SL-WHEAT-0231"
+  }
+ },
+ "sops": [
+  {
+   "code": "SOP-PRC-001",
+   "title": "Supplier and contract-grower approval",
+   "department": "procurement",
+   "owner": "admin@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "superseded",
+     "summary": "First issue",
+     "content": "",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -420,
+     "next_review_offset": -55,
+     "submitted_offset": null,
+     "acks": []
+    },
+    {
+     "n": 2,
+     "status": "effective",
+     "summary": "Added grower land-record and isolation checks",
+     "content": "PURPOSE\nMake sure seed is only sourced from approved suppliers and growers.\n\nPROCEDURE\n1. Collect land records, GPS plot and previous-crop declaration.\n2. Score the grower against the approval checklist.\n3. Quality head approves; grower is added to the approved list.\n4. Re-evaluate each season using germination and field-inspection results.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -180,
+     "next_review_offset": 185,
+     "submitted_offset": -186,
+     "acks": [
+      "admin@seedsphere.com",
+      "inspector@seedsphere.com",
+      "producer@seedsphere.com",
+      "warehouse@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-PRD-001",
+   "title": "Seed plot registration and isolation",
+   "department": "production",
+   "owner": "inspector@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "superseded",
+     "summary": "First issue",
+     "content": "",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -600,
+     "next_review_offset": -235,
+     "submitted_offset": null,
+     "acks": []
+    },
+    {
+     "n": 2,
+     "status": "superseded",
+     "summary": "Isolation distances per crop",
+     "content": "",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -400,
+     "next_review_offset": -35,
+     "submitted_offset": null,
+     "acks": []
+    },
+    {
+     "n": 3,
+     "status": "effective",
+     "summary": "Added drone-based boundary verification",
+     "content": "PURPOSE\nRegister every production plot and keep the required isolation distance.\n\nPROCEDURE\n1. Register the plot with the certification agency before sowing.\n2. Record crop, class of seed, area and isolation distance.\n3. Verify boundaries on site and photograph the isolation strip.\n4. Re-check at flowering and before harvest.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -120,
+     "next_review_offset": 245,
+     "submitted_offset": -130,
+     "acks": [
+      "admin@seedsphere.com",
+      "inspector@seedsphere.com",
+      "breeder@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-PRD-002",
+   "title": "Field inspection and roguing",
+   "department": "production",
+   "owner": "inspector@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "effective",
+     "summary": "First issue",
+     "content": "PURPOSE\nInspect seed plots at the prescribed stages and remove off-types.\n\nPROCEDURE\n1. Inspect at vegetative, flowering and pre-harvest stages.\n2. Count off-types per sample area and record against the tolerance.\n3. Rogue within 48 hours and re-inspect.\n4. Report results in the field inspection form.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -250,
+     "next_review_offset": 115,
+     "submitted_offset": -256,
+     "acks": [
+      "admin@seedsphere.com",
+      "inspector@seedsphere.com"
+     ]
+    },
+    {
+     "n": 2,
+     "status": "in_review",
+     "summary": "Add off-type count checkpoint after cotton complaint",
+     "content": "PURPOSE\nInspect seed plots at the prescribed stages and remove off-types.\n\nPROCEDURE\n1. Inspect at vegetative, flowering and pre-harvest stages.\n2. Count off-types per 1,000 plants and record against the tolerance.\n3. Stop harvest if off-types exceed tolerance and raise an NCR.\n4. Rogue within 48 hours and re-inspect.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": null,
+     "effective_offset": null,
+     "next_review_offset": null,
+     "submitted_offset": -3,
+     "acks": []
+    }
+   ]
+  },
+  {
+   "code": "SOP-RND-001",
+   "title": "Breeder seed maintenance and genetic purity",
+   "department": "rd",
+   "owner": "breeder@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "effective",
+     "summary": "First issue",
+     "content": "PURPOSE\nMaintain breeder seed so varietal identity and purity are preserved.\n\nPROCEDURE\n1. Grow-out test each lot against the reference sample.\n2. Record deviations and discard lots that fail.\n3. Store reference samples in cold storage with the lot code.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "breeder@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -300,
+     "next_review_offset": 65,
+     "submitted_offset": -305,
+     "acks": [
+      "admin@seedsphere.com",
+      "breeder@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-LAB-001",
+   "title": "Germination testing (ISTA)",
+   "department": "laboratory",
+   "owner": "inspector@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "superseded",
+     "summary": "First issue",
+     "content": "",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -500,
+     "next_review_offset": -135,
+     "submitted_offset": null,
+     "acks": []
+    },
+    {
+     "n": 2,
+     "status": "effective",
+     "summary": "Aligned replication and tolerance tables with current ISTA rules",
+     "content": "PURPOSE\nTest germination on a consistent, repeatable basis.\n\nPROCEDURE\n1. Draw a working sample by the prescribed method.\n2. Plant four replicates of 100 seeds on the correct substrate.\n3. Count at the first and final count day.\n4. Record normal, abnormal and dead seed; report with the lot code.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -90,
+     "next_review_offset": 275,
+     "submitted_offset": -96,
+     "acks": [
+      "admin@seedsphere.com",
+      "inspector@seedsphere.com",
+      "producer@seedsphere.com",
+      "warehouse@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-LAB-002",
+   "title": "Physical purity and moisture testing",
+   "department": "laboratory",
+   "owner": "inspector@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "effective",
+     "summary": "First issue",
+     "content": "PURPOSE\nMeasure purity and moisture so lots meet the minimum standards.\n\nPROCEDURE\n1. Divide the sample with a calibrated divider.\n2. Separate pure seed, other crop, weed seed and inert matter.\n3. Measure moisture on the oven or meter method.\n4. Report within the tolerance table.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "inspector@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -430,
+     "next_review_offset": -65,
+     "submitted_offset": -436,
+     "acks": [
+      "admin@seedsphere.com",
+      "inspector@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-WH-001",
+   "title": "Receipt, storage and first-expiry dispatch",
+   "department": "warehouse",
+   "owner": "warehouse@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "superseded",
+     "summary": "First issue",
+     "content": "",
+     "created_by": "warehouse@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -380,
+     "next_review_offset": -15,
+     "submitted_offset": null,
+     "acks": []
+    },
+    {
+     "n": 2,
+     "status": "effective",
+     "summary": "Added QR scan at receipt and dispatch",
+     "content": "PURPOSE\nStore seed so lots stay identified, segregated and dispatched first-expiry-first-out.\n\nPROCEDURE\n1. Check lot, bag count and condition at receipt.\n2. Scan the QR label and assign a storage location.\n3. Log temperature and humidity twice a day.\n4. Dispatch released stock only, oldest expiry first.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "warehouse@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -100,
+     "next_review_offset": 265,
+     "submitted_offset": -108,
+     "acks": [
+      "admin@seedsphere.com",
+      "warehouse@seedsphere.com",
+      "producer@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-WH-002",
+   "title": "Pest and moisture control in godowns",
+   "department": "warehouse",
+   "owner": "warehouse@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "draft",
+     "summary": "First draft \u2014 pest-control schedule and moisture limits",
+     "content": "Draft in preparation. Covers fumigation intervals, moisture limits by crop and pallet spacing.",
+     "created_by": "warehouse@seedsphere.com",
+     "approved_by": null,
+     "effective_offset": null,
+     "next_review_offset": null,
+     "submitted_offset": null,
+     "acks": []
+    }
+   ]
+  },
+  {
+   "code": "SOP-LOG-001",
+   "title": "Transport and dispatch documentation",
+   "department": "logistics",
+   "owner": "warehouse@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "effective",
+     "summary": "First issue",
+     "content": "PURPOSE\nDispatch seed with complete documents and traceable lot details.\n\nPROCEDURE\n1. Match the dispatch note to released lots.\n2. Record vehicle, driver and seal number.\n3. Obtain dealer acknowledgement at delivery.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "warehouse@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -160,
+     "next_review_offset": 205,
+     "submitted_offset": -166,
+     "acks": [
+      "admin@seedsphere.com",
+      "warehouse@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-OPS-001",
+   "title": "Labelling, tagging and packaging",
+   "department": "operations",
+   "owner": "admin@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "superseded",
+     "summary": "First issue",
+     "content": "",
+     "created_by": "admin@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -540,
+     "next_review_offset": -175,
+     "submitted_offset": null,
+     "acks": []
+    },
+    {
+     "n": 2,
+     "status": "effective",
+     "summary": "Barcode check added before packing",
+     "content": "PURPOSE\nMake sure every packet carries the required declarations.\n\nPROCEDURE\n1. Print labels from the approved lot record only.\n2. Verify lot, packing date, validity and germination on the first packet.\n3. Seal and tag as per the Seeds Rules.\n4. Record packed unit counts.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "admin@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -350,
+     "next_review_offset": 18,
+     "submitted_offset": -356,
+     "acks": [
+      "admin@seedsphere.com",
+      "inspector@seedsphere.com",
+      "warehouse@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-QA-001",
+   "title": "Non-conformance and CAPA handling",
+   "department": "quality",
+   "owner": "admin@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "effective",
+     "summary": "First issue",
+     "content": "PURPOSE\nRecord, investigate and close problems so they do not repeat.\n\nPROCEDURE\n1. Raise an NCR as soon as a problem is noticed.\n2. Investigate and record the root cause.\n3. Raise corrective and preventive actions with an owner and date.\n4. Someone other than the owner verifies the actions worked.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "admin@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -140,
+     "next_review_offset": 225,
+     "submitted_offset": -146,
+     "acks": [
+      "admin@seedsphere.com",
+      "inspector@seedsphere.com",
+      "producer@seedsphere.com",
+      "warehouse@seedsphere.com",
+      "breeder@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-QA-002",
+   "title": "Customer complaint handling and recall",
+   "department": "quality",
+   "owner": "admin@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "effective",
+     "summary": "First issue",
+     "content": "PURPOSE\nRespond to customer complaints and stop affected seed from being sold.\n\nPROCEDURE\n1. Log the complaint with lot details and severity.\n2. Place the lot on hold if the complaint is serious.\n3. Investigate, find the root cause and resolve with the customer.\n4. Recommend a recall where the risk to farmers warrants it.\n\nRECORDS\nCompleted forms are filed centrally and linked to the seed lot code.",
+     "created_by": "admin@seedsphere.com",
+     "approved_by": "admin@seedsphere.com",
+     "effective_offset": -135,
+     "next_review_offset": 230,
+     "submitted_offset": -141,
+     "acks": [
+      "admin@seedsphere.com",
+      "inspector@seedsphere.com",
+      "warehouse@seedsphere.com"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "SOP-HR-001",
+   "title": "Staff training and competency records",
+   "department": "hr_training",
+   "owner": "admin@seedsphere.com",
+   "interval": 12,
+   "versions": [
+    {
+     "n": 1,
+     "status": "draft",
+     "summary": "First draft \u2014 training matrix and sign-off",
+     "content": "Draft in preparation. Covers induction training, SOP read-and-understood sign-off and annual competency review.",
+     "created_by": "admin@seedsphere.com",
+     "approved_by": null,
+     "effective_offset": null,
+     "next_review_offset": null,
+     "submitted_offset": null,
+     "acks": []
+    }
+   ]
+  }
+ ],
+ "complaints": [
+  {
+   "key": "C1",
+   "code": "CMP-2026-0001",
+   "source": "farmer",
+   "name": "Ramesh Patel",
+   "contact": "+91 98250 11234 (Anand, Gujarat)",
+   "lot": "maize",
+   "title": "Poor germination reported in maize hybrid",
+   "description": "Farmer reports about 60% emergence in a 3-acre plot sown within the validity period. Seed was stored at the dealer for six weeks.",
+   "severity": "major",
+   "status": "investigating",
+   "received": -12,
+   "assigned": "inspector@seedsphere.com",
+   "root": null,
+   "resolution": null,
+   "recall": false,
+   "resolved": null,
+   "closed": null,
+   "ncr": "N3"
+  },
+  {
+   "key": "C2",
+   "code": "CMP-2026-0002",
+   "source": "dealer",
+   "name": "Sai Agro Traders",
+   "contact": "saiagro@example.com (Warangal)",
+   "lot": "cotton",
+   "title": "Off-type plants in Bt cotton fields",
+   "description": "Three growers report visibly different plant types across about 8 acres. Dealer holds 140 unsold packets from the same lot.",
+   "severity": "critical",
+   "status": "investigating",
+   "received": -6,
+   "assigned": "inspector@seedsphere.com",
+   "root": null,
+   "resolution": null,
+   "recall": true,
+   "resolved": null,
+   "closed": null,
+   "ncr": "N2"
+  },
+  {
+   "key": "C3",
+   "code": "CMP-2026-0003",
+   "source": "farmer",
+   "name": "Lakshmi Devi",
+   "contact": "+91 94410 55871 (Nizamabad)",
+   "lot": "soy",
+   "title": "Soybean packets smelt of mould",
+   "description": "Farmer opened two bags at delivery and found damp seed with a musty smell.",
+   "severity": "major",
+   "status": "resolved",
+   "received": -40,
+   "assigned": "inspector@seedsphere.com",
+   "root": "Bags stored near a wet wall at the dealer; moisture rose above the safe limit.",
+   "resolution": "Replaced the affected bags, re-tested the lot (moisture within limit) and advised the dealer on storage.",
+   "recall": false,
+   "resolved": -28,
+   "closed": null,
+   "ncr": null
+  },
+  {
+   "key": "C4",
+   "code": "CMP-2026-0004",
+   "source": "distributor",
+   "name": "Kisan Seeds Distributors",
+   "contact": "orders@kisanseeds.example",
+   "lot": "paddy",
+   "title": "Label shows wrong packing date",
+   "description": "Distributor noticed the packing date on two pallets was a month earlier than the invoice.",
+   "severity": "minor",
+   "status": "closed",
+   "received": -75,
+   "assigned": "admin@seedsphere.com",
+   "root": "Label template carried over the previous month date.",
+   "resolution": "Relabelled both pallets; added a barcode check before packing.",
+   "recall": false,
+   "resolved": -66,
+   "closed": -60,
+   "ncr": null
+  },
+  {
+   "key": "C5",
+   "code": "CMP-2026-0005",
+   "source": "internal",
+   "name": "Warehouse team",
+   "contact": null,
+   "lot": null,
+   "title": "Torn bags found at godown receipt",
+   "description": "Eleven bags damaged in transit from the processing unit. Seed re-bagged and weighed.",
+   "severity": "minor",
+   "status": "received",
+   "received": -2,
+   "assigned": null,
+   "root": null,
+   "resolution": null,
+   "recall": false,
+   "resolved": null,
+   "closed": null,
+   "ncr": null
+  },
+  {
+   "key": "C6",
+   "code": "CMP-2026-0006",
+   "source": "farmer",
+   "name": "Gurpreet Singh",
+   "contact": "+91 98760 22145 (Ludhiana)",
+   "lot": "wheat",
+   "title": "Lower tillering than expected",
+   "description": "Farmer reports fewer tillers than the previous season on the same variety.",
+   "severity": "minor",
+   "status": "investigating",
+   "received": -20,
+   "assigned": "inspector@seedsphere.com",
+   "root": null,
+   "resolution": null,
+   "recall": false,
+   "resolved": null,
+   "closed": null,
+   "ncr": null
+  }
+ ],
+ "ncrs": [
+  {
+   "key": "N1",
+   "code": "NCR-2026-0001",
+   "title": "Godown temperature log not signed for three days",
+   "description": "Internal audit found the daily temperature and humidity log unsigned from 4 to 6 of the month.",
+   "department": "warehouse",
+   "source": "internal_audit",
+   "severity": "minor",
+   "lot": null,
+   "status": "closed",
+   "raised_by": "inspector@seedsphere.com",
+   "assigned": "warehouse@seedsphere.com",
+   "due": -30,
+   "created": -55,
+   "root": "No named backup when the storekeeper was on leave.",
+   "closure": "Backup named in the SOP; log reviewed weekly by the warehouse manager.",
+   "closed_by": "admin@seedsphere.com",
+   "closed": -25,
+   "complaint": null
+  },
+  {
+   "key": "N2",
+   "code": "NCR-2026-0002",
+   "title": "Off-types above tolerance in cotton lot",
+   "description": "Complaint CMP-2026-0002 raised after dealers reported off-type plants. Lot placed on hold pending re-inspection of source plots.",
+   "department": "production",
+   "source": "complaint",
+   "severity": "critical",
+   "lot": "cotton",
+   "status": "investigating",
+   "raised_by": "inspector@seedsphere.com",
+   "assigned": "inspector@seedsphere.com",
+   "due": 5,
+   "created": -6,
+   "root": null,
+   "closure": null,
+   "closed_by": null,
+   "closed": null,
+   "complaint": "C2"
+  },
+  {
+   "key": "N3",
+   "code": "NCR-2026-0003",
+   "title": "Germination below label claim \u2014 maize lot",
+   "description": "Retest shows germination well under the declared figure. Complaint CMP-2026-0001 refers to this lot.",
+   "department": "laboratory",
+   "source": "complaint",
+   "severity": "major",
+   "lot": "maize",
+   "status": "investigating",
+   "raised_by": "inspector@seedsphere.com",
+   "assigned": "inspector@seedsphere.com",
+   "due": 9,
+   "created": -11,
+   "root": null,
+   "closure": null,
+   "closed_by": null,
+   "closed": null,
+   "complaint": "C1"
+  },
+  {
+   "key": "N4",
+   "code": "NCR-2026-0004",
+   "title": "Purity result outside tolerance \u2014 chilli lot",
+   "description": "Laboratory result for physical purity was below the minimum standard; lot was not blocked from allocation.",
+   "department": "laboratory",
+   "source": "lab_oos",
+   "severity": "major",
+   "lot": "chilli",
+   "status": "open",
+   "raised_by": "inspector@seedsphere.com",
+   "assigned": "inspector@seedsphere.com",
+   "due": -4,
+   "created": -22,
+   "root": null,
+   "closure": null,
+   "closed_by": null,
+   "closed": null,
+   "complaint": null
+  },
+  {
+   "key": "N5",
+   "code": "NCR-2026-0005",
+   "title": "Grower delivered without moisture certificate",
+   "description": "Contract grower delivered 4 tonnes of seed with no moisture certificate attached to the delivery note.",
+   "department": "procurement",
+   "source": "supplier",
+   "severity": "minor",
+   "lot": null,
+   "status": "open",
+   "raised_by": "warehouse@seedsphere.com",
+   "assigned": "admin@seedsphere.com",
+   "due": 12,
+   "created": -5,
+   "root": null,
+   "closure": null,
+   "closed_by": null,
+   "closed": null,
+   "complaint": null
+  },
+  {
+   "key": "N6",
+   "code": "NCR-2026-0006",
+   "title": "Packaging label mismatch on two batches",
+   "description": "Validity date printed on two paddy batches did not match the lab certificate.",
+   "department": "operations",
+   "source": "process_deviation",
+   "severity": "major",
+   "lot": "paddy",
+   "status": "closed",
+   "raised_by": "inspector@seedsphere.com",
+   "assigned": "admin@seedsphere.com",
+   "due": -18,
+   "created": -34,
+   "root": "Label template not refreshed after the retest; no cross-check before packing.",
+   "closure": "Both batches relabelled and re-verified; barcode cross-check added to the packing step.",
+   "closed_by": "admin@seedsphere.com",
+   "closed": -12,
+   "complaint": null
+  },
+  {
+   "key": "N7",
+   "code": "NCR-2026-0007",
+   "title": "Field inspection reports missing isolation distance",
+   "description": "Inspection forms for 6 plots have no recorded isolation distance, so compliance with the certification standard cannot be shown.",
+   "department": "production",
+   "source": "inspection",
+   "severity": "major",
+   "lot": null,
+   "status": "investigating",
+   "raised_by": "admin@seedsphere.com",
+   "assigned": "inspector@seedsphere.com",
+   "due": -10,
+   "created": -30,
+   "root": null,
+   "closure": null,
+   "closed_by": null,
+   "closed": null,
+   "complaint": null
+  },
+  {
+   "key": "N8",
+   "code": "NCR-2026-0008",
+   "title": "Training records not available for new warehouse staff",
+   "description": "Internal audit could not find read-and-understood evidence for three staff who joined this quarter.",
+   "department": "hr_training",
+   "source": "internal_audit",
+   "severity": "minor",
+   "lot": null,
+   "status": "open",
+   "raised_by": "admin@seedsphere.com",
+   "assigned": "admin@seedsphere.com",
+   "due": 20,
+   "created": -3,
+   "root": null,
+   "closure": null,
+   "closed_by": null,
+   "closed": null,
+   "complaint": null
+  }
+ ],
+ "capas": [
+  {
+   "key": "P1",
+   "code": "CAPA-2026-0001",
+   "type": "corrective",
+   "ncr": "N1",
+   "complaint": null,
+   "title": "Name a backup for the daily storage log",
+   "description": "Name a deputy for each storekeeper and add the log to the weekly review.",
+   "owner": "warehouse@seedsphere.com",
+   "due": -35,
+   "status": "closed",
+   "created": -54,
+   "implemented": -40,
+   "implementation_notes": "Backup named in SOP-WH-001 and briefed to staff.",
+   "verified_by": "admin@seedsphere.com",
+   "verified": -30,
+   "result": "effective",
+   "verification_notes": "No gaps in the log for 30 days after the change.",
+   "verification_count": 1,
+   "created_by": "admin@seedsphere.com"
+  },
+  {
+   "key": "P2",
+   "code": "CAPA-2026-0002",
+   "type": "preventive",
+   "ncr": "N1",
+   "complaint": null,
+   "title": "Weekly review of storage logs",
+   "description": "Warehouse manager reviews and signs the logs every Friday.",
+   "owner": "warehouse@seedsphere.com",
+   "due": -30,
+   "status": "closed",
+   "created": -54,
+   "implemented": -33,
+   "implementation_notes": "Weekly review added to the manager checklist.",
+   "verified_by": "admin@seedsphere.com",
+   "verified": -26,
+   "result": "effective",
+   "verification_notes": "Reviewed for four consecutive weeks.",
+   "verification_count": 1,
+   "created_by": "admin@seedsphere.com"
+  },
+  {
+   "key": "P3",
+   "code": "CAPA-2026-0003",
+   "type": "corrective",
+   "ncr": "N2",
+   "complaint": null,
+   "title": "Re-inspect source plots for the cotton lot",
+   "description": "Re-inspect every plot that supplied the affected lot and count off-types.",
+   "owner": "inspector@seedsphere.com",
+   "due": 4,
+   "status": "in_progress",
+   "created": -5,
+   "implemented": null,
+   "implementation_notes": null,
+   "verified_by": null,
+   "verified": null,
+   "result": null,
+   "verification_notes": null,
+   "verification_count": 0,
+   "created_by": "admin@seedsphere.com"
+  },
+  {
+   "key": "P4",
+   "code": "CAPA-2026-0004",
+   "type": "preventive",
+   "ncr": "N2",
+   "complaint": null,
+   "title": "Add off-type count to the field inspection SOP",
+   "description": "Revise SOP-PRD-002 so off-types are counted per 1,000 plants and harvest stops above tolerance.",
+   "owner": "admin@seedsphere.com",
+   "due": 25,
+   "status": "open",
+   "created": -5,
+   "implemented": null,
+   "implementation_notes": null,
+   "verified_by": null,
+   "verified": null,
+   "result": null,
+   "verification_notes": null,
+   "verification_count": 0,
+   "created_by": "admin@seedsphere.com"
+  },
+  {
+   "key": "P5",
+   "code": "CAPA-2026-0005",
+   "type": "corrective",
+   "ncr": "N3",
+   "complaint": null,
+   "title": "Retest and re-grade the maize lot",
+   "description": "Retest germination on three fresh samples, relabel the lot with the actual figure and notify the dealer.",
+   "owner": "inspector@seedsphere.com",
+   "due": 1,
+   "status": "implemented",
+   "created": -10,
+   "implemented": -1,
+   "implementation_notes": "Three samples retested; lot relabelled and dealer informed.",
+   "verified_by": null,
+   "verified": null,
+   "result": null,
+   "verification_notes": null,
+   "verification_count": 0,
+   "created_by": "admin@seedsphere.com"
+  },
+  {
+   "key": "P6",
+   "code": "CAPA-2026-0006",
+   "type": "corrective",
+   "ncr": "N4",
+   "complaint": null,
+   "title": "Recalibrate purity divider and retest chilli lot",
+   "description": "Recalibrate the sample divider, retest the lot and block allocation until it passes.",
+   "owner": "inspector@seedsphere.com",
+   "due": -3,
+   "status": "in_progress",
+   "created": -20,
+   "implemented": null,
+   "implementation_notes": null,
+   "verified_by": null,
+   "verified": null,
+   "result": null,
+   "verification_notes": null,
+   "verification_count": 0,
+   "created_by": "admin@seedsphere.com"
+  },
+  {
+   "key": "P7",
+   "code": "CAPA-2026-0007",
+   "type": "corrective",
+   "ncr": "N6",
+   "complaint": null,
+   "title": "Relabel and re-verify the two paddy batches",
+   "description": "Reprint labels from the lab certificate and verify all units.",
+   "owner": "admin@seedsphere.com",
+   "due": -20,
+   "status": "closed",
+   "created": -33,
+   "implemented": -24,
+   "implementation_notes": "Relabelled and verified with a second person.",
+   "verified_by": "admin@seedsphere.com",
+   "verified": -14,
+   "result": "effective",
+   "verification_notes": "Spot check of 30 packets found no errors.",
+   "verification_count": 1,
+   "created_by": "admin@seedsphere.com"
+  },
+  {
+   "key": "P8",
+   "code": "CAPA-2026-0008",
+   "type": "preventive",
+   "ncr": "N6",
+   "complaint": null,
+   "title": "Barcode check before packing",
+   "description": "Packing line scans the label barcode against the lot record before sealing.",
+   "owner": "admin@seedsphere.com",
+   "due": -14,
+   "status": "closed",
+   "created": -33,
+   "implemented": -18,
+   "implementation_notes": "Barcode scanner installed and step added to SOP-OPS-001.",
+   "verified_by": "admin@seedsphere.com",
+   "verified": -10,
+   "result": "effective",
+   "verification_notes": "Second verification: no mismatch in 400 packets (first attempt found a skipped step).",
+   "verification_count": 2,
+   "created_by": "admin@seedsphere.com"
+  },
+  {
+   "key": "P9",
+   "code": "CAPA-2026-0009",
+   "type": "corrective",
+   "ncr": "N7",
+   "complaint": null,
+   "title": "Retrain inspectors on isolation recording",
+   "description": "Run a refresher for all field inspectors and re-issue the inspection form with a mandatory isolation field.",
+   "owner": "inspector@seedsphere.com",
+   "due": -6,
+   "status": "in_progress",
+   "created": -28,
+   "implemented": -12,
+   "implementation_notes": "Refresher held and form updated.",
+   "verified_by": "admin@seedsphere.com",
+   "verified": -8,
+   "result": "ineffective",
+   "verification_notes": "Two of the next six forms still had the field blank; re-train and add a checker.",
+   "verification_count": 1,
+   "created_by": "admin@seedsphere.com"
+  },
+  {
+   "key": "P10",
+   "code": "CAPA-2026-0010",
+   "type": "corrective",
+   "ncr": null,
+   "complaint": "C3",
+   "title": "Storage guidance for dealers",
+   "description": "Send dealers a one-page storage guide and a moisture check card.",
+   "owner": "admin@seedsphere.com",
+   "due": -30,
+   "status": "closed",
+   "created": -39,
+   "implemented": -33,
+   "implementation_notes": "Guide sent to 42 dealers.",
+   "verified_by": "admin@seedsphere.com",
+   "verified": -24,
+   "result": "effective",
+   "verification_notes": "No repeat moisture complaints in 30 days.",
+   "verification_count": 1,
+   "created_by": "admin@seedsphere.com"
+  }
+ ],
+ "holds": [
+  {
+   "key": "H1",
+   "lot": "cotton",
+   "reason": "Critical complaint: off-types above tolerance. Stop-sale until re-inspection of source plots is complete.",
+   "source": "ncr",
+   "source_key": "N2",
+   "placed_by": "inspector@seedsphere.com",
+   "placed": -5,
+   "released_by": null,
+   "released": null,
+   "release_notes": null
+  },
+  {
+   "key": "H2",
+   "lot": "chilli",
+   "reason": "Purity below the minimum standard (NCR-2026-0004). Block allocation until retested.",
+   "source": "ncr",
+   "source_key": "N4",
+   "placed_by": "inspector@seedsphere.com",
+   "placed": -20,
+   "released_by": null,
+   "released": null,
+   "release_notes": null
+  },
+  {
+   "key": "H3",
+   "lot": "soy",
+   "reason": "Mould complaint (CMP-2026-0003): hold until moisture retest.",
+   "source": "complaint",
+   "source_key": "C3",
+   "placed_by": "inspector@seedsphere.com",
+   "placed": -38,
+   "released_by": "admin@seedsphere.com",
+   "released": -27,
+   "release_notes": "Retest showed moisture within limit and germination unchanged; released for sale."
+  }
+ ],
+ "requirements": [
+  {
+   "i": 0,
+   "status": "compliant",
+   "current": "Licences held for all three places of business; copies displayed and renewal tracked.",
+   "review": 200,
+   "evidence": [
+    [
+     "Licence copies \u2014 Hyderabad, Warangal, Nizamabad",
+     "QA-REG/2026/LIC-01"
+    ]
+   ],
+   "sop": null
+  },
+  {
+   "i": 1,
+   "status": "compliant",
+   "current": "Variety master lists notified or registered status against each variety.",
+   "review": 240,
+   "evidence": [
+    [
+     "Variety registration extract",
+     "QA-REG/2026/VAR-04"
+    ]
+   ],
+   "sop": null
+  },
+  {
+   "i": 2,
+   "status": "partially_compliant",
+   "current": "Plots are registered and inspected, but isolation distance is missing on six forms.",
+   "gap": "Isolation distance not recorded on six inspection forms.",
+   "risk": "medium",
+   "action": "Re-issue the form with a mandatory isolation field and re-inspect the six plots.",
+   "responsible": "inspector@seedsphere.com",
+   "target": 14,
+   "ncr": "N7",
+   "sop": "SOP-PRD-001",
+   "review": 60,
+   "evidence": []
+  },
+  {
+   "i": 3,
+   "status": "compliant",
+   "current": "Every lot is tested for germination, purity and moisture before release.",
+   "review": 180,
+   "evidence": [
+    [
+     "Lab testing procedure and last 3 months of reports",
+     "SOP-LAB-001"
+    ]
+   ],
+   "sop": "SOP-LAB-001"
+  },
+  {
+   "i": 4,
+   "status": "partially_compliant",
+   "current": "Tags carry the required particulars, but validity date was wrong on two batches.",
+   "gap": "Validity date mismatch on two paddy batches (NCR-2026-0006, closed).",
+   "risk": "high",
+   "action": "Barcode check added; re-audit 30 days after rollout.",
+   "responsible": "admin@seedsphere.com",
+   "target": 10,
+   "ncr": null,
+   "sop": "SOP-OPS-001",
+   "review": 45,
+   "evidence": []
+  },
+  {
+   "i": 5,
+   "status": "compliant",
+   "current": "Net quantity, MRP and packing month are printed on all packaged seed.",
+   "review": 210,
+   "evidence": [
+    [
+     "Label artwork approval sheet",
+     "QA-LBL/2026/05"
+    ]
+   ],
+   "sop": "SOP-OPS-001"
+  },
+  {
+   "i": 6,
+   "status": "compliant",
+   "current": "Purchase, production and sale records are stored centrally and searchable.",
+   "review": 150,
+   "evidence": [
+    [
+     "Records register extract",
+     "SeedSphere / Records"
+    ]
+   ],
+   "sop": null
+  },
+  {
+   "i": 7,
+   "status": "compliant",
+   "current": "Each lot carries a lot code traceable from source seed to dealer through SeedSphere.",
+   "review": 190,
+   "evidence": [
+    [
+     "Trace report for a sample lot",
+     "SeedSphere / Genealogy"
+    ]
+   ],
+   "sop": null
+  },
+  {
+   "i": 8,
+   "status": "non_compliant",
+   "current": "No schedule exists to re-test lots as they approach and pass validity.",
+   "gap": "No re-test schedule; two lots past validity were still allocated.",
+   "risk": "high",
+   "action": "Create a re-test calendar and block allocation of expired lots.",
+   "responsible": "inspector@seedsphere.com",
+   "target": -5,
+   "ncr": null,
+   "sop": "SOP-LAB-001",
+   "review": 30,
+   "evidence": []
+  },
+  {
+   "i": 9,
+   "status": "not_assessed"
+  },
+  {
+   "i": 10,
+   "status": "compliant",
+   "current": "Inspectors are given access and samples on request; visits are logged.",
+   "review": 220,
+   "evidence": [
+    [
+     "Inspector visit log",
+     "QA-LOG/2026/INSP"
+    ]
+   ],
+   "sop": null
+  },
+  {
+   "i": 11,
+   "status": "partially_compliant",
+   "current": "Lots are segregated and labelled; humidity logging has gaps.",
+   "gap": "Humidity readings missing on some days in the older godown.",
+   "risk": "medium",
+   "action": "Install a data logger and review readings weekly.",
+   "responsible": "warehouse@seedsphere.com",
+   "target": 30,
+   "ncr": null,
+   "sop": "SOP-WH-001",
+   "review": 90,
+   "evidence": []
+  },
+  {
+   "i": 12,
+   "status": "compliant",
+   "current": "Dispatches go only to licensed dealers with lot-level invoices.",
+   "review": 205,
+   "evidence": [
+    [
+     "Dealer licence register",
+     "QA-DEAL/2026"
+    ]
+   ],
+   "sop": "SOP-LOG-001"
+  },
+  {
+   "i": 13,
+   "status": "not_assessed"
+  },
+  {
+   "i": 14,
+   "status": "compliant",
+   "current": "Complaints are logged, investigated and closed under SOP-QA-002.",
+   "review": 230,
+   "evidence": [
+    [
+     "Complaint register extract",
+     "SeedSphere / Quality"
+    ]
+   ],
+   "sop": "SOP-QA-002"
+  },
+  {
+   "i": 15,
+   "status": "non_compliant",
+   "current": "Training is delivered but not recorded, so there is no evidence of read-and-understood.",
+   "gap": "No training records for new staff; SOP-HR-001 still in draft.",
+   "risk": "high",
+   "action": "Approve SOP-HR-001 and start recording sign-offs for every SOP.",
+   "responsible": "admin@seedsphere.com",
+   "target": 20,
+   "ncr": "N8",
+   "sop": "SOP-HR-001",
+   "review": 45,
+   "evidence": []
+  },
+  {
+   "i": 16,
+   "status": "not_assessed"
+  },
+  {
+   "i": 17,
+   "status": "not_assessed"
+  },
+  {
+   "i": 18,
+   "status": "not_assessed"
+  }
+ ],
+ "starter": [
+  {
+   "regulation": "Seeds Act, 1966 / Seeds (Control) Order, 1983",
+   "title": "Valid seed dealer / seed business licence for each place of business",
+   "category": "licensing",
+   "department": "operations",
+   "description": "Every place where seed is stored or sold is covered by a current licence, displayed and renewed before expiry. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seeds Act, 1966",
+   "title": "Only notified or registered varieties are produced and sold",
+   "category": "certification",
+   "department": "production",
+   "description": "Each variety sold is a notified kind/variety or otherwise registered, with the status recorded against the variety. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seeds Act, 1966 / Seed certification agency requirements",
+   "title": "Seed production is registered and field-inspected for certification",
+   "category": "certification",
+   "department": "production",
+   "description": "Seed production plots are registered with the certification agency and inspected at the required stages; inspection reports are retained. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Indian Minimum Seed Certification Standards",
+   "title": "Each lot is tested against the minimum standards before release",
+   "category": "quality_testing",
+   "department": "laboratory",
+   "description": "Physical purity, germination, moisture and (where applicable) genetic purity are tested and recorded per lot, and lots below standard are not released. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seeds Rules, 1968",
+   "title": "Seed containers are labelled/tagged with the required particulars",
+   "category": "labelling_packaging",
+   "department": "production",
+   "description": "Every container carries the declared particulars (lot number, variety, purity, germination, date of test, validity, net quantity, producer details). (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Legal Metrology (Packaged Commodities) Rules, 2011",
+   "title": "Packaged seed carries the mandatory declarations",
+   "category": "labelling_packaging",
+   "department": "production",
+   "description": "Net quantity, price, month and year of packing and manufacturer/packer details are declared as required on every pack. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seeds Act, 1966 / Seeds Rules, 1968",
+   "title": "Purchase, production and sale records are maintained and available for inspection",
+   "category": "record_keeping",
+   "department": "operations",
+   "description": "Records of seed received, produced, stored and sold are complete, retained for the required period and retrievable on request. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seeds Act, 1966",
+   "title": "Seed lots are traceable from source seed to dealer",
+   "category": "record_keeping",
+   "department": "quality",
+   "description": "For any lot sold, the parent lot, production, testing, packaging and dispatch records can be produced together. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seeds Rules, 1968",
+   "title": "Seed past its validity period is re-tested before it is sold",
+   "category": "quality_testing",
+   "department": "laboratory",
+   "description": "Lots approaching or beyond the declared validity are re-tested and re-labelled, or withdrawn from sale. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seeds Act, 1966",
+   "title": "A reference sample is retained for each released lot",
+   "category": "quality_testing",
+   "department": "quality",
+   "description": "A sealed reference sample of each released lot is retained for at least the validity period to support disputes and inspections. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seeds Act, 1966",
+   "title": "Seed inspectors can sample and inspect without obstruction",
+   "category": "dealer_sales",
+   "department": "operations",
+   "description": "Staff know how to receive a seed inspector, supply samples against a receipt and retain the counterpart. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seed storage good practice",
+   "title": "Storage keeps lots segregated, identified and protected",
+   "category": "storage_handling",
+   "department": "warehouse",
+   "description": "Warehouse storage separates lots and varieties, controls temperature/humidity and pests, and rotates stock first-in-first-out. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Seeds (Control) Order, 1983",
+   "title": "Seed is sold only through licensed dealers with lot-level invoices",
+   "category": "dealer_sales",
+   "department": "operations",
+   "description": "Dealers are verified as licensed and every invoice records the lot sold, so a lot can be recalled to its buyers. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Protection of Plant Varieties and Farmers' Rights Act, 2001",
+   "title": "Protected and registered varieties are handled within their rights",
+   "category": "certification",
+   "department": "rd",
+   "description": "Use of protected varieties, parental lines and denominations is covered by the appropriate licence or registration. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Customer and consumer protection requirements",
+   "title": "Customer complaints are recorded, investigated and resolved to a documented process",
+   "category": "dealer_sales",
+   "department": "quality",
+   "description": "Complaints are logged, linked to the lot, investigated for root cause and closed with corrective action. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Internal quality management system",
+   "title": "Staff are trained on the SOPs that apply to their work",
+   "category": "other",
+   "department": "hr_training",
+   "description": "Current SOPs are issued to the people who perform the work and their acknowledgement or training is recorded. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Export / import-country phytosanitary requirements",
+   "title": "Exports meet phytosanitary and importing-country requirements",
+   "category": "customer_export",
+   "department": "logistics",
+   "description": "Required phytosanitary certificates, treatments and import-country conditions are checked before each export consignment. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "Customer contract specifications",
+   "title": "Customer-specific quality and audit requirements are identified and met",
+   "category": "customer_export",
+   "department": "quality",
+   "description": "Contracted specifications and customer audit expectations are captured and the company can evidence them. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  },
+  {
+   "regulation": "State seed regulations",
+   "title": "State-specific registration, reporting and licensing duties are identified and met",
+   "category": "licensing",
+   "department": "operations",
+   "description": "For each state of operation, the additional registrations, returns and fees are listed and tracked to completion. (Starter entry \u2014 confirm applicability and current wording with regulatory counsel before relying on it.)"
+  }
+ ]
+}

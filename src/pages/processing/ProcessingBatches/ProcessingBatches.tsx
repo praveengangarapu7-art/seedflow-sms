@@ -15,9 +15,10 @@ import { useToast } from '@/components/common/Toast/ToastContext';
 import defaultBatches from '@/data/processing/batches';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
 import { PROCESSING_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
-import { rawIntakes as mockIntakes } from '@/data/processing/rawIntakes';
-import { recipes as mockRecipes } from '@/data/processing/recipes';
-import { machines as mockMachines } from '@/data/processing/machines';
+import { rawIntakes as intakeStarter } from '@/data/processing/rawIntakes';
+import { recipes as recipeStarter } from '@/data/processing/recipes';
+import { machines as machineStarter } from '@/data/processing/machines';
+import { usePersistentCollection } from '@/hooks/persistentCollections';
 import { ProcessingBatch } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './ProcessingBatches.module.css';
@@ -32,12 +33,16 @@ const STEPPER_STEPS = [
 export default function ProcessingBatchesPage() {
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { items: allBatches, add } = useRealtimeMockStore<ProcessingBatch>(defaultBatches);
+  const { items: allBatches, add, update } = useRealtimeMockStore<ProcessingBatch>(defaultBatches, 'processing.batches');
+  const [mockIntakes] = usePersistentCollection('processing.intakes', intakeStarter);
+  const [mockRecipes] = usePersistentCollection('processing.recipes', recipeStarter);
+  const [mockMachines] = usePersistentCollection('processing.machines', machineStarter);
+  const [plannedOnly, setPlannedOnly] = useState(false);
   const [period, setPeriod] = useState<PeriodValue>('all');
 
   const items = useMemo(
-    () => allBatches.filter((b) => isDateInPeriod(b.startedDate, period, PROCESSING_TODAY)),
-    [allBatches, period]
+    () => allBatches.filter((b) => (!plannedOnly || b.status === 'Planned') && (!b.startedDate || isDateInPeriod(b.startedDate, period, PROCESSING_TODAY))),
+    [allBatches, period, plannedOnly]
   );
 
   const canCreate = usePermission('create_processing_batch');
@@ -70,7 +75,7 @@ export default function ProcessingBatchesPage() {
   // Filter lists
   const eligibleLots = useMemo(() => {
     return mockIntakes.filter(lot => lot.status === 'Accepted');
-  }, []);
+  }, [mockIntakes]);
 
   const selectedLotObj = useMemo(() => {
     return eligibleLots.find(l => l.id === sourceLot) || null;
@@ -78,11 +83,11 @@ export default function ProcessingBatchesPage() {
 
   const selectedRecipeObj = useMemo(() => {
     return mockRecipes.find(r => r.id === recipeId) || null;
-  }, [recipeId]);
+  }, [recipeId, mockRecipes]);
 
   const plantMachines = useMemo(() => {
     return mockMachines.filter(m => m.plantId === (plant === 'Aurangabad Plant' ? 'PL-AUR' : (plant === 'Hyderabad Plant' ? 'PL-HYD' : 'PL-IND')));
-  }, [plant]);
+  }, [plant, mockMachines]);
 
   // Set default form values
   useMemo(() => {
@@ -259,22 +264,22 @@ export default function ProcessingBatchesPage() {
         return (
           <div style={{ display: 'flex', gap: '6px' }} onClick={handleStopPropagation}>
             {canApproveRecipe && b.status === 'Planned' && (
-              <Button size="sm" variant="secondary" onClick={() => addToast(`Recipe approved for batch ${b.id}`, 'success')}>
+              <Button size="sm" variant="secondary" onClick={() => { update(b.id, { status: 'In Progress', startedDate: b.startedDate ?? new Date().toISOString().slice(0, 10), stageHistory: [...b.stageHistory, { stage: b.currentStage, timestamp: new Date().toISOString(), durationHours: 0, operator: b.operator, parameters: { recipeApproved: b.recipeId } }] }); addToast(`Recipe approved for batch ${b.id}; batch started`, 'success'); }}>
                 Approve Recipe
               </Button>
             )}
             {canPauseResume && b.status === 'In Progress' && (
-              <Button size="sm" variant="secondary" onClick={() => addToast(`Batch ${b.id} paused`, 'info')}>
+              <Button size="sm" variant="secondary" onClick={() => { update(b.id, { status: 'Quality Hold' }); addToast(`Batch ${b.id} paused`, 'info'); }}>
                 Pause
               </Button>
             )}
             {canCancel && b.status !== 'Completed' && b.status !== 'Rejected' && (
-              <Button size="sm" variant="danger" onClick={() => addToast(`Batch ${b.id} cancelled`, 'error')}>
+              <Button size="sm" variant="danger" onClick={() => { if (!window.confirm(`Cancel batch ${b.id}? It will be marked rejected.`)) return; update(b.id, { status: 'Rejected' }); addToast(`Batch ${b.id} cancelled`, 'error'); }}>
                 Cancel
               </Button>
             )}
             {canInspect && b.status === 'In Progress' && (
-              <Button size="sm" variant="secondary" onClick={() => addToast(`In-process QC check started for ${b.id}`, 'info')}>
+              <Button size="sm" variant="secondary" onClick={() => navigate(`/processing/batches/${b.id}`)}>
                 Run QC
               </Button>
             )}
@@ -301,7 +306,7 @@ export default function ProcessingBatchesPage() {
             </Button>
           )}
           {canApproveRecipe && (
-            <Button variant="secondary" onClick={() => addToast('Pending recipe approvals menu opened.', 'success')}>
+            <Button variant="secondary" onClick={() => { setPlannedOnly((v) => !v); addToast(plannedOnly ? 'Showing all batches' : 'Showing batches waiting for recipe approval', 'info'); }}>
               Pending recipe approvals
             </Button>
           )}

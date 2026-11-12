@@ -5,6 +5,10 @@ import { Stepper } from '@/components/common/Stepper/Stepper';
 import { Input } from '@/components/common/Input/Input';
 import styles from './CustomReportModal.module.css';
 
+import { setCollection } from '@/hooks/persistentCollections';
+import { reportDefinitions } from '../../mockData/reportsData';
+import type { ReportDefinition } from '@/types/warehouse';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface CustomReportModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -15,6 +19,10 @@ export const CustomReportModal: React.FC<CustomReportModalProps> = ({
   onClose
 }) => {
   const [activeStep, setActiveStep] = useState(0);
+  const [whFilter, setWhFilter] = useState<string[]>([]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const { addToast } = useToast();
   const steps = [
     { key: 'source', label: 'Data source' },
     { key: 'metrics', label: 'Metrics' },
@@ -45,7 +53,7 @@ export const CustomReportModal: React.FC<CustomReportModalProps> = ({
               <label className={styles.label}>Filter by Warehouse</label>
               <div className={styles.chipGrid}>
                 {['Main', 'North', 'South', 'East'].map(w => (
-                  <button key={w} className={styles.chip}>{w}</button>
+                  <button key={w} type="button" className={`${styles.chip} ${whFilter.includes(w) ? styles.chipActive : ''}`} onClick={() => setWhFilter((p) => (p.includes(w) ? p.filter((x) => x !== w) : [...p, w]))}>{w}</button>
                 ))}
               </div>
             </div>
@@ -92,8 +100,8 @@ export const CustomReportModal: React.FC<CustomReportModalProps> = ({
                 ))}
               </div>
             </div>
-            <Input label="Report title" placeholder="e.g. Monthly Stock Value by Category" />
-            <Input label="Description" placeholder="Optional description..." />
+            <Input label="Report title" placeholder="e.g. Monthly Stock Value by Category" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <Input label="Description" placeholder="Optional description..." value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
         );
       case 3:
@@ -148,7 +156,12 @@ export const CustomReportModal: React.FC<CustomReportModalProps> = ({
             {activeStep < steps.length - 1 ? (
               <Button variant="primary" onClick={() => setActiveStep(v => v + 1)}>Next</Button>
             ) : (
-              <Button variant="primary" onClick={() => { console.log('Custom report created'); onClose(); }}>Generate report</Button>
+              <Button variant="primary" onClick={() => {
+                const def: ReportDefinition = { id: `RPT-${Date.now().toString(36).toUpperCase()}`, title: title.trim() || 'Custom report', category: 'Inventory', description: description.trim() || (whFilter.length ? `Warehouses: ${whFilter.join(', ')}` : 'Custom report'), iconName: 'BarChart3', miniPreviewType: 'kpi', miniPreviewValue: 'New', saved: true, hasFullDetailView: false, lastGenerated: 'just now' };
+                setCollection<ReportDefinition>('warehouse.reports', reportDefinitions, (prev) => [def, ...prev]);
+                addToast({ type: 'success', message: `${def.title} created — find it under Saved reports` });
+                onClose();
+              }}>Generate report</Button>
             )}
           </div>
         </div>

@@ -41,8 +41,6 @@ import { ScheduleMaintenanceModal } from './components/ScheduleMaintenanceModal/
 import { 
   iotKpis, 
   currentReadings, 
-  sensors as mockSensors, 
-  iotAlerts as mockAlerts,
   historicalReadings,
   germinationDeclineRecords,
   maintenanceTasks,
@@ -56,9 +54,25 @@ import styles from './IoTMonitoring.module.css';
 
 import { usePermission } from '@/hooks/usePermission';
 
+import { useWh, whUpdate, whUser } from './warehouseStore';
+import { usePersistentCollection } from '@/hooks/persistentCollections';
+import { downloadCsv } from '@/utils/fileExport';
+import type { MaintenanceTask } from '@/types/warehouse';
 const IoTMonitoring: React.FC = () => {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState('live');
+  const [mockSensors] = useWh('sensors');
+  const [mockAlerts] = useWh('iotAlerts');
+  const [maintenance, setMaintenance] = usePersistentCollection<MaintenanceTask>('warehouse.maintenance', maintenanceTasks);
+  const TREND_ZONES = Object.keys(historicalReadings);
+  const [trendZones, setTrendZones] = useState<string[]>(TREND_ZONES.slice(0, 2));
+  const [trendMetric, setTrendMetric] = useState<'Temperature' | 'Humidity' | 'CO2' | 'Energy'>('Temperature');
+  const METRIC: Record<string, { key: 'temperature' | 'humidity' | 'co2' | 'energyKwh'; unit: string; min?: number; max?: number }> = {
+    Temperature: { key: 'temperature', unit: '°C', min: 14, max: 18 },
+    Humidity: { key: 'humidity', unit: '%', min: 40, max: 60 },
+    CO2: { key: 'co2', unit: ' ppm', max: 1000 },
+    Energy: { key: 'energyKwh', unit: ' kWh' },
+  };
   const [selectedSensor, setSelectedSensor] = useState<IoTSensor | null>(null);
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [isAlertConfigOpen, setIsAlertConfigOpen] = useState(false);
@@ -156,32 +170,33 @@ const IoTMonitoring: React.FC = () => {
       <div className={styles.trendsHeader}>
         <div className={styles.trendControls}>
           <div className={styles.multiSelect}>
-            {['Cold Zone A', 'Cold Zone B', 'Cold Zone C', 'Controlled Zone'].map(z => (
-              <button key={z} className={`${styles.chip} ${styles.activeChip}`}>{z}</button>
+            {TREND_ZONES.map(z => (
+              <button
+                key={z}
+                className={`${styles.chip} ${trendZones.includes(z) ? styles.activeChip : ''}`}
+                onClick={() => setTrendZones((prev) => (prev.includes(z) ? (prev.length > 1 ? prev.filter((x) => x !== z) : prev) : [...prev, z]))}
+              >{z}</button>
             ))}
           </div>
           <div className={styles.metricTabs}>
             {['Temperature', 'Humidity', 'CO2', 'Energy'].map(m => (
-              <button key={m} className={`${styles.metricTab} ${m === 'Temperature' ? styles.activeMetricTab : ''}`}>{m}</button>
+              <button key={m} className={`${styles.metricTab} ${m === trendMetric ? styles.activeMetricTab : ''}`} onClick={() => setTrendMetric(m as typeof trendMetric)}>{m}</button>
             ))}
           </div>
         </div>
-        <Button variant="secondary" leftIcon={Download} onClick={() => { console.log('export iot data'); addToast({ type: 'success', message: 'Historical data exported as CSV' }); }}>Export data</Button>
+        <Button variant="secondary" leftIcon={Download} onClick={() => { const k = METRIC[trendMetric].key; const base = historicalReadings[trendZones[0]] ?? []; downloadCsv(`iot_${trendMetric.toLowerCase()}_${new Date().toISOString().slice(0, 10)}.csv`, base.map((r, i) => ({ timestamp: r.timestamp, ...Object.fromEntries(trendZones.map((z) => [z, historicalReadings[z]?.[i]?.[k] ?? ''])) }))); addToast({ type: 'success', message: 'Historical data exported as CSV' }); }}>Export data</Button>
       </div>
 
       <HistoricalTrendChart 
-        data={historicalReadings['Cold Zone A'].map((r, i) => ({
+        data={(historicalReadings[trendZones[0]] ?? []).map((r, i) => ({
           timestamp: r.timestamp,
-          values: {
-            'Cold Zone A': r.temperature || 0,
-            'Cold Zone B': historicalReadings['Cold Zone B'][i].temperature || 0
-          }
+          values: Object.fromEntries(trendZones.map((z) => [z, Number(historicalReadings[z]?.[i]?.[METRIC[trendMetric].key] ?? 0)])),
         }))}
-        zones={['Cold Zone A', 'Cold Zone B']}
-        metric="Temperature"
-        unit="°C"
-        thresholdMin={14}
-        thresholdMax={18}
+        zones={trendZones}
+        metric={trendMetric}
+        unit={METRIC[trendMetric].unit}
+        thresholdMin={METRIC[trendMetric].min}
+        thresholdMax={METRIC[trendMetric].max}
       />
 
       <div className={styles.trendsFooter}>
@@ -360,14 +375,25 @@ const IoTMonitoring: React.FC = () => {
           {canConfigureIoT && <Button variant="primary" size="sm" onClick={() => setIsScheduleMaintenanceOpen(true)}>+ Schedule</Button>}
         </div>
         <Card>
-          <MaintenanceCalendar tasks={maintenanceTasks} />
+          <MaintenanceCalendar tasks={maintenance} />
         </Card>
         <div className={styles.maintenanceList}>
-          {maintenanceTasks.map(task => (
+          {maintenance.map(task => (
             <MaintenanceTaskCard 
               key={task.id} 
               task={task} 
-              onAction={(id, action) => console.log(action, id)} 
+              onAction={(id, action) => {
+                if (action === 'complete') {
+                  setMaintenance((prev) => prev.map((t) => (t.id === id ? { ...t, status: 'Completed' as MaintenanceTask['status'], completedDate: new Date().toISOString().slice(0, 10) } : t)));
+                  addToast({ type: 'success', message: `${id} marked complete` });
+                } else {
+                  const d = window.prompt('New date (YYYY-MM-DD)', task.scheduledDate.slice(0, 10));
+                  if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
+                    setMaintenance((prev) => prev.map((t) => (t.id === id ? { ...t, scheduledDate: d } : t)));
+                    addToast({ type: 'success', message: `${id} rescheduled to ${d}` });
+                  }
+                }
+              }} 
             />
           ))}
         </div>
@@ -410,7 +436,7 @@ const IoTMonitoring: React.FC = () => {
             {
               label: 'Refresh',
               icon: RefreshCw,
-              onClick: () => console.log('Refresh')
+              onClick: () => addToast({ type: 'info', message: `Showing the latest saved readings from ${mockSensors.length} sensors. Live streaming starts when the sensor gateway is connected.` })
             }
           ]}
           period={{ value: period, onChange: (v) => setPeriod(v as PeriodValue), options: PERIOD_OPTIONS }}
@@ -465,19 +491,27 @@ const IoTMonitoring: React.FC = () => {
         <AcknowledgeAlertModal 
           isOpen={!!ackAlertId} 
           onClose={() => setAckAlertId(null)} 
-          onConfirm={(notes) => { console.log('Ack', ackAlertId, notes); setAckAlertId(null); }} 
+          onConfirm={(notes) => { if (ackAlertId) { whUpdate('iotAlerts', ackAlertId, { acknowledgedAt: new Date().toISOString(), acknowledgedBy: whUser(), resolution: notes || undefined }); addToast({ type: 'success', message: 'Alert acknowledged' }); } setAckAlertId(null); }} 
         />
 
         <ResolveAlertModal 
           isOpen={!!resolveAlertId} 
           onClose={() => setResolveAlertId(null)} 
-          onConfirm={(res, notes) => { console.log('Resolve', resolveAlertId, res, notes); setResolveAlertId(null); }} 
+          onConfirm={(res, notes) => { if (resolveAlertId) { whUpdate('iotAlerts', resolveAlertId, { resolvedAt: new Date().toISOString(), resolution: [res, notes].filter(Boolean).join(' — ') }); addToast({ type: 'success', message: 'Alert resolved' }); } setResolveAlertId(null); }} 
         />
 
         <ScheduleMaintenanceModal 
           isOpen={isScheduleMaintenanceOpen} 
           onClose={() => setIsScheduleMaintenanceOpen(false)} 
-          onSchedule={(task) => console.log('Scheduled', task)} 
+          onSchedule={(f) => {
+            const task: MaintenanceTask = {
+              id: `MNT-${Date.now().toString(36).toUpperCase()}`, asset: f.asset || 'Unnamed asset', zone: f.zone, taskType: f.taskType as MaintenanceTask['taskType'],
+              description: f.description, scheduledDate: f.scheduledDate || new Date().toISOString().slice(0, 10), assignedTo: f.assignedTo || whUser(),
+              status: 'Scheduled', priority: f.priority as MaintenanceTask['priority'], estimatedDurationHours: Number(f.estimatedDuration) || 1,
+            };
+            setMaintenance((prev) => [task, ...prev]);
+            addToast({ type: 'success', message: `Maintenance ${task.id} scheduled` });
+          }} 
         />
       </div>
     </ModuleLayout>

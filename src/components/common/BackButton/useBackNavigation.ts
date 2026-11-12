@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 const HIDDEN_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password', '/modules'];
 
 /** Routes rendered inside ModuleLayout, which supplies its own TopHeader. */
-export const TOP_HEADER_PREFIXES = ['/procurement', '/warehouse', '/rd', '/processing', '/lab/', '/modules'];
+export const TOP_HEADER_PREFIXES = ['/procurement', '/warehouse', '/rd', '/processing', '/lab/', '/quality', '/modules', '/ai'];
 
 export function isTopHeaderRoute(pathname: string): boolean {
   if (pathname === '/lab') return true;

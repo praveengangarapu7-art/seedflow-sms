@@ -56,7 +56,7 @@ export default function Outbound() {
   const [dispatchOrder, setDispatchOrder] = useState<DispatchOrder | null>(null);
   const [trackOrder, setTrackOrder] = useState<DispatchOrder | null>(null);
 
-  const { items: allDispatchOrders, update } = useRealtimeMockStore(initialDispatchOrders);
+  const { items: allDispatchOrders, update } = useRealtimeMockStore(initialDispatchOrders, 'warehouse.dispatch_orders');
 
   // Tab counts, the KPI row and the table all read this, so they never
   // disagree about which period they are describing.

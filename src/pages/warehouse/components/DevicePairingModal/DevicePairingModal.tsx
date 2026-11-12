@@ -4,6 +4,8 @@ import { Button } from '@/components/common/Button/Button';
 import type { ScanDevice } from '@/types/warehouse';
 import styles from './DevicePairingModal.module.css';
 
+import { whAdd } from '../../warehouseStore';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface DevicePairingModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -14,6 +16,7 @@ const STAFF = ['Anjali Reddy', 'Mohammed Khan', 'Sunita Rao', 'Priya Sharma', 'V
 const ZONES = ['Receiving Dock 1', 'Receiving Dock 2', 'Cold Zone A', 'Cold Zone B', 'Ambient Zone 1', 'Ambient Zone 3', 'Controlled Zone', 'Quality lab', 'Dispatch Bay', 'Gate / Receiving'];
 
 export function DevicePairingModal({ isOpen, onClose }: DevicePairingModalProps) {
+  const { addToast } = useToast();
   const [type, setType] = useState<ScanDevice>('Handheld scanner');
   const [name, setName] = useState('');
   const [pairingCode, setPairingCode] = useState('');
@@ -33,7 +36,8 @@ export function DevicePairingModal({ isOpen, onClose }: DevicePairingModalProps)
   const canSubmit = name.trim() !== '' && /^\d{6}$/.test(pairingCode.trim());
 
   const submit = () => {
-    console.log('pair device', { type, name, pairingCode, assignedTo, defaultZone });
+    whAdd('devices', { id: `SD-${pairingCode.trim()}`, name: name.trim(), type, status: 'Connected', lastSeen: 'just now', assignedTo, defaultZone, scansToday: 0, battery: 100 });
+    addToast({ type: 'success', message: `${name.trim()} paired and assigned to ${assignedTo}` });
     onClose();
   };
 

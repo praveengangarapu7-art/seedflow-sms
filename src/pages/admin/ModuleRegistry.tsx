@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
+  ClipboardCheck,
   ArrowRight,
   Cog,
   FlaskConical,
@@ -18,6 +19,7 @@ import { Button } from '@/components/common/Button/Button';
 import { KpiCard } from '@/components/common/KpiCard/KpiCard';
 import { adminNav } from '@/config/adminNav';
 import { labNav } from '@/config/labNav';
+import { qualityNav } from '@/config/qualityNav';
 import { processingNav } from '@/config/processingNav';
 import { procurementNav } from '@/config/procurementNav';
 import { rdNav } from '@/config/rdNav';
@@ -27,6 +29,7 @@ import { useToast } from '@/components/common/Toast/ToastContext';
 import {
   ADMIN_ROLES,
   LAB_ROLES,
+  QUALITY_ROLES,
   PROCESSING_ROLES,
   PROCUREMENT_ROLES,
   RD_ROLES,
@@ -131,6 +134,17 @@ const MODULES: ModuleDescriptor[] = [
     roles: LAB_ROLES,
     permissionModule: 'Laboratory',
     searchModule: 'Laboratory',
+    backing: 'Live backend',
+  },
+  {
+    key: 'quality',
+    name: 'Quality',
+    icon: ClipboardCheck,
+    entryPath: '/quality/dashboard',
+    navCount: qualityNav.length,
+    roles: QUALITY_ROLES,
+    permissionModule: 'Quality',
+    searchModule: 'Quality',
     backing: 'Live backend',
   },
   {

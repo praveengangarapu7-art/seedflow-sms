@@ -10,6 +10,10 @@ import styles from './YieldAndLoss.module.css';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
 import { type PeriodValue } from '@/utils/periodFilter';
 
+import { readCollection } from '@/hooks/persistentCollections';
+import defaultBatches from '@/data/processing/batches';
+import type { ProcessingBatch } from '@/types/processing';
+import { downloadCsv } from '@/utils/fileExport';
 const lineData = [
   { month: 'Jul', rate: 80.5 },
   { month: 'Aug', rate: 81.2 },
@@ -48,7 +52,7 @@ export default function YieldAndLossPage() {
         </div>
         <div className={styles.pageActions}>
           <PeriodSelect value={period} onChange={setPeriod} />
-          <Button variant="secondary" leftIcon={Download} onClick={() => addToast('Downloading yield report...', 'success')}>
+          <Button variant="secondary" leftIcon={Download} onClick={() => { const rows = readCollection<ProcessingBatch>('processing.batches', defaultBatches).map((b) => { const loss = Object.values(b.losses).reduce((s, x) => s + x, 0); return { batch: b.id, crop: b.crop, variety: b.variety, plant: b.plant, stage: b.currentStage, status: b.status, inputKg: b.inputQuantity, outputKg: b.outputQuantity ?? '', ...b.losses, totalLossKg: loss, recoveryPct: b.inputQuantity ? Math.round(((b.outputQuantity ?? b.inputQuantity - loss) / b.inputQuantity) * 1000) / 10 : '' }; }); downloadCsv(`yield_and_loss_${new Date().toISOString().slice(0, 10)}.csv`, rows); addToast(`Yield report exported (${rows.length} batches)`, 'success'); }}>
             Export Report
           </Button>
         </div>

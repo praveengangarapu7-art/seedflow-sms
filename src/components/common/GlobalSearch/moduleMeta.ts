@@ -1,4 +1,5 @@
 import {
+  ClipboardCheck,
   Database,
   Factory,
   FlaskConical,
@@ -21,6 +22,7 @@ export const MODULE_ICON: Record<SearchModule, LucideIcon> = {
   Processing: Factory,
   Production: Sprout,
   Laboratory: TestTube,
+  Quality: ClipboardCheck,
   Administration: ShieldCheck,
   'Master Data': Database,
   Portals: Users,

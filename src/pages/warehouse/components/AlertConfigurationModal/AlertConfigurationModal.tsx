@@ -5,16 +5,22 @@ import { Button } from '@/components/common/Button/Button';
 import { Input } from '@/components/common/Input/Input';
 import styles from './AlertConfigurationModal.module.css';
 
+import { usePersistentCollection } from '@/hooks/persistentCollections';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface AlertConfigurationModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const DEFAULT_ZONES = [{ id: 'Cold Zone A' }, { id: 'Cold Zone B' }];
 
 export const AlertConfigurationModal: React.FC<AlertConfigurationModalProps> = ({
   isOpen,
   onClose
 }) => {
   const [activeStep, setActiveStep] = useState(0);
+  const [zones, setZones] = usePersistentCollection<{ id: string }>('warehouse.alert_zones', DEFAULT_ZONES);
+  const { addToast } = useToast();
   const steps = [
     { key: 'zone', label: 'Zone & metric' },
     { key: 'thresholds', label: 'Thresholds' },
@@ -31,7 +37,7 @@ export const AlertConfigurationModal: React.FC<AlertConfigurationModalProps> = (
               <label>Select zones</label>
               <div className={styles.chipGrid}>
                 {['Cold Zone A', 'Cold Zone B', 'Cold Zone C', 'Controlled Zone'].map(z => (
-                  <button key={z} className={styles.chip}>{z}</button>
+                  <button key={z} type="button" className={`${styles.chip} ${zones.some((x) => x.id === z) ? styles.chipActive : ''}`} onClick={() => setZones((prev) => (prev.some((x) => x.id === z) ? prev.filter((x) => x.id !== z) : [...prev, { id: z }]))}>{z}</button>
                 ))}
               </div>
             </div>
@@ -136,7 +142,7 @@ export const AlertConfigurationModal: React.FC<AlertConfigurationModalProps> = (
             {activeStep < steps.length - 1 ? (
               <Button variant="primary" onClick={() => setActiveStep(v => v + 1)}>Next</Button>
             ) : (
-              <Button variant="primary" onClick={() => { console.log('Config saved'); onClose(); }}>Save configuration</Button>
+              <Button variant="primary" onClick={() => { addToast({ type: 'success', message: `Alert configuration saved for ${zones.length} zone(s)` }); onClose(); }}>Save configuration</Button>
             )}
           </div>
         </div>

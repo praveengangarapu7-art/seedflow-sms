@@ -1,0 +1,17 @@
+.panel { background: var(--color-white, #fff); border: 1px solid var(--color-border, #e3e7d8); border-radius: 12px; padding: 16px 18px; margin: 0 0 16px; }
+.head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.head h3 { margin: 0; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--color-primary); }
+.manage { font-size: 12px; font-weight: 600; color: var(--color-primary); text-decoration: none; }
+.manage:hover { text-decoration: underline; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px 16px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.label { font-weight: 600; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.shared { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #5C7A2E; background: #E9EFDD; padding: 1px 6px; border-radius: 50px; }
+.field input:not([type='checkbox']), .field select { padding: 8px 10px; border: 1px solid var(--color-border, #d5dabf); border-radius: 8px; font: inherit; background: #fff; min-width: 0; }
+.field input[type='checkbox'] { width: 18px; height: 18px; }
+.help { font-size: 11px; color: #6b7a6f; }
+.foot { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 12px; }
+.save { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-weight: 700; font-size: 13px; padding: 7px 14px; border-radius: 8px; border: 0; background: var(--color-primary); color: #fff; cursor: pointer; }
+.save:disabled { opacity: .45; cursor: default; }
+.ok { color: #2f7d32; font-size: 13px; font-weight: 600; }
+.err { color: #b3261e; font-size: 13px; }

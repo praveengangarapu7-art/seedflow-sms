@@ -12,6 +12,7 @@ import { DataTable } from '@/components/common/DataTable/DataTable';
 import { Nursery, GermplasmAccession } from '@/types/rd';
 import styles from './NurseryDetailModal.module.css';
 
+import { downloadCsv } from '@/utils/fileExport';
 interface NurseryDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -365,7 +366,7 @@ export const NurseryDetailModal: React.FC<NurseryDetailModalProps> = ({
             <div className={styles.tableWrap}>
               <div className={styles.tableHeader}>
                 <h4 className={styles.sectionTitle}>Planted accession blocks</h4>
-                <button className={styles.exportBtn}>
+                <button className={styles.exportBtn} onClick={() => downloadCsv(`${nursery.id}_entries.csv`, entriesData as unknown as Record<string, unknown>[])}>
                   <FileSpreadsheet size={14} />
                   <span>Download entries (CSV)</span>
                 </button>

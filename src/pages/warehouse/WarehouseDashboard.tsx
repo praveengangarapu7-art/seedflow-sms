@@ -32,6 +32,7 @@ import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
 import { isDateInPeriod, periodLabel, type PeriodValue } from '@/utils/periodFilter';
 import styles from './WarehouseDashboard.module.css';
 
+import { useNavigate } from 'react-router-dom';
 /**
  * How much of a full month each period represents, used to scale the headline
  * KPIs. These four figures (accuracy, fulfilment, utilisation, SKU count) are
@@ -71,14 +72,15 @@ export default function WarehouseDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [isRecentMovementsModalOpen, setIsRecentMovementsModalOpen] = useState(false);
   const { addToast } = useToast();
+  const navigate = useNavigate();
 
   const handleExport = () => {
     setIsExporting(true);
     setTimeout(() => {
-      console.log('Exporting warehouse dashboard...');
-      addToast({ type: 'success', message: 'Dashboard exported as PDF' });
+      window.print();
+      addToast({ type: 'success', message: 'Choose “Save as PDF” in the print dialog to export the dashboard' });
       setIsExporting(false);
-    }, 1000);
+    }, 100);
   };
 
   const handlePeriodChange = (value: PeriodValue) => {
@@ -206,7 +208,7 @@ export default function WarehouseDashboard() {
 
       <div className={`${styles.section} ${styles.tablesGrid}`}>
         <RecentMovements data={displayedMovements} onViewAll={() => setIsRecentMovementsModalOpen(true)} />
-        <AlertsList data={dashboardAlerts} onAlertClick={(id) => console.log('alert clicked', id)} />
+        <AlertsList data={dashboardAlerts} onAlertClick={(id) => { const a = dashboardAlerts.find((x) => x.id === id); const to: Record<string, string> = { Stock: '/warehouse/inventory', Expiry: '/warehouse/inventory', Temperature: '/warehouse/iot', Capacity: '/warehouse/locations', Quality: '/warehouse/inventory' }; navigate(to[a?.category ?? ''] ?? '/warehouse/inventory'); }} />
       </div>
 
       <div className={`${styles.section}`}>

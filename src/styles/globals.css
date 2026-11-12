@@ -70,3 +70,36 @@ ul, ol {
 body[data-floating-back='true'] #root {
   padding-top: 2.6rem;
 }
+
+/*
+ * v2 phone safety net. Several module dashboards place wide data tables in
+ * grid cards; on a 360-430px phone the table pushed its card (and the page)
+ * wider than the screen. These rules let the card shrink and the table
+ * scroll inside it instead. Attribute selectors match the CSS-module class
+ * names (e.g. _tableWrap_1o731_269) without touching each module's styles.
+ */
+@media (max-width: 760px) {
+  [class*='tableWrap'],
+  [class*='TableWrap'],
+  [class*='tableContainer'],
+  [class*='tableScroll'] {
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [class*='_card_'],
+  [class*='_panel_'],
+  [class*='_section_'] {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Page-header action rows (period selects, export/refresh buttons) wrap. */
+  [class*='_headerActions_'],
+  [class*='_pageActions_'],
+  [class*='_header_']:has(> [class*='_headerActions_']) {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+}

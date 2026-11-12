@@ -68,7 +68,7 @@ export default function CycleCounting() {
   const [postingCount, setPostingCount] = useState<{ count: CycleCount; decisions: VarianceDecision[] } | null>(null);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
-  const { items: allCycleCounts, update, add } = useRealtimeMockStore(initialCycleCounts);
+  const { items: allCycleCounts, update, add } = useRealtimeMockStore(initialCycleCounts, 'warehouse.cycle_counts');
 
   const cycleCounts = useMemo(
     () => allCycleCounts.filter((c) => isDateInPeriod(c.scheduledDate, period)),
@@ -110,7 +110,7 @@ export default function CycleCounting() {
     } else if (c.status === 'Pending review' || c.status === 'Variance approval') {
       setReviewCount(c);
     } else {
-      console.log('open count detail', c.id);
+      setReviewCount(c);
     }
   };
 
@@ -169,7 +169,7 @@ export default function CycleCounting() {
         <CountSchedulePanel
           recurring={recurringSchedule}
           weekDays={WEEK_DAYS}
-          onManageSchedule={() => console.log('manage schedule')}
+          onManageSchedule={() => setIsScheduleOpen(true)}
         />
       </div>
 
@@ -231,7 +231,7 @@ export default function CycleCounting() {
         isOpen={executionCount !== null}
         onClose={() => setExecutionCount(null)}
         count={executionCount}
-        onComplete={(c) => { update(c.id, { status: 'Pending review' }); setExecutionCount(null); addToast({ type: 'success', message: 'Count completed, ready for review' }); }}
+        onComplete={(c) => { update(c.id, { ...c, status: 'Pending review' }); setExecutionCount(null); addToast({ type: 'success', message: 'Count completed, ready for review' }); }}
       />
 
       <CountReviewModal

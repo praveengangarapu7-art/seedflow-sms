@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 import { Modal } from '@/components/common/Modal/Modal';
 import { Button } from '@/components/common/Button/Button';
 import { formatIndianCurrency } from '@/utils/formatters';
-import { APPROVED_PRS, MOCK_SUPPLIERS } from '@/pages/procurement/mockData/ordersData';
+import { usePRs, useSuppliers } from '@/pages/procurement/procurementStore';
 import styles from './POCreateModal.module.css';
 
 type Step = 1 | 2 | 3;
@@ -27,6 +27,10 @@ export function POCreateModal({ isOpen, onClose, onSubmit, preselectedPrId }: PO
   const [paymentTerms,    setPaymentTerms]   = useState('Net 30');
   const [deliveryAddress, setDeliveryAddress] = useState('');
 
+  const [prs] = usePRs();
+  const [suppliers] = useSuppliers();
+  const APPROVED_PRS = prs.filter((p) => p.status === 'Approved' || p.id === preselectedPrId);
+  const MOCK_SUPPLIERS = suppliers.filter((s) => s.classification !== 'Blacklisted');
   const selectedPR  = APPROVED_PRS.find((p) => p.id === selectedPrId);
   const selectedSup = MOCK_SUPPLIERS.find((s) => s.id === selectedSupId);
 

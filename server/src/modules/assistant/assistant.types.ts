@@ -40,6 +40,16 @@ export interface AssistantContextBlock {
   path: string;
 }
 
+/** A knowledge-base passage the answer was grounded on (RAG source). */
+export interface AssistantSource {
+  id: string;
+  title: string;
+  module: string;
+  path: string;
+  type: string;
+  excerpt: string;
+}
+
 export interface AssistantAnswer {
   answer: string;
   intent: AssistantIntent;
@@ -50,10 +60,14 @@ export interface AssistantAnswer {
   source: 'model' | 'rules';
   modelName: string | null;
   suggestions: string[];
+  /** Knowledge-base passages retrieved for this question (empty when none matched). */
+  sources?: AssistantSource[];
 }
 
 export interface AskAssistantInput {
   question: string;
   /** Optional current route, so "what's on this page" style questions work. */
   currentPath?: string;
+  /** Earlier turns of this conversation (oldest first) so follow-ups make sense. */
+  history?: { role: 'user' | 'assistant'; text: string }[];
 }

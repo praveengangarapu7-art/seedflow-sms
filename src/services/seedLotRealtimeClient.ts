@@ -13,6 +13,10 @@ import { resolveDemoResponse } from './demoData';
 // rather than a real deployment's records — DemoModeBadge renders it.
 
 let demoMode = false;
+
+// Demo data is a development convenience. It is OFF unless VITE_DEMO_MODE=true,
+// so a production deployment shows real errors instead of invented records.
+const DEMO_FALLBACK_ENABLED = (import.meta.env.VITE_DEMO_MODE as string | undefined) === 'true';
 const demoModeListeners = new Set<(active: boolean) => void>();
 
 function enterDemoMode(): void {
@@ -268,7 +272,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-async function request<T>(path: string, token: string | null, options: RequestInit = {}): Promise<T> {
+async function request<T>(path: string, token: string | null, options: RequestInit = {}, retried = false): Promise<T> {
   const method = (options.method ?? 'GET').toUpperCase();
   if (token) lastKnownToken = token;
 
@@ -287,7 +291,7 @@ async function request<T>(path: string, token: string | null, options: RequestIn
     // connection, offline) — anything else (HTTP error status) resolves
     // normally and is handled below instead.
     if (err instanceof TypeError) {
-      enterDemoMode();
+      if (DEMO_FALLBACK_ENABLED) enterDemoMode();
       // Graceful degradation, in preference order:
       //   1. real data this browser cached earlier (freshest truth),
       //   2. the demo dataset (self-consistent, clearly labelled),
@@ -299,10 +303,15 @@ async function request<T>(path: string, token: string | null, options: RequestIn
       const cached = cacheRead<T>(path);
       if (cached) return cached.data;
 
-      const demo = resolveDemoResponse(path, method, options.body as string | undefined);
+      const demo = DEMO_FALLBACK_ENABLED
+        ? resolveDemoResponse(path, method, options.body as string | undefined)
+        : undefined;
       if (demo !== undefined) return demo as T;
 
       if (method === 'GET') {
+        if (!DEMO_FALLBACK_ENABLED) {
+          throw new Error('Could not reach the SeedSphere server. Check your connection and try again.');
+        }
         // An unmapped read degrades to "nothing here yet", which every page
         // in this app already renders as a friendly empty state.
         return [] as unknown as T;
@@ -334,6 +343,11 @@ async function request<T>(path: string, token: string | null, options: RequestIn
   const text = await response.text();
   const payload = text ? JSON.parse(text) : null;
 
+  if (response.status === 401 && token && !retried) {
+    const fresh = await renewToken(token);
+    if (fresh) return request<T>(path, fresh, options, true);
+  }
+
   if (!response.ok || payload?.success === false) {
     throw new SeedLotApiError(friendlyMessageForStatus(response.status, payload?.message));
   }
@@ -364,8 +378,85 @@ export async function requestWithCacheFallback<T>(
   }
 }
 
+// --- Session reuse --------------------------------------------------------
+// Every real-backend page bootstraps its own session with login(). Without
+// reuse, browsing a dozen pages fires a dozen logins and trips the server's
+// login rate limit (40 per 15 min), after which pages fall into demo data.
+// Sessions are therefore shared per account for most of the token's 15-minute
+// life, and a request that comes back 401 (expired token) re-logs in once and
+// retries transparently, so a page left open past expiry keeps working.
+
+const SESSION_REUSE_MS = 12 * 60 * 1000;
+const sessionCache = new Map<string, { at: number; promise: Promise<{ user: RealtimeUser; accessToken: string }> }>();
+const tokenOwner = new Map<string, { email: string; password: string }>();
+
+// Mirrored to sessionStorage so a page reload (or a deep link opened in the
+// same tab) reuses the session instead of logging in again.
+const SESSION_STORE_KEY = 'seedflow_backend_sessions_v1';
+
+type StoredSession = { at: number; user: RealtimeUser; accessToken: string };
+
+function readStoredSessions(): Record<string, StoredSession> {
+  try {
+    return JSON.parse(sessionStorage.getItem(SESSION_STORE_KEY) ?? '{}') as Record<string, StoredSession>;
+  } catch {
+    return {};
+  }
+}
+
+function writeStoredSession(key: string, value: StoredSession | null): void {
+  try {
+    const all = readStoredSessions();
+    if (value) all[key] = value;
+    else delete all[key];
+    sessionStorage.setItem(SESSION_STORE_KEY, JSON.stringify(all));
+  } catch {
+    // Storage unavailable: in-memory reuse still applies.
+  }
+}
+
 export async function login(email: string, password: string): Promise<{ user: RealtimeUser; accessToken: string }> {
-  return request('/auth/login', null, { method: 'POST', body: JSON.stringify({ email, password }) });
+  const key = email.toLowerCase();
+  const cached = sessionCache.get(key);
+  if (cached && Date.now() - cached.at < SESSION_REUSE_MS) return cached.promise;
+
+  const stored = readStoredSessions()[key];
+  if (stored && Date.now() - stored.at < SESSION_REUSE_MS && stored.accessToken) {
+    const restored = Promise.resolve({ user: stored.user, accessToken: stored.accessToken });
+    tokenOwner.set(stored.accessToken, { email, password });
+    sessionCache.set(key, { at: stored.at, promise: restored });
+    return restored;
+  }
+
+  const promise = request<{ user: RealtimeUser; accessToken: string }>('/auth/login', null, {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  }).then((session) => {
+    if (session?.accessToken) {
+      tokenOwner.set(session.accessToken, { email, password });
+      // Demo-mode sessions (server unreachable) are not persisted, so the
+      // next load tries the real server again.
+      if (!isDemoMode()) writeStoredSession(key, { at: Date.now(), user: session.user, accessToken: session.accessToken });
+    }
+    return session;
+  });
+  sessionCache.set(key, { at: Date.now(), promise });
+  promise.catch(() => sessionCache.delete(key));
+  return promise;
+}
+
+/** Fresh token for the account that owned an expired one, or null if unknown. */
+async function renewToken(expired: string): Promise<string | null> {
+  const owner = tokenOwner.get(expired);
+  if (!owner) return null;
+  sessionCache.delete(owner.email.toLowerCase());
+  writeStoredSession(owner.email.toLowerCase(), null);
+  try {
+    const { accessToken } = await login(owner.email, owner.password);
+    return accessToken && accessToken !== expired ? accessToken : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchSeedLots(token: string): Promise<RealtimeSeedLot[]> {
@@ -681,7 +772,7 @@ export function connectInventorySocket(
     // inside a useEffect would surface as a crashed page. Live updates are a
     // progressive enhancement, never load-bearing, so hand back an inert stub
     // that satisfies the one method callers use (close) and stay silent.
-    enterDemoMode();
+    if (DEMO_FALLBACK_ENABLED) enterDemoMode();
     return { close() {} } as unknown as WebSocket;
   }
 
@@ -2216,6 +2307,8 @@ export interface AssistantAnswer {
   source: 'model' | 'rules';
   modelName: string | null;
   suggestions: string[];
+  /** Knowledge-base passages the answer was grounded on (RAG). */
+  sources?: { id: string; title: string; module: string; path: string; type: string; excerpt: string }[];
 }
 
 export interface AssistantStatus {
@@ -2232,10 +2325,11 @@ export async function askAssistant(
   token: string,
   question: string,
   currentPath?: string,
+  history: { role: 'user' | 'assistant'; text: string }[] = [],
 ): Promise<AssistantAnswer> {
   return request('/assistant/ask', token, {
     method: 'POST',
-    body: JSON.stringify({ question, currentPath }),
+    body: JSON.stringify({ question, currentPath, history: history.slice(-6) }),
   });
 }
 
@@ -4434,4 +4528,841 @@ export async function updateAdminUser(
 
 export async function resetAdminUserPassword(token: string, id: string, password: string): Promise<void> {
   await request(`/users/${id}/reset-password`, token, { method: 'POST', body: JSON.stringify({ password }) });
+}
+
+// ---------------------------------------------------------------------------
+// Quality (SOP register, non-conformances, CAPA, complaints, lot holds)
+// Mirrors server/src/modules/quality. Every mutation returns the updated row.
+// ---------------------------------------------------------------------------
+
+export type QualityDepartment =
+  | 'procurement'
+  | 'production'
+  | 'rd'
+  | 'laboratory'
+  | 'warehouse'
+  | 'logistics'
+  | 'operations'
+  | 'quality'
+  | 'hr_training';
+export type QualitySeverity = 'minor' | 'major' | 'critical';
+
+export const QUALITY_DEPARTMENTS: { value: QualityDepartment; label: string }[] = [
+  { value: 'procurement', label: 'Procurement' },
+  { value: 'production', label: 'Production' },
+  { value: 'rd', label: 'R&D' },
+  { value: 'laboratory', label: 'Laboratory' },
+  { value: 'warehouse', label: 'Warehouse' },
+  { value: 'logistics', label: 'Logistics' },
+  { value: 'operations', label: 'Operations' },
+  { value: 'quality', label: 'Quality' },
+  { value: 'hr_training', label: 'HR & Training' },
+];
+
+export function qualityDepartmentLabel(value: string): string {
+  return QUALITY_DEPARTMENTS.find((d) => d.value === value)?.label ?? value;
+}
+
+export interface QualityDashboardData {
+  generatedAt: string;
+  nonConformances: {
+    open_total: number;
+    open_critical: number;
+    open_major: number;
+    open_minor: number;
+    overdue: number;
+    closed_last_30d: number;
+    avg_days_to_close: number | null;
+  };
+  capas: {
+    open_total: number;
+    overdue: number;
+    awaiting_verification: number;
+    closed_last_30d: number;
+    failed_verification: number;
+    closed_total: number;
+  };
+  complaints: {
+    open_total: number;
+    open_critical: number;
+    recall_recommended: number;
+    received_last_30d: number;
+    avg_days_to_resolve_90d: number | null;
+  };
+  sops: {
+    effective: number;
+    draft: number;
+    in_review: number;
+    reviewOverdue: number;
+    reviewDueSoon: number;
+    departmentCoverage: { department: QualityDepartment; effectiveSops: number; covered: boolean }[];
+    departmentsCovered: number;
+    departmentsTotal: number;
+    coveragePercent: number;
+  };
+  holds: { active: number };
+}
+
+export type SopVersionStatus = 'draft' | 'in_review' | 'effective' | 'superseded' | 'rejected';
+export type SopReviewStatus = 'current' | 'due_soon' | 'overdue' | 'not_effective';
+
+export interface SopListItem {
+  id: string;
+  sop_code: string;
+  title: string;
+  department: QualityDepartment;
+  owner_email: string;
+  review_interval_months: number;
+  effective_version: number | null;
+  effective_date: string | null;
+  next_review_date: string | null;
+  approved_by: string | null;
+  open_version: number | null;
+  open_version_status: 'draft' | 'in_review' | null;
+  review_status: SopReviewStatus;
+  acknowledgement_count: number;
+}
+
+export interface SopVersion {
+  id: string;
+  sop_id: string;
+  version_number: number;
+  title: string;
+  content: string;
+  change_summary: string;
+  status: SopVersionStatus;
+  created_by: string;
+  submitted_at: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  rejection_reason: string | null;
+  effective_date: string | null;
+  next_review_date: string | null;
+  acknowledgement_count: number;
+}
+
+export interface SopDetail {
+  document: { id: string; sop_code: string; title: string; department: QualityDepartment; owner_email: string; review_interval_months: number };
+  versions: SopVersion[];
+  acknowledgements: { sop_version_id: string; user_email: string; acknowledged_at: string }[];
+  acknowledgedByMe: boolean;
+}
+
+export interface PendingSopAcknowledgement {
+  id: string;
+  sop_code: string;
+  title: string;
+  department: QualityDepartment;
+  version_number: number;
+  effective_date: string;
+}
+
+export type NcrStatus = 'open' | 'investigating' | 'closed' | 'cancelled';
+
+export interface NcrListItem {
+  id: string;
+  ncr_code: string;
+  title: string;
+  description: string;
+  department: QualityDepartment;
+  source: string;
+  severity: QualitySeverity;
+  seed_lot_id: string | null;
+  lot_code: string | null;
+  status: NcrStatus;
+  raised_by: string;
+  assigned_to: string | null;
+  due_date: string | null;
+  root_cause: string | null;
+  closure_notes: string | null;
+  closed_by: string | null;
+  closed_at: string | null;
+  complaint_id: string | null;
+  is_overdue: boolean;
+  capa_count: number;
+  open_capa_count: number;
+  created_at: string;
+}
+
+export type CapaStatus = 'open' | 'in_progress' | 'implemented' | 'closed' | 'cancelled';
+
+export interface CapaItem {
+  id: string;
+  capa_code: string;
+  ncr_id: string | null;
+  ncr_code: string | null;
+  complaint_id: string | null;
+  complaint_code: string | null;
+  action_type: 'corrective' | 'preventive';
+  title: string;
+  description: string;
+  owner_email: string;
+  due_date: string;
+  status: CapaStatus;
+  implementation_notes: string | null;
+  implemented_at: string | null;
+  verified_by: string | null;
+  verified_at: string | null;
+  effectiveness_result: 'effective' | 'ineffective' | null;
+  effectiveness_notes: string | null;
+  verification_count: number;
+  is_overdue: boolean;
+  created_by: string;
+  created_at: string;
+}
+
+export interface NcrDetail extends Omit<NcrListItem, 'capa_count' | 'open_capa_count'> {
+  capas: CapaItem[];
+  complaint: { id: string; complaint_code: string; title: string; severity: QualitySeverity; status: string } | null;
+  holds: LotHold[];
+}
+
+export type ComplaintStatus = 'received' | 'investigating' | 'resolved' | 'closed';
+
+export interface ComplaintItem {
+  id: string;
+  complaint_code: string;
+  source: string;
+  complainant_name: string;
+  complainant_contact: string | null;
+  seed_lot_id: string | null;
+  lot_code: string | null;
+  ncr_id: string | null;
+  ncr_code: string | null;
+  title: string;
+  description: string;
+  severity: QualitySeverity;
+  status: ComplaintStatus;
+  received_date: string;
+  assigned_to: string | null;
+  root_cause: string | null;
+  resolution: string | null;
+  recall_recommended: boolean;
+  resolved_at: string | null;
+  closed_at: string | null;
+  age_days: number;
+}
+
+export interface ComplaintDetail extends ComplaintItem {
+  crop?: string | null;
+  variety?: string | null;
+  ncr: { id: string; ncr_code: string; title: string; severity: QualitySeverity; status: string } | null;
+  capas: CapaItem[];
+}
+
+export interface LotHold {
+  id: string;
+  seed_lot_id: string;
+  lot_code?: string;
+  crop?: string;
+  variety?: string;
+  reason: string;
+  source_type: 'ncr' | 'complaint' | 'manual';
+  source_id: string | null;
+  placed_by: string;
+  placed_at: string;
+  released_by: string | null;
+  released_at: string | null;
+  release_notes: string | null;
+}
+
+export interface LotImpact {
+  lot: { id: string; lot_code: string; crop: string; variety: string; stage: string; status: string; testing_status: string; quantity_total: number; quantity_allocated: number; unit: string };
+  packagingBatches: {
+    id: string;
+    batch_code: string;
+    unit_count: number;
+    unit_size: number;
+    unit_of_measure: string;
+    total_quantity: number;
+    status: string;
+    units_packaged: number;
+    units_distributed: number;
+    units_sold: number;
+    units_damaged: number;
+  }[];
+  allocations: { id: string; allocated_to: string; quantity: number; status: string; created_at: string }[];
+  holds: LotHold[];
+  nonConformances: { id: string; ncr_code: string; title: string; severity: QualitySeverity; status: string }[];
+  complaints: { id: string; complaint_code: string; title: string; severity: QualitySeverity; status: string; recall_recommended: boolean }[];
+  summary: {
+    activeHold: boolean;
+    packagingBatchCount: number;
+    unitsPackaged: number;
+    unitsDistributed: number;
+    unitsSold: number;
+    unitsInField: number;
+    activeAllocationCount: number;
+    recipients: string[];
+    recallRecommended: boolean;
+  };
+}
+
+/**
+ * When the backend is unreachable, request() queues writes and returns an
+ * optimistic echo with a `demo-` id. For a compliance record that must never
+ * be presented as "saved" — callers use this to say it is queued instead.
+ */
+export function wasQueuedOffline(result: unknown): boolean {
+  const id = (result as { id?: unknown } | null)?.id;
+  return typeof id === 'string' && id.startsWith('demo-');
+}
+
+const post = <T>(path: string, token: string, body: object = {}): Promise<T> =>
+  request<T>(path, token, { method: 'POST', body: JSON.stringify(body) });
+
+const qs = (params: Record<string, string | boolean | undefined>): string => {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== '') search.set(k, String(v));
+  });
+  const text = search.toString();
+  return text ? `?${text}` : '';
+};
+
+export const fetchQualityDashboard = (token: string) => request<QualityDashboardData>('/quality/dashboard', token);
+
+// SOPs
+export const fetchSops = (token: string, filters: { department?: string; reviewStatus?: string } = {}) =>
+  request<SopListItem[]>(`/quality/sops${qs(filters)}`, token);
+export const fetchSopById = (token: string, id: string) => request<SopDetail>(`/quality/sops/${id}`, token);
+export const fetchPendingSopAcknowledgements = (token: string) =>
+  request<PendingSopAcknowledgement[]>('/quality/sops/pending-acknowledgement', token);
+export interface CreateSopPayload {
+  title: string;
+  department: QualityDepartment;
+  ownerEmail: string;
+  content: string;
+  reviewIntervalMonths?: number;
+}
+export const createSop = (token: string, payload: CreateSopPayload) => post<{ document: { id: string; sop_code: string } }>('/quality/sops', token, payload);
+export const reviseSop = (token: string, id: string, payload: { title?: string; content: string; changeSummary: string }) =>
+  post<SopVersion>(`/quality/sops/${id}/revise`, token, payload);
+export const updateSopDraft = (token: string, id: string, payload: { title?: string; content?: string; changeSummary?: string }) =>
+  request<SopVersion>(`/quality/sops/${id}/draft`, token, { method: 'PATCH', body: JSON.stringify(payload) });
+export const submitSopForReview = (token: string, id: string) => post<SopVersion>(`/quality/sops/${id}/submit`, token);
+export const approveSop = (token: string, id: string) => post<SopVersion>(`/quality/sops/${id}/approve`, token);
+export const rejectSop = (token: string, id: string, reason: string) => post<SopVersion>(`/quality/sops/${id}/reject`, token, { reason });
+export const retireSop = (token: string, id: string, reason: string) => post<SopVersion>(`/quality/sops/${id}/retire`, token, { reason });
+export const acknowledgeSop = (token: string, id: string) => post<{ alreadyAcknowledged: boolean }>(`/quality/sops/${id}/acknowledge`, token);
+
+// NCRs
+export const fetchNcrs = (token: string, filters: { status?: string; severity?: string; department?: string; seedLotId?: string; overdue?: boolean } = {}) =>
+  request<NcrListItem[]>(`/quality/ncrs${qs(filters)}`, token);
+export const fetchNcrById = (token: string, id: string) => request<NcrDetail>(`/quality/ncrs/${id}`, token);
+export interface RaiseNcrPayload {
+  title: string;
+  description: string;
+  department: QualityDepartment;
+  source: string;
+  severity: QualitySeverity;
+  seedLotId?: string;
+  assignedTo?: string;
+  dueDate?: string;
+}
+export const raiseNcr = (token: string, payload: RaiseNcrPayload) =>
+  post<{ ncr: NcrListItem; holdPlaced: boolean }>('/quality/ncrs', token, payload);
+export const updateNcr = (token: string, id: string, payload: { assignedTo?: string | null; dueDate?: string | null; rootCause?: string | null; startInvestigation?: boolean }) =>
+  request<NcrListItem>(`/quality/ncrs/${id}`, token, { method: 'PATCH', body: JSON.stringify(payload) });
+export const closeNcr = (token: string, id: string, payload: { closureNotes: string; rootCause?: string }) => post<NcrListItem>(`/quality/ncrs/${id}/close`, token, payload);
+export const cancelNcr = (token: string, id: string, reason: string) => post<NcrListItem>(`/quality/ncrs/${id}/cancel`, token, { reason });
+
+// CAPAs
+export const fetchCapas = (token: string, filters: { status?: string; ncrId?: string; complaintId?: string; owner?: string; overdue?: boolean } = {}) =>
+  request<CapaItem[]>(`/quality/capas${qs(filters)}`, token);
+export interface CreateCapaPayload {
+  actionType: 'corrective' | 'preventive';
+  title: string;
+  description: string;
+  ownerEmail: string;
+  dueDate: string;
+  ncrId?: string;
+  complaintId?: string;
+}
+export const createCapa = (token: string, payload: CreateCapaPayload) => post<CapaItem>('/quality/capas', token, payload);
+export const startCapa = (token: string, id: string) => post<CapaItem>(`/quality/capas/${id}/start`, token);
+export const implementCapa = (token: string, id: string, implementationNotes: string) => post<CapaItem>(`/quality/capas/${id}/implement`, token, { implementationNotes });
+export const verifyCapa = (token: string, id: string, result: 'effective' | 'ineffective', effectivenessNotes: string) =>
+  post<CapaItem>(`/quality/capas/${id}/verify`, token, { result, effectivenessNotes });
+export const cancelCapa = (token: string, id: string, reason: string) => post<CapaItem>(`/quality/capas/${id}/cancel`, token, { reason });
+
+// Complaints
+export const fetchComplaints = (token: string, filters: { status?: string; severity?: string; seedLotId?: string } = {}) =>
+  request<ComplaintItem[]>(`/quality/complaints${qs(filters)}`, token);
+export const fetchComplaintById = (token: string, id: string) => request<ComplaintDetail>(`/quality/complaints/${id}`, token);
+export interface LogComplaintPayload {
+  source: 'farmer' | 'dealer' | 'distributor' | 'internal' | 'other';
+  complainantName: string;
+  complainantContact?: string;
+  seedLotId?: string;
+  title: string;
+  description: string;
+  severity: QualitySeverity;
+  receivedDate?: string;
+}
+export const logComplaint = (token: string, payload: LogComplaintPayload) =>
+  post<{ complaint: ComplaintItem; ncr: NcrListItem | null; hold: LotHold | null }>('/quality/complaints', token, payload);
+export const investigateComplaint = (token: string, id: string, payload: { assignedTo?: string; recallRecommended?: boolean } = {}) =>
+  post<ComplaintItem>(`/quality/complaints/${id}/investigate`, token, payload);
+export const resolveComplaint = (token: string, id: string, payload: { rootCause: string; resolution: string; recallRecommended?: boolean }) =>
+  post<ComplaintItem>(`/quality/complaints/${id}/resolve`, token, payload);
+export const closeComplaint = (token: string, id: string) => post<ComplaintItem>(`/quality/complaints/${id}/close`, token);
+
+// Lot holds
+export const fetchLotHolds = (token: string, filters: { active?: boolean; seedLotId?: string } = {}) => request<LotHold[]>(`/quality/holds${qs(filters)}`, token);
+export const placeLotHold = (token: string, seedLotId: string, reason: string) => post<LotHold>('/quality/holds', token, { seedLotId, reason });
+export const releaseLotHold = (token: string, id: string, releaseNotes: string) => post<LotHold>(`/quality/holds/${id}/release`, token, { releaseNotes });
+export const fetchLotImpact = (token: string, seedLotId: string) => request<LotImpact>(`/quality/lots/${seedLotId}/impact`, token);
+
+
+// Compliance register (regulatory requirements, gap assessment, evidence)
+export type RequirementStatus = 'not_assessed' | 'compliant' | 'partially_compliant' | 'non_compliant' | 'not_applicable';
+export type RequirementRisk = 'low' | 'medium' | 'high' | 'critical';
+export type RequirementCategory =
+  | 'licensing'
+  | 'certification'
+  | 'labelling_packaging'
+  | 'record_keeping'
+  | 'quality_testing'
+  | 'storage_handling'
+  | 'dealer_sales'
+  | 'customer_export'
+  | 'other';
+
+export const REQUIREMENT_CATEGORIES: { value: RequirementCategory; label: string }[] = [
+  { value: 'licensing', label: 'Licensing' },
+  { value: 'certification', label: 'Certification' },
+  { value: 'labelling_packaging', label: 'Labelling & packaging' },
+  { value: 'record_keeping', label: 'Record keeping & traceability' },
+  { value: 'quality_testing', label: 'Quality testing' },
+  { value: 'storage_handling', label: 'Storage & handling' },
+  { value: 'dealer_sales', label: 'Dealers & sales' },
+  { value: 'customer_export', label: 'Customer & export' },
+  { value: 'other', label: 'Other' },
+];
+
+export const requirementCategoryLabel = (value: string): string =>
+  REQUIREMENT_CATEGORIES.find((c) => c.value === value)?.label ?? value;
+
+export interface RequirementItem {
+  id: string;
+  req_code: string;
+  regulation: string;
+  reference: string | null;
+  title: string;
+  description: string;
+  category: RequirementCategory;
+  department: QualityDepartment;
+  status: RequirementStatus;
+  current_status: string | null;
+  gap: string | null;
+  risk: RequirementRisk | null;
+  corrective_action: string | null;
+  responsible_email: string | null;
+  target_date: string | null;
+  sop_id: string | null;
+  sop_code: string | null;
+  ncr_id: string | null;
+  ncr_code: string | null;
+  ncr_status: string | null;
+  assessed_by: string | null;
+  assessed_at: string | null;
+  next_review_date: string | null;
+  evidence_count: number;
+  is_overdue: boolean;
+  review_overdue: boolean;
+}
+
+export interface RequirementEvidence {
+  id: string;
+  title: string;
+  reference: string | null;
+  description: string | null;
+  added_by: string;
+  added_at: string;
+}
+
+export interface RequirementDetail {
+  requirement: RequirementItem;
+  evidence: RequirementEvidence[];
+  capas: { id: string; capa_code: string; title: string; action_type: string; status: string; owner_email: string; due_date: string }[];
+}
+
+export interface ComplianceDashboardData {
+  totals: {
+    total: number;
+    not_assessed: number;
+    compliant: number;
+    partially_compliant: number;
+    non_compliant: number;
+    not_applicable: number;
+    overdue_gaps: number;
+    gaps_without_ncr: number;
+    reviews_overdue: number;
+  };
+  assessedOfApplicable: { assessed: number; applicable: number };
+  byCategory: { category: RequirementCategory; total: number; compliant: number; gaps: number; not_assessed: number }[];
+  openGapsByRisk: Record<RequirementRisk, number>;
+  nextGapsDue: { id: string; req_code: string; title: string; status: RequirementStatus; risk: RequirementRisk; target_date: string; responsible_email: string }[];
+}
+
+export interface RequirementFilters {
+  status?: string;
+  category?: string;
+  department?: string;
+  risk?: string;
+  overdue?: boolean;
+  q?: string;
+}
+
+export interface AssessRequirementPayload {
+  status: Exclude<RequirementStatus, 'not_assessed'>;
+  currentStatus: string;
+  gap?: string;
+  risk?: RequirementRisk;
+  correctiveAction?: string;
+  responsibleEmail?: string;
+  targetDate?: string;
+  nextReviewDate?: string;
+}
+
+export interface RequirementDefinitionPayload {
+  regulation: string;
+  reference?: string;
+  title: string;
+  description: string;
+  category: RequirementCategory;
+  department: QualityDepartment;
+  sopId?: string;
+}
+
+export const fetchComplianceDashboard = (token: string) => request<ComplianceDashboardData>('/quality/compliance/dashboard', token);
+export const fetchRequirements = (token: string, filters: RequirementFilters = {}) =>
+  request<RequirementItem[]>(`/quality/compliance/requirements${qs({ ...filters })}`, token);
+export const fetchRequirementById = (token: string, id: string) => request<RequirementDetail>(`/quality/compliance/requirements/${id}`, token);
+export const createRequirement = (token: string, payload: RequirementDefinitionPayload) =>
+  post<RequirementItem>('/quality/compliance/requirements', token, payload);
+export const updateRequirement = (token: string, id: string, payload: RequirementDefinitionPayload) =>
+  request<RequirementItem>(`/quality/compliance/requirements/${id}`, token, { method: 'PUT', body: JSON.stringify(payload) });
+export const assessRequirement = (token: string, id: string, payload: AssessRequirementPayload) =>
+  post<RequirementItem>(`/quality/compliance/requirements/${id}/assess`, token, payload);
+export const addRequirementEvidence = (token: string, id: string, payload: { title: string; reference?: string; description?: string }) =>
+  post<RequirementEvidence>(`/quality/compliance/requirements/${id}/evidence`, token, payload);
+export const removeRequirementEvidence = (token: string, id: string, evidenceId: string) =>
+  request<{ removed: boolean }>(`/quality/compliance/requirements/${id}/evidence/${evidenceId}`, token, { method: 'DELETE' });
+export const raiseNcrForRequirement = (token: string, id: string) =>
+  post<{ requirement: RequirementItem; ncr: NcrListItem }>(`/quality/compliance/requirements/${id}/raise-ncr`, token);
+export const loadComplianceStarterTemplate = (token: string) =>
+  post<{ added: number; skipped: number; templateSize: number }>('/quality/compliance/template/seed-company', token);
+
+/**
+ * Downloads the Seed Compliance Gap Assessment Report as a CSV. This is a
+ * file, not JSON, so it bypasses request() — and unlike a read it must never
+ * degrade to demo data: an auditor handed an empty or invented report would
+ * be worse off than one told the server is unreachable.
+ */
+export async function downloadComplianceGapReport(token: string, filters: RequirementFilters = {}): Promise<void> {
+  const response = await fetch(`${BASE_URL}/quality/compliance/report.csv${qs({ ...filters })}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) {
+    throw new SeedLotApiError(friendlyMessageForStatus(response.status, undefined));
+  }
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `seed-compliance-gap-report-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+// --- AI Center (server/src/modules/ai) -------------------------------------
+// Risk scores and forecasts are computed deterministically on the server;
+// the model (when configured) only writes the narrative and analyses photos.
+
+export type AiRiskLevel = 'critical' | 'high' | 'medium' | 'low';
+
+export interface AiLotRisk {
+  seedLotId: string;
+  lotCode: string;
+  crop: string;
+  variety: string;
+  stage: string;
+  testingStatus: string;
+  quantityAvailable: number;
+  unit: string;
+  ageDays: number;
+  germination: number | null;
+  purity: number | null;
+  viability: number | null;
+  minGermination: number;
+  predictedGermination90d: number | null;
+  openQualityFlags: number;
+  riskScore: number;
+  riskLevel: AiRiskLevel;
+  factors: { label: string; points: number }[];
+  recommendation: string;
+}
+
+export interface AiLabRiskReport {
+  generatedAt: string;
+  summary: { total: number; critical: number; high: number; medium: number; low: number; quantityAtRisk: number };
+  lots: AiLotRisk[];
+  narrative: string;
+  narrativeSource: 'model' | 'rules';
+  model: string | null;
+}
+
+export interface AiCropForecast {
+  crop: string;
+  lots: number;
+  quantityAvailable: number;
+  allocatedLast90d: number;
+  monthlyVelocity: number;
+  monthsOfCover: number | null;
+  projectedStockoutDate: string | null;
+  status: 'shortage' | 'tight' | 'healthy' | 'slow-moving';
+}
+
+export interface AiExpiryForecast {
+  seedLotId: string;
+  lotCode: string;
+  crop: string;
+  variety: string;
+  quantityAvailable: number;
+  unit: string;
+  daysToExpiry: number;
+  expiryDate: string;
+}
+
+export interface AiForecastReport {
+  generatedAt: string;
+  horizonDays: number;
+  crops: AiCropForecast[];
+  expiring: AiExpiryForecast[];
+  narrative: string;
+  narrativeSource: 'model' | 'rules';
+  model: string | null;
+}
+
+export type AiSeverity = 'none' | 'low' | 'medium' | 'high';
+
+export interface AiPhotoAnalysis {
+  configured: boolean;
+  model: string | null;
+  subject: string;
+  cropGuess: string | null;
+  overallSeverity: AiSeverity;
+  findings: { issue: string; severity: AiSeverity; confidence: number; evidence: string }[];
+  recommendations: string[];
+  followUpTests: string[];
+  summary: string;
+}
+
+export interface AiStatus {
+  configured: boolean;
+  model: string | null;
+  provider?: string;
+  models?: { chat: string; fast: string; vision: string } | null;
+  knowledge?: { total: number; bySource: Record<string, number> };
+}
+
+/** A knowledge-base passage retrieved for a question (RAG source). */
+export interface AiKnowledgeHit {
+  id: string;
+  sourceType: string;
+  title: string;
+  module: string;
+  path: string;
+  passage: string;
+  score: number;
+}
+
+export async function searchAiKnowledge(token: string, q: string): Promise<AiKnowledgeHit[]> {
+  return request(`/ai/knowledge/search?q=${encodeURIComponent(q)}`, token);
+}
+
+export async function reindexAiKnowledge(token: string): Promise<{ indexed: number; removed: number; bySource: Record<string, number> }> {
+  return request('/ai/knowledge/reindex', token, { method: 'POST' });
+}
+
+export async function fetchAiStatus(token: string): Promise<AiStatus> {
+  return request('/ai/status', token);
+}
+
+export async function fetchAiLabRisk(token: string): Promise<AiLabRiskReport> {
+  return request('/ai/lab-risk', token);
+}
+
+export async function fetchAiForecasts(token: string): Promise<AiForecastReport> {
+  return request('/ai/forecasts', token);
+}
+
+export type AiModuleKey = 'production' | 'procurement' | 'warehouse' | 'rd' | 'processing' | 'laboratory' | 'quality' | 'administration';
+export type AiInsightSeverity = 'critical' | 'warning' | 'info' | 'good';
+
+export interface AiModuleInsight {
+  id: string;
+  severity: AiInsightSeverity;
+  title: string;
+  detail: string;
+  action: string | null;
+  link: string | null;
+  aiTab: 'risk' | 'forecast' | null;
+}
+
+export interface AiModuleMetric {
+  label: string;
+  value: string;
+  tone: 'bad' | 'warn' | 'good' | 'neutral';
+}
+
+export interface AiModuleInsights {
+  module: AiModuleKey;
+  label: string;
+  generatedAt: string;
+  headline: string;
+  metrics: AiModuleMetric[];
+  insights: AiModuleInsight[];
+  suggestedQuestions: string[];
+  briefing: string | null;
+  briefingSource: 'model' | 'rules';
+  model: string | null;
+}
+
+export interface AiModuleSummary {
+  module: AiModuleKey;
+  label: string;
+  headline: string;
+  severity: AiInsightSeverity;
+  counts: Record<AiInsightSeverity, number>;
+  metrics: AiModuleMetric[];
+  top: AiModuleInsight[];
+}
+
+export async function fetchAiModuleInsights(token: string, module: AiModuleKey, briefing = false): Promise<AiModuleInsights> {
+  return request(`/ai/insights/${module}${briefing ? '?briefing=true' : ''}`, token);
+}
+
+export async function fetchAiAllModules(token: string): Promise<AiModuleSummary[]> {
+  return request('/ai/insights', token);
+}
+
+export async function analyzeCropPhoto(
+  token: string,
+  payload: { imageBase64: string; mediaType: string; kind: 'field' | 'seed'; crop?: string; notes?: string },
+): Promise<AiPhotoAnalysis> {
+  return request('/ai/photo-analysis', token, { method: 'POST', body: JSON.stringify(payload) });
+}
+
+// ---------------------------------------------------------------------------
+// Custom fields — admin-defined attributes that show and work across modules.
+// ---------------------------------------------------------------------------
+
+export type CustomFieldType = 'text' | 'number' | 'date' | 'select' | 'boolean';
+export type CustomEntityType =
+  | 'seed_lot' | 'supplier' | 'purchase_order' | 'grn' | 'processing_batch'
+  | 'warehouse_item' | 'lab_submission' | 'non_conformance';
+
+export interface CustomField {
+  id: string;
+  fieldKey: string;
+  label: string;
+  fieldType: CustomFieldType;
+  options: string[];
+  entityTypes: CustomEntityType[];
+  required: boolean;
+  helpText: string | null;
+  sortOrder: number;
+  active: boolean;
+}
+
+export interface CustomFieldWithValue extends CustomField {
+  value: string | number | boolean | null;
+  storedOn: { entityType: string; entityId: string };
+  /** True when stored on the lot, i.e. shared with every module showing it. */
+  shared: boolean;
+}
+
+export interface CustomFieldInput {
+  label: string;
+  fieldType?: CustomFieldType;
+  fieldKey?: string;
+  options?: string[];
+  entityTypes: CustomEntityType[];
+  required?: boolean;
+  helpText?: string;
+  active?: boolean;
+}
+
+export interface CustomFieldRef {
+  entityType: CustomEntityType;
+  entityId: string;
+  /** The seed lot this record belongs to; lets lot-wide fields be shared across modules. */
+  lotId?: string;
+}
+
+export function fetchCustomFields(token: string, includeInactive = false): Promise<CustomField[]> {
+  return request(`/custom-fields${includeInactive ? '?all=true' : ''}`, token);
+}
+export function createCustomField(token: string, input: CustomFieldInput): Promise<CustomField> {
+  return request('/custom-fields', token, { method: 'POST', body: JSON.stringify(input) });
+}
+export function updateCustomField(token: string, id: string, input: Partial<CustomFieldInput>): Promise<CustomField> {
+  return request(`/custom-fields/${id}`, token, { method: 'PATCH', body: JSON.stringify(input) });
+}
+export function fetchCustomFieldValues(token: string, ref: CustomFieldRef): Promise<CustomFieldWithValue[]> {
+  const q = new URLSearchParams({ entityType: ref.entityType, entityId: ref.entityId });
+  if (ref.lotId) q.set('lotId', ref.lotId);
+  return request(`/custom-fields/values?${q.toString()}`, token);
+}
+export function saveCustomFieldValues(
+  token: string, ref: CustomFieldRef, values: Record<string, string | number | boolean | null>,
+): Promise<CustomFieldWithValue[]> {
+  return request('/custom-fields/values', token, { method: 'PUT', body: JSON.stringify({ ...ref, values }) });
+}
+
+// ---------------------------------------------------------------------------
+// Record-level AI ("AI assist" on detail pages). The rules live in
+// src/ai/copilot and are shared with the server; see RecordAiPanel.
+// ---------------------------------------------------------------------------
+
+export async function runRecordCopilot(
+  token: string,
+  payload: { recordType: string; action?: string; question?: string; record: unknown },
+): Promise<import('@/ai/copilot').CopilotResult> {
+  return request('/ai/copilot', token, { method: 'POST', body: JSON.stringify(payload) });
+}
+
+// ---------------------------------------------------------------------------
+// Generic module record store (migration 059). Backs Procurement, Warehouse,
+// Processing and R&D screens; see src/hooks/persistentCollections.ts.
+// ---------------------------------------------------------------------------
+
+export interface ModuleRecordCollection<T = unknown> {
+  collection: string;
+  seeded: boolean;
+  items: T[];
+}
+
+export interface ModuleRecordSync {
+  upserts?: { id: string; data: unknown; position?: number }[];
+  deletes?: string[];
+  seed?: { id: string; data: unknown; position?: number }[];
+  actor?: string;
+}
+
+export async function fetchModuleRecords<T = unknown>(token: string, collection: string): Promise<ModuleRecordCollection<T>> {
+  return request(`/module-records/${encodeURIComponent(collection)}`, token);
+}
+
+export async function syncModuleRecords(
+  token: string,
+  collection: string,
+  body: ModuleRecordSync,
+): Promise<{ collection: string; seeded: boolean; upserted: number; deleted: number }> {
+  return request(`/module-records/${encodeURIComponent(collection)}/sync`, token, { method: 'POST', body: JSON.stringify(body) });
 }

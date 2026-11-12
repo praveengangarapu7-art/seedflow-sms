@@ -14,12 +14,13 @@ import { EmptyState } from '@/components/common/EmptyState/EmptyState';
 import { FileUpload } from '@/components/common/FileUpload/FileUpload';
 import { useToast } from '@/components/common/Toast';
 import { KpiStrip } from './components/KpiStrip/KpiStrip';
-import { mockInspections } from './mockData/inspectionsData';
+import { currentUserName, today, updateGRN, useInspections } from './procurementStore';
 import { procurementNav } from '@/config/procurementNav';
 import type { InspectionItem, InspectionDecision, InspectionPriority } from '@/types/procurement';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './InspectionQuality.module.css';
 
+import { RecordEditModal } from '@/components/common/RecordEditModal/RecordEditModal';
 const TABS = [
   { key: 'mine',      label: 'My Queue' },
   { key: 'all',       label: 'All Pending' },
@@ -97,6 +98,14 @@ function InspectionWorkflowModal({ item, onClose }: WorkflowProps) {
 
   function handleSubmit() {
     if (!decision || !signedOff) return;
+    const status = decision === 'Accept' ? 'Accepted' : decision === 'Partial Accept' ? 'Partial' : decision === 'Reject' ? 'Rejected' : 'Inspected';
+    const measured = params.filter((p) => p.value).map((p) => `${p.name}: ${p.value}${p.unit ? ` ${p.unit}` : ''}`).join('; ');
+    updateGRN(item.id, {
+      status,
+      inspector: currentUserName(),
+      inspectionDate: today(),
+      notes: [decisionNotes.trim(), measured].filter(Boolean).join(' — ') || item.notes,
+    }, `Inspection ${decision}${decisionNotes.trim() ? `: ${decisionNotes.trim()}` : ''}`);
     addToast(`Inspection submitted: ${decision} for ${item.id}`, 'success');
     onClose();
   }
@@ -319,20 +328,30 @@ export default function InspectionQuality() {
   const [activeTab, setActiveTab] = useState('mine');
   const [activeItem, setActiveItem] = useState<InspectionItem | null>(null);
   const canInspect = usePermission('conduct_inspection');
+  const { addToast } = useToast();
+  const [allInspections, setInspections] = useInspections();
+  const [reassignItem, setReassignItem] = useState<InspectionItem | null>(null);
+  const mockInspections = useMemo(() => allInspections.filter((i) => i.status === 'Pending Inspection'), [allInspections]);
+  const done = useMemo(() => allInspections.filter((i) => i.status !== 'Pending Inspection' && i.status !== 'Rejected'), [allInspections]);
+  const rejected = useMemo(() => allInspections.filter((i) => i.status === 'Rejected'), [allInspections]);
+  const inspectors = useMemo(
+    () => Array.from(new Set([CURRENT_INSPECTOR, currentUserName(), ...allInspections.map((i) => i.assignedTo).filter((x): x is string => Boolean(x))])),
+    [allInspections],
+  );
 
   const tabFiltered = useMemo(() => {
     if (activeTab === 'mine')      return mockInspections.filter((i) => i.assignedTo === CURRENT_INSPECTOR);
     if (activeTab === 'all')       return mockInspections;
-    if (activeTab === 'completed') return [];
-    if (activeTab === 'rejected')  return [];
+    if (activeTab === 'completed') return done;
+    if (activeTab === 'rejected')  return rejected;
     return mockInspections;
-  }, [activeTab]);
+  }, [activeTab, mockInspections, done, rejected]);
 
   const tabs = [
     { ...TABS[0], count: mockInspections.filter((i) => i.assignedTo === CURRENT_INSPECTOR).length },
     { ...TABS[1], count: mockInspections.length },
-    { ...TABS[2], count: 0 },
-    { ...TABS[3], count: 0 },
+    { ...TABS[2], count: done.length },
+    { ...TABS[3], count: rejected.length },
   ];
 
   return (
@@ -410,7 +429,7 @@ export default function InspectionQuality() {
                   <Button variant="ghost" size="sm" leftIcon={Eye} onClick={() => navigate(`/procurement/grn/${item.id}`)}>
                     View GRN
                   </Button>
-                  {canInspect && <Button variant="ghost" size="sm">Reassign</Button>}
+                  {canInspect && <Button variant="ghost" size="sm" onClick={() => setReassignItem(item)}>Reassign</Button>}
                 </div>
               </div>
             );
@@ -421,6 +440,24 @@ export default function InspectionQuality() {
       {activeItem && (
         <InspectionWorkflowModal item={activeItem} onClose={() => setActiveItem(null)} />
       )}
+
+      <RecordEditModal
+        isOpen={!!reassignItem}
+        title={`Reassign ${reassignItem?.id ?? ''}`}
+        fields={[
+          { key: 'assignedTo', label: 'Inspector', type: 'select', options: inspectors, required: true },
+          { key: 'priority', label: 'Priority', type: 'select', options: ['Low', 'Medium', 'High', 'Urgent'] },
+        ]}
+        values={{ assignedTo: reassignItem?.assignedTo ?? '', priority: reassignItem?.priority ?? 'Medium' }}
+        submitLabel="Reassign"
+        onClose={() => setReassignItem(null)}
+        onSave={(v) => {
+          if (!reassignItem) return;
+          setInspections((prev) => prev.map((i) => (i.id === reassignItem.id ? { ...i, assignedTo: String(v.assignedTo), priority: (v.priority || i.priority) as InspectionItem['priority'] } : i)));
+          addToast(`${reassignItem.id} assigned to ${v.assignedTo}`, 'success');
+          setReassignItem(null);
+        }}
+      />
     </ModuleLayout>
   );
 }

@@ -16,17 +16,18 @@ import { registrations as mockRegistrations } from './mockData/registrationsData
 import { varieties as mockVarieties } from './mockData/varietiesData';
 import { VarietyRegistration, Variety, RegStatus } from '@/types/rd';
 import { PeriodSelect } from '@/components/common/PeriodSelect/PeriodSelect';
-import { RD_TODAY, isDateInPeriod, isYearInPeriod, type PeriodValue } from '@/utils/periodFilter';
+import { RD_TODAY, isDateInPeriod, type PeriodValue } from '@/utils/periodFilter';
 import { RegistrationDetailModal } from './components/RegistrationDetailModal/RegistrationDetailModal';
 import { NewRegistrationModal } from './components/NewRegistrationModal/NewRegistrationModal';
 import { VarietyDetailModal } from './components/VarietyDetailModal/VarietyDetailModal';
 import styles from './Registrations.module.css';
 
+import { downloadCsv } from '@/utils/fileExport';
 export default function Registrations() {
   const { addToast } = useToast();
   const [period, setPeriod] = useState<PeriodValue>('all');
-  const { items: allVarieties } = useRealtimeMockStore<Variety>(mockVarieties);
-  const { items: allRegistrationItems, add, update } = useRealtimeMockStore<VarietyRegistration>(mockRegistrations);
+  const { items: allVarieties } = useRealtimeMockStore<Variety>(mockVarieties, 'rd.varieties');
+  const { items: allRegistrationItems, add, update } = useRealtimeMockStore<VarietyRegistration>(mockRegistrations, 'rd.registrations');
 
   const items = useMemo(
     () => allRegistrationItems.filter((r) => isDateInPeriod(r.filedDate, period, RD_TODAY)),
@@ -379,7 +380,7 @@ export default function Registrations() {
           <Button 
             variant="secondary" 
             leftIcon={Upload}
-            onClick={() => addToast('Exporting registrations catalog as CSV...', 'info')}
+            onClick={() => { downloadCsv(`variety_registrations_${new Date().toISOString().slice(0, 10)}.csv`, allRegistrationItems.map((r) => { const flat: Record<string, unknown> = {}; Object.entries(r).forEach(([k, v]) => { if (v === null || typeof v !== 'object') flat[k] = v; }); return flat; })); addToast(`${allRegistrationItems.length} registrations exported`, 'success'); }}
           >
             Export
           </Button>

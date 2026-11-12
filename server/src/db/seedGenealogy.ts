@@ -13,6 +13,13 @@ async function userFor(email: string): Promise<AuthenticatedUser> {
   return { id: row.id, email: row.email, role: row.role, organizationId: row.organization_id };
 }
 
+/** ISO date n days before today, so the chain's production dates strictly increase (the schema requires a child to be newer than its parent). */
+function daysAgo(n: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
 async function lotExists(lotCode: string): Promise<boolean> {
   const result = await pool.query('SELECT id FROM seed_lots WHERE lot_code = $1', [lotCode]);
   return result.rows.length > 0;
@@ -35,6 +42,7 @@ async function run(): Promise<void> {
       variety: 'Paddy-1010',
       quantityTotal: 10000,
       stage: 'Breeder',
+      productionDate: daysAgo(150),
       notes: 'Original breeder nucleus seed.',
     },
     breeder,
@@ -42,11 +50,11 @@ async function run(): Promise<void> {
   console.log(`created ${breederLot.lot_code} (${breederLot.stage})`);
 
   const foundation1 = await createSeedLot(
-    { lotCode: 'SL-GEN-FOUND-01', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: breederLot.id, quantityTotal: 3000 },
+    { lotCode: 'SL-GEN-FOUND-01', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: breederLot.id, productionDate: daysAgo(100), quantityTotal: 3000 },
     breeder,
   );
   const foundation2 = await createSeedLot(
-    { lotCode: 'SL-GEN-FOUND-02', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: breederLot.id, quantityTotal: 2500 },
+    { lotCode: 'SL-GEN-FOUND-02', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: breederLot.id, productionDate: daysAgo(100), quantityTotal: 2500 },
     breeder,
   );
   console.log(`created ${foundation1.lot_code} (${foundation1.stage}), ${foundation2.lot_code} (${foundation2.stage})`);
@@ -63,19 +71,19 @@ async function run(): Promise<void> {
   );
 
   const certified1 = await createSeedLot(
-    { lotCode: 'SL-GEN-CERT-01', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: foundation1.id, quantityTotal: 1200 },
+    { lotCode: 'SL-GEN-CERT-01', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: foundation1.id, productionDate: daysAgo(50), quantityTotal: 1200 },
     breeder,
   );
   const certified2 = await createSeedLot(
-    { lotCode: 'SL-GEN-CERT-02', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: foundation1.id, quantityTotal: 900 },
+    { lotCode: 'SL-GEN-CERT-02', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: foundation1.id, productionDate: daysAgo(50), quantityTotal: 900 },
     breeder,
   );
   const certified3 = await createSeedLot(
-    { lotCode: 'SL-GEN-CERT-03', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: foundation2.id, quantityTotal: 1000 },
+    { lotCode: 'SL-GEN-CERT-03', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: foundation2.id, productionDate: daysAgo(50), quantityTotal: 1000 },
     breeder,
   );
   const certified4 = await createSeedLot(
-    { lotCode: 'SL-GEN-CERT-04', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: foundation2.id, quantityTotal: 800 },
+    { lotCode: 'SL-GEN-CERT-04', crop: 'Paddy', variety: 'Paddy-1010', parentLotId: foundation2.id, productionDate: daysAgo(50), quantityTotal: 800 },
     breeder,
   );
   console.log(`created ${certified1.lot_code}, ${certified2.lot_code}, ${certified3.lot_code}, ${certified4.lot_code} (all Certified)`);

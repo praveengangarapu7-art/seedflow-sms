@@ -7,6 +7,7 @@ import { formatIndianNumber, formatRupees } from '@/utils/formatters';
 import type { VarianceDecision } from '../CountReviewModal/CountReviewModal';
 import styles from './VarianceApprovalModal.module.css';
 
+import { adjustStock, nowIso, whAdd, whNextId, whRead, whUser } from '../../warehouseStore';
 interface VarianceApprovalModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -59,7 +60,19 @@ export function VarianceApprovalModal({ isOpen, onClose, count, decisions, onApp
       reason: reasonOverrides[v.id] ?? 'Cycle count variance',
       source: 'Cycle count',
     }));
-    console.log('post variances as adjustments', newAdjustments);
+    newAdjustments.forEach((n) => {
+      const item = whRead('items').find((it) => it.sku === n.sku);
+      const unitCost = item?.unitCost ?? 0;
+      const id = whNextId('ADJ', whRead('adjustments').map((a) => a.id));
+      whAdd('adjustments', {
+        id, itemSku: n.sku, itemName: n.itemName, batch: n.batch, location: n.location,
+        direction: n.varianceQty >= 0 ? 'Increase' : 'Decrease', systemQty: n.systemQty, actualQty: n.actualQty, varianceQty: n.varianceQty,
+        uom: item?.uom ?? 'units', unitCost, varianceValue: n.varianceQty * unitCost, reason: n.reason as AdjustmentReason,
+        photos: [], initiatedBy: whUser(), initiatedAt: nowIso(), status: 'Posted', approvalChain: [], source: 'Cycle count',
+        cycleCountRef: n.cycleCountRef, postedAt: nowIso(), warehouse: count.warehouse,
+      });
+      adjustStock(n.sku, n.varianceQty);
+    });
     onApprove?.(count);
     onClose();
   };

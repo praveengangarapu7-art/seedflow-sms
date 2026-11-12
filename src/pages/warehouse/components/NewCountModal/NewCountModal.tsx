@@ -6,6 +6,7 @@ import { useToast } from '@/components/common/Toast/ToastContext';
 import type { CountStrategy, CountFrequency, CycleCount } from '@/types/warehouse';
 import styles from './NewCountModal.module.css';
 
+import { whAdd, whNextId, whRead } from '../../warehouseStore';
 interface NewCountModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -109,7 +110,6 @@ export function NewCountModal({ isOpen, onClose, onSave }: NewCountModalProps) {
       lines: [],
     };
 
-    console.log('schedule cycle count', data);
     onSave?.(data);
     onClose();
   };
@@ -285,7 +285,7 @@ export function NewCountModal({ isOpen, onClose, onSave }: NewCountModalProps) {
       <div className={styles.footer}>
         <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
         <div className={styles.footerRight}>
-          <Button variant="secondary" size="sm" onClick={() => { console.log('save count draft'); addToast({ type: 'success', message: 'Count saved as draft' }); onClose(); }}>Save as draft</Button>
+          <Button variant="secondary" size="sm" onClick={() => { whAdd('counts', { id: whNextId('CC', whRead('counts').map((c) => c.id)), name: name || 'Draft count', strategy, frequency, scheduledDate: scheduledDate || new Date().toISOString().slice(0, 10), status: 'Scheduled', warehouse, zonesScope: selectedZones, assignedCounters: counters, totalLines: 0, countedLines: 0, variancesFound: 0, totalVarianceValue: 0, notes: `[Draft] ${notes}`, lines: [] }); addToast({ type: 'success', message: 'Count saved as draft' }); onClose(); }}>Save as draft</Button>
           {step > 0 && (
             <Button variant="ghost" size="sm" onClick={() => setStep((s) => Math.max(0, s - 1))}>← Back</Button>
           )}

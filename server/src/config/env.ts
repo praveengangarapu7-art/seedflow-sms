@@ -30,6 +30,13 @@ export const env = {
   aiProvider: optional('AI_PROVIDER', 'anthropic'),
   aiApiKey: optional('AI_API_KEY', ''),
   aiModel: optional('AI_MODEL', ''),
+  // Optional per-task models: a cheaper one for short narratives, a vision one
+  // for photo analysis. Both fall back to AI_MODEL.
+  aiFastModel: optional('AI_FAST_MODEL', ''),
+  aiVisionModel: optional('AI_VISION_MODEL', ''),
+  // Base URL for provider 'openai-compatible' (Ollama, vLLM, Groq, OpenRouter,
+  // Azure OpenAI proxy, LM Studio...), e.g. http://localhost:11434/v1
+  aiBaseUrl: optional('AI_BASE_URL', ''),
   // Hard ceiling on how many rows of real data are packed into a prompt, so
   // a large database can never blow up the context window or the bill.
   aiMaxContextRows: Number(optional('AI_MAX_CONTEXT_ROWS', '40')),

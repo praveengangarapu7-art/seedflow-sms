@@ -1,5 +1,5 @@
 .section {
-  padding: 72px 24px;
+  padding: 44px 24px;
   background-color: var(--landing-surface-alt);
   position: relative;
   overflow: hidden;
@@ -14,7 +14,7 @@
 .header {
   text-align: center;
   max-width: 720px;
-  margin: 0 auto 64px auto;
+  margin: 0 auto 32px auto;
 }
 
 .label {

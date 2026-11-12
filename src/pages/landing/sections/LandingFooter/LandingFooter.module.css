@@ -4,7 +4,7 @@
 .footer {
   background-color: var(--landing-footer-bg);
   border-top: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 72px 24px 36px 24px;
+  padding: 48px 24px 28px 24px;
   position: relative;
   z-index: 5;
 }
@@ -19,7 +19,7 @@
   display: grid;
   grid-template-columns: 2fr repeat(3, 1fr);
   gap: 48px;
-  margin-bottom: 60px;
+  margin-bottom: 36px;
 }
 
 @media (max-width: 991px) {

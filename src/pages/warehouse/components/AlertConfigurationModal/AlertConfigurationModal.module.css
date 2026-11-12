@@ -141,3 +141,5 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.chipActive { background: var(--color-primary-soft, #E8F3EC); border-color: var(--color-primary); color: var(--color-primary); font-weight: 600; }

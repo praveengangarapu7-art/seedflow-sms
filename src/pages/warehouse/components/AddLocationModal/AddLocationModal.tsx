@@ -4,6 +4,8 @@ import { Button } from '@/components/common/Button/Button';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import styles from './AddLocationModal.module.css';
 
+import { whAdd, whRead } from '../../warehouseStore';
+import type { StorageLocation } from '@/types/warehouse';
 interface AddLocationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,7 +33,15 @@ export function AddLocationModal({ isOpen, onClose }: AddLocationModalProps) {
   const canSubmit = rack.trim() !== '' && shelf.trim() !== '' && bin.trim() !== '' && capacity.trim() !== '';
 
   const handleSubmit = () => {
-    console.log('add location', { warehouse, zone, rack, shelf, bin, code, capacity, abc, active });
+    const all = whRead('bins');
+    const cap = Number(capacity) || 0;
+    whAdd('bins', {
+      id: `B-${String(all.length + 1).padStart(3, '0')}-${Date.now().toString(36).slice(-3)}`,
+      warehouse, zone, zoneType: /cold/i.test(zone) ? 'cold' : /quarantine/i.test(zone) ? 'quarantine' : /controlled/i.test(zone) ? 'controlled' : 'ambient',
+      rack, shelf, bin, capacity: cap, occupied: 0, occupancyPct: 0,
+      status: active ? 'Available' : 'Blocked',
+      abcZone: (['A', 'B', 'C'].includes(String(abc)) ? abc : undefined) as StorageLocation['abcZone'],
+    });
     addToast({ type: 'success', message: `Bin ${code} added` });
     onClose();
   };

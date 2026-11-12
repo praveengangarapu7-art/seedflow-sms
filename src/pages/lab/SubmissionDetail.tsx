@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CustomFieldsPanel } from '@/components/customFields/CustomFieldsPanel';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, FileCheck2, FlaskConical, Upload } from 'lucide-react';
 import { ModuleLayout } from '@/components/layout/ModuleLayout/ModuleLayout';
@@ -18,6 +19,7 @@ import {
 import { useLabSession } from './useLabSession';
 import styles from './Lab.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
 // Mirrors CERTIFICATION_THRESHOLDS in
 // server/src/modules/labTesting/labTesting.types.ts — shown here so the bench
 // operator sees the bar their reading is about to be judged against. The
@@ -178,6 +180,7 @@ export default function SubmissionDetail() {
           <div className={styles.card}><div className={styles.emptyState}>{busy ? 'Loading…' : 'Submission not found.'}</div></div>
         ) : (
           <>
+            <CustomFieldsPanel entityType="lab_submission" entityId={submission.id} lotId={submission.lot_code} />
             <div className={styles.header}>
               <div>
                 <h1 className={styles.title}>Submission — {submission.lot_code}</h1>
@@ -188,6 +191,8 @@ export default function SubmissionDetail() {
                 </p>
               </div>
             </div>
+
+            <RecordAiPanel recordType="lab.submission" record={submission} label={submission.lot_code} />
 
             <div className={styles.card}>
               <div className={styles.metaGrid}>

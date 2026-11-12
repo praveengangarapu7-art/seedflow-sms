@@ -53,6 +53,13 @@ import {
 
 import styles from './RDSettings.module.css';
 
+import { usePersistentCollection } from '@/hooks/persistentCollections';
+import { setCollection } from '@/hooks/persistentCollections';
+import { trials as trialStarter } from './mockData/trialsData';
+import type { Trial } from '@/types/rd';
+import { downloadCsv, downloadText } from '@/utils/fileExport';
+import { useNavigate } from 'react-router-dom';
+import { RecordEditModal, type EditField } from '@/components/common/RecordEditModal/RecordEditModal';
 export default function RDSettings() {
   const { addToast } = useToast();
   
@@ -65,14 +72,16 @@ export default function RDSettings() {
   const [activeTab, setActiveTab] = useState('templates');
 
   // Core Data Stores
-  const [templates] = useState<TrialTemplate[]>(initialTemplates);
-  const [traits, setTraits] = useState<TraitDefinition[]>(initialTraits);
-  const [crops, setCrops] = useState<CropConfig[]>(initialCrops);
-  const [cultivars, setCultivars] = useState<CultivarConfig[]>(initialCultivars);
-  const [rules, setRules] = useState<WorkflowRule[]>(initialRules);
-  const [usersList, setUsersList] = useState<RDUserPermission[]>(initialUsers);
-  const [integrations, setIntegrations] = useState<RDIntegration[]>(initialIntegrations);
-  const [auditLogs] = useState<RDAuditLog[]>(initialAuditLogs);
+  const [templates, setTemplates] = usePersistentCollection<TrialTemplate>('rd.templates', initialTemplates);
+  const navigate = useNavigate();
+  const [rdDialog, setRdDialog] = useState<null | 'template' | 'trait' | 'crop' | 'cultivar' | 'user'>(null);
+  const [traits, setTraits] = usePersistentCollection<TraitDefinition>('rd.traits', initialTraits);
+  const [crops, setCrops] = usePersistentCollection<CropConfig>('rd.crops', initialCrops);
+  const [cultivars, setCultivars] = usePersistentCollection<CultivarConfig>('rd.cultivars', initialCultivars);
+  const [rules, setRules] = usePersistentCollection<WorkflowRule>('rd.rules', initialRules);
+  const [usersList, setUsersList] = usePersistentCollection<RDUserPermission>('rd.users', initialUsers);
+  const [integrations, setIntegrations] = usePersistentCollection<RDIntegration>('rd.integrations', initialIntegrations);
+  const [auditLogs] = usePersistentCollection<RDAuditLog>('rd.audit_logs', initialAuditLogs);
 
   // Search & Filter State
   const [templateSearch, setTemplateSearch] = useState('');
@@ -280,7 +289,7 @@ export default function RDSettings() {
         <Button 
           variant="primary" 
           leftIcon={Plus}
-          onClick={() => addToast({ message: 'Trial template wizard initialized' })}
+          onClick={() => setRdDialog('template')}
         >
           Add template
         </Button>
@@ -312,7 +321,15 @@ export default function RDSettings() {
               <span className={styles.lastUsed}>Last used: {temp.lastUsed}</span>
               <button 
                 className={styles.useLink}
-                onClick={() => addToast({ type: 'success', message: `Template "${temp.name}" loaded into workspace` })}
+                onClick={() => {
+                  const id = `TRL-${new Date().getFullYear()}-${Date.now().toString(36).slice(-4).toUpperCase()}`;
+                  const start = new Date();
+                  const trial: Trial = { id, name: `${temp.name} — ${start.toLocaleDateString('en-IN')}`, type: temp.type as Trial['type'], design: temp.design as Trial['design'], crop: temp.crop, season: 'Kharif 2026', status: 'Planning', startDate: start.toISOString().slice(0, 10), expectedHarvest: new Date(start.getTime() + 120 * 86_400_000).toISOString().slice(0, 10), leadResearcher: 'You', objectives: [], entries: [], locations: [], replications: temp.replications, totalPlots: 0, notes: `Created from template ${temp.name}` };
+                  setCollection<Trial>('rd.trials', trialStarter, (prev) => [trial, ...prev]);
+                  setTemplates((prev) => prev.map((t) => (t.id === temp.id ? { ...t, lastUsed: 'just now' } : t)));
+                  addToast({ type: 'success', message: `Trial ${id} created from "${temp.name}"` });
+                  navigate(`/rd/trials/${id}`);
+                }}
               >
                 Use Template →
               </button>
@@ -391,14 +408,24 @@ export default function RDSettings() {
           <div className={styles.actionButtons}>
             <button 
               className={styles.linkButton}
-              onClick={() => addToast({ type: 'info', message: 'Pulling UPOV reference standards...' })}
+              onClick={() => {
+                const std: TraitDefinition[] = [
+                  { id: 'TR-STD-01', name: 'Days to 50% flowering', category: 'Agronomic', unit: 'days', protocol: 'Count from sowing to 50% plants flowering', standardRef: 'ICAR', applicableCrops: ['Maize', 'Paddy', 'Cotton'], active: true },
+                  { id: 'TR-STD-02', name: 'Plant height', category: 'Morphological', unit: 'cm', protocol: 'Ground to tip at maturity, 5 plants per plot', standardRef: 'ICAR', applicableCrops: ['Maize', 'Paddy', 'Cotton'], active: true },
+                  { id: 'TR-STD-03', name: '100-seed weight', category: 'Quality', unit: 'g', protocol: '4 replicates of 100 seeds at 12% moisture', standardRef: 'IBPGR', applicableCrops: ['Maize', 'Cotton', 'Soybean'], active: true },
+                  { id: 'TR-STD-04', name: 'Grain yield', category: 'Agronomic', unit: 'kg/ha', protocol: 'Net plot harvest adjusted to 14% moisture', standardRef: 'ICAR', applicableCrops: ['Maize', 'Paddy'], active: true },
+                ];
+                const missing = std.filter((s) => !traits.some((t) => t.name.toLowerCase() === s.name.toLowerCase()));
+                setTraits((prev) => [...prev, ...missing]);
+                addToast({ type: 'success', message: missing.length ? `${missing.length} standard trait(s) added` : 'All standard traits are already configured' });
+              }}
             >
               <ExternalLink size={14} /> Import from standards
             </button>
             <Button 
               variant="primary" 
               leftIcon={Plus}
-              onClick={() => addToast({ message: 'New phenotype trait creator initialized' })}
+              onClick={() => setRdDialog('trait')}
             >
               Add trait
             </Button>
@@ -493,7 +520,7 @@ export default function RDSettings() {
                 variant="secondary" 
                 size="sm" 
                 leftIcon={Plus}
-                onClick={() => addToast({ message: 'Add crop modal initialized' })}
+                onClick={() => setRdDialog('crop')}
               >
                 Add crop
               </Button>
@@ -526,7 +553,7 @@ export default function RDSettings() {
                   variant="secondary" 
                   size="sm" 
                   leftIcon={Plus}
-                  onClick={() => addToast({ message: 'Add cultivar modal initialized' })}
+                  onClick={() => setRdDialog('cultivar')}
                 >
                   Add check
                 </Button>
@@ -691,7 +718,7 @@ export default function RDSettings() {
           <Button 
             variant="primary" 
             leftIcon={Plus}
-            onClick={() => addToast({ message: 'User access delegation wizard initialized' })}
+            onClick={() => setRdDialog('user')}
           >
             Add user
           </Button>
@@ -815,7 +842,7 @@ export default function RDSettings() {
             <div className={styles.preferencesSaveRow}>
               <Button 
                 variant="secondary"
-                onClick={() => addToast({ type: 'info', message: 'Sending test email ping to admin@seedsphere.in...' })}
+                onClick={() => addToast({ type: 'info', message: 'Email delivery is not configured on this deployment yet; notifications appear in-app until SMTP is set up.' })}
               >
                 Test connection
               </Button>
@@ -960,7 +987,7 @@ export default function RDSettings() {
           <Button 
             variant="secondary" 
             leftIcon={Download}
-            onClick={() => addToast({ type: 'success', message: `Exported ${filteredAuditLogs.length} audit log entries as CSV successfully` })}
+            onClick={() => { downloadCsv(`rd_audit_logs_${new Date().toISOString().slice(0, 10)}.csv`, filteredAuditLogs.map((l) => { const flat: Record<string, unknown> = {}; Object.entries(l).forEach(([k, v]) => { flat[k] = typeof v === 'object' && v !== null ? JSON.stringify(v) : v; }); return flat; })); addToast({ type: 'success', message: `Exported ${filteredAuditLogs.length} audit log entries as CSV` }); }}
           >
             Export audit logs
           </Button>
@@ -1003,7 +1030,7 @@ export default function RDSettings() {
         <div className={styles.headerActions}>
           <Button 
             variant="secondary" 
-            onClick={() => addToast({ message: 'Configuration backup downloaded' })}
+            onClick={() => { downloadText(`rd_settings_backup_${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ exportedAt: new Date().toISOString(), templates, traits, crops, cultivars, rules, users: usersList, integrations }, null, 2), 'application/json'); addToast({ message: 'Configuration backup downloaded' }); }}
           >
             Export config
           </Button>
@@ -1062,6 +1089,55 @@ export default function RDSettings() {
           entry={selectedAuditLog}
         />
       )}
+      <RecordEditModal
+        isOpen={rdDialog !== null}
+        title={{ template: 'New trial template', trait: 'New phenotype trait', crop: 'Add crop', cultivar: 'Add check / cultivar', user: 'Add R&D user' }[rdDialog ?? 'template']}
+        fields={(({
+          template: [
+            { key: 'name', label: 'Template name', required: true },
+            { key: 'type', label: 'Trial type', type: 'select', options: ['Single-location', 'Multi-location', 'On-farm', 'Demonstration'], required: true },
+            { key: 'design', label: 'Design', type: 'select', options: ['RCBD', 'CRD', 'Alpha-lattice', 'Augmented', 'Split-plot'], required: true },
+            { key: 'crop', label: 'Crop', type: 'select', options: crops.map((c) => c.name), required: true },
+            { key: 'replications', label: 'Replications', type: 'number' },
+            { key: 'observationsScheduled', label: 'Scheduled observations', type: 'number' },
+          ],
+          trait: [
+            { key: 'name', label: 'Trait name', required: true },
+            { key: 'category', label: 'Category', type: 'select', options: ['Agronomic', 'Quality', 'Stress tolerance', 'Disease resistance', 'Morphological'], required: true },
+            { key: 'unit', label: 'Unit' },
+            { key: 'protocol', label: 'Measurement protocol', type: 'textarea' },
+            { key: 'applicableCrops', label: 'Crops (comma separated)' },
+          ],
+          crop: [
+            { key: 'name', label: 'Crop', required: true },
+            { key: 'scientificName', label: 'Scientific name' },
+            { key: 'family', label: 'Family' },
+          ],
+          cultivar: [
+            { key: 'name', label: 'Cultivar / check name', required: true },
+            { key: 'crop', label: 'Crop', type: 'select', options: crops.map((c) => c.name), required: true },
+            { key: 'type', label: 'Type', type: 'select', options: ['Cultivar', 'Check', 'Reference'], required: true },
+            { key: 'source', label: 'Source' },
+          ],
+          user: [
+            { key: 'name', label: 'Name', required: true },
+            { key: 'email', label: 'Email', type: 'email', required: true },
+            { key: 'role', label: 'Role', type: 'select', options: ['Researcher', 'Lead Breeder', 'Field Staff', 'Compliance Officer', 'Module Admin', 'Read-only'], required: true },
+          ],
+        } as Record<string, EditField[]>)[rdDialog ?? 'template'])}
+        values={rdDialog === 'cultivar' ? { type: 'Check' } : rdDialog === 'template' ? { replications: 3, observationsScheduled: 6 } : {}}
+        onClose={() => setRdDialog(null)}
+        onSave={(v) => {
+          const id = `${(rdDialog ?? 'x').slice(0, 3).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+          if (rdDialog === 'template') setTemplates((prev) => [...prev, { id, name: String(v.name), type: String(v.type), design: String(v.design), crop: String(v.crop), replications: Number(v.replications) || 3, observationsScheduled: Number(v.observationsScheduled) || 0, lastUsed: 'never' }]);
+          if (rdDialog === 'trait') setTraits((prev) => [...prev, { id, name: String(v.name), category: v.category as TraitDefinition['category'], unit: String(v.unit), protocol: String(v.protocol), standardRef: 'Custom', applicableCrops: String(v.applicableCrops).split(',').map((c) => c.trim()).filter(Boolean), active: true }]);
+          if (rdDialog === 'crop') setCrops((prev) => [...prev, { id, name: String(v.name), scientificName: String(v.scientificName), family: String(v.family), cultivarsCount: 0, active: true }]);
+          if (rdDialog === 'cultivar') setCultivars((prev) => [...prev, { id, name: String(v.name), crop: String(v.crop), type: v.type as CultivarConfig['type'], source: String(v.source), active: true }]);
+          if (rdDialog === 'user') setUsersList((prev) => [...prev, { id, name: String(v.name), email: String(v.email), role: v.role as RDUserPermission['role'], assignedPrograms: [], lastActive: 'never', active: true }]);
+          addToast({ type: 'success', message: `${String(v.name)} added` });
+          setRdDialog(null);
+        }}
+      />
     </ModuleLayout>
   );
 }

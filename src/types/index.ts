@@ -23,6 +23,11 @@ export type UserRole =
   | 'lab_manager'
   | 'lab_technician'
   | 'lab_quality_analyst'
+  // Quality roles (NEW) — own the quality spine: SOPs, non-conformances,
+  // CAPA and complaints. Every other role can still raise a problem or
+  // acknowledge a SOP (see FRONTLINE_QUALITY in permissions.ts).
+  | 'quality_manager'
+  | 'quality_officer'
   // Administration roles (NEW) — the only roles that are not scoped to a
   // single business module: they administer every module of the platform.
   | 'super_admin'
@@ -39,6 +44,8 @@ export type ProcessingRole = Extract<UserRole,
   'plant_supervisor' | 'plant_manager' | 'processing_quality_field_inspector'>;
 export type LabRole = Extract<UserRole,
   'lab_manager' | 'lab_technician' | 'lab_quality_analyst'>;
+export type QualityRole = Extract<UserRole,
+  'quality_manager' | 'quality_officer'>;
 export type AdminRole = Extract<UserRole,
   'super_admin' | 'system_admin' | 'compliance_auditor'>;
 
@@ -68,6 +75,8 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   lab_manager: 'Lab Manager',
   lab_technician: 'Lab Technician',
   lab_quality_analyst: 'Quality Analyst (Laboratory)',
+  quality_manager: 'Quality Manager',
+  quality_officer: 'Quality Officer',
   super_admin: 'Super Admin',
   system_admin: 'System Admin',
   compliance_auditor: 'Compliance Auditor',
@@ -91,6 +100,8 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   lab_manager: 'Owns lab throughput: accepts samples, approves results, issues certificates, resolves quality flags',
   lab_technician: 'Runs the bench: records germination, purity and vigor results and uploads result files',
   lab_quality_analyst: 'Reviews results against certification thresholds and audits lab performance',
+  quality_manager: 'Approves SOPs, closes non-conformances and complaints, verifies CAPA effectiveness and releases lot holds',
+  quality_officer: 'Authors SOPs, investigates non-conformances and complaints, owns corrective actions and places lot holds',
   super_admin: 'Unrestricted platform authority: users, roles, organizations, governance, privacy and every module setting',
   system_admin: 'Runs the platform day to day: user accounts, organizations, system health, notifications and module availability',
   compliance_auditor: 'Read-only oversight: audit trail, data governance violations, privacy compliance and retention policies',
@@ -110,6 +121,9 @@ export const PROCESSING_ROLES: UserRole[] = [
 ];
 export const LAB_ROLES: UserRole[] = [
   'lab_manager', 'lab_technician', 'lab_quality_analyst'
+];
+export const QUALITY_ROLES: UserRole[] = [
+  'quality_manager', 'quality_officer'
 ];
 export const ADMIN_ROLES: UserRole[] = [
   'super_admin', 'system_admin', 'compliance_auditor'

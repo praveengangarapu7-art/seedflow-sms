@@ -3,11 +3,13 @@ import type { SpendCategory } from '@/types/procurement';
 import { formatIndianCurrency } from '@/utils/formatters';
 import styles from './SpendByCategoryChart.module.css';
 
+import { useNavigate } from 'react-router-dom';
 interface SpendByCategoryChartProps {
   data: SpendCategory[];
 }
 
 export function SpendByCategoryChart({ data }: SpendByCategoryChartProps) {
+  const navigate = useNavigate();
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
@@ -15,7 +17,7 @@ export function SpendByCategoryChart({ data }: SpendByCategoryChartProps) {
           <h3 className={styles.title}>Spend by category</h3>
           <span className={styles.subtitle}>Last 6 months</span>
         </div>
-        <button className={styles.moreBtn} aria-label="More options">
+        <button className={styles.moreBtn} aria-label="Open spend reports" title="Open spend reports" onClick={() => navigate('/procurement/reports')}>
           <MoreHorizontal size={18} />
         </button>
       </div>

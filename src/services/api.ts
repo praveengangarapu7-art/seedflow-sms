@@ -305,6 +305,30 @@ async function request<T>(
           { endpoint },
         );
 
+    // Local-data fallback for the mock-era production pages.
+    // These pages (crop planning, farms, harvests, inspections, seed-lot
+    // register) ship with their own local datasets and already fall back to
+    // them on any error. What they should NOT do is flash an error toast or
+    // banner just because the connected server has no such endpoint (404),
+    // the call is unauthenticated (401), or the server is unreachable. For
+    // reads we therefore throw with an EMPTY message: every page's fallback
+    // still runs, `setError('')` renders nothing, and the toast system ignores
+    // empty messages. Writes keep a clear message so nobody thinks an
+    // unsaved record was stored.
+    const isNetwork = !(error instanceof ApiClientError);
+    const unsupported = apiError.status === 401 || apiError.status === 404;
+    const method = (options.method ?? 'GET').toUpperCase();
+    if (isNetwork || unsupported) {
+      if (method === 'GET') {
+        throw new ApiClientError('', apiError.status, { endpoint, localFallback: true });
+      }
+      throw new ApiClientError(
+        'This screen is running on local demo data, so the change was not saved to the server.',
+        apiError.status,
+        { endpoint, localFallback: true },
+      );
+    }
+
     console.error(`[SeedSphere API] ${options.method ?? 'GET'} ${endpoint} failed`, apiError);
     throw apiError;
   } finally {

@@ -30,7 +30,10 @@
     "db:backup": "tsx scripts/backupDatabase.ts",
     "db:restore": "tsx scripts/restoreDatabase.ts",
     "backfill:lot-hash-chain": "tsx scripts/backfillLotHashChain.ts",
-    "verify:certificate": "tsx scripts/verifyLotCertificate.ts"
+    "verify:certificate": "tsx scripts/verifyLotCertificate.ts",
+    "seed:all": "tsx src/db/seed.ts && tsx src/db/seedAuth.ts && tsx src/db/seedGenealogy.ts && tsx src/db/seedAnalytics.ts && tsx src/db/seedCompliance.ts && tsx src/db/seedStorage.ts && tsx src/db/seedFeedbackLoop.ts && tsx src/db/seedFarmerProgram.ts && tsx src/db/seedLabTesting.ts && tsx src/db/seedAiDemo.ts && tsx src/db/seedQuality.ts",
+    "seed:ai": "tsx src/db/seedAiDemo.ts",
+    "seed:quality": "tsx src/db/seedQuality.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

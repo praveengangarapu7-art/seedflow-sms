@@ -1,0 +1,20 @@
+.section { padding: 44px 24px; background-color: var(--landing-surface); position: relative; z-index: 5; }
+.container { max-width: 1280px; margin: 0 auto; }
+.header { text-align: center; max-width: 720px; margin: 0 auto 24px; }
+.label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--color-warning); letter-spacing: 2px; display: block; margin-bottom: 12px; }
+.title { font-size: clamp(28px, 4vw, 40px); font-weight: 800; color: var(--color-primary); margin: 0 0 12px; line-height: 1.15; }
+.subtitle { font-size: 17px; line-height: 1.6; color: var(--landing-text-on-tint); margin: 0; }
+.tabs { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+.tab { font: inherit; font-weight: 700; font-size: 14px; padding: 9px 20px; border-radius: 50px; cursor: pointer; background: transparent; color: var(--color-primary); border: 1.5px solid var(--landing-border); transition: all 160ms ease; }
+.tab:hover { background: var(--color-white); }
+.active, .active:hover { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 991px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } .section { padding: 36px 16px; } }
+.card { background: var(--color-white); border: 1px solid var(--landing-border); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 8px; transition: transform 200ms ease, box-shadow 200ms ease; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(11, 59, 58, 0.1); }
+.tag { align-self: flex-start; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #5C7A2E; background: #E9EFDD; padding: 4px 10px; border-radius: 50px; }
+.cardTitle { margin: 4px 0 0; font-size: 18px; font-weight: 700; color: var(--color-primary); line-height: 1.3; }
+.cardText { margin: 0; font-size: 15px; line-height: 1.55; color: var(--landing-text-on-tint); }
+.cardLink { margin-top: auto; padding-top: 6px; font-weight: 700; font-size: 14px; color: var(--color-primary); text-decoration: none; }
+.cardLink:hover { text-decoration: underline; }

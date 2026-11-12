@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { CustomFieldsPanel } from '@/components/customFields/CustomFieldsPanel';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Factory, Sparkles, AlertCircle, FileText, ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { ModuleLayout } from '@/components/layout/ModuleLayout/ModuleLayout';
@@ -14,6 +15,9 @@ import { ProcessingBatch } from '@/types/processing';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './BatchDetail.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
+import { printDocument } from '@/utils/fileExport';
+import { RecordEditModal } from '@/components/common/RecordEditModal/RecordEditModal';
 const LIFECYCLE_STEPS = [
   { key: 'Planned', label: 'Planned' },
   { key: 'Cleaning', label: 'Cleaning' },
@@ -28,7 +32,7 @@ export default function BatchDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { items, update } = useRealtimeMockStore<ProcessingBatch>(defaultBatches);
+  const { items, update } = useRealtimeMockStore<ProcessingBatch>(defaultBatches, 'processing.batches');
 
   const canUpdateStage = usePermission('update_batch_stage');
   const canSendToLab = usePermission('send_sample_to_lab');
@@ -44,6 +48,14 @@ export default function BatchDetailPage() {
   }, [items, id]);
 
   const [activeTab, setActiveTab] = useState('overview');
+  const [qcDialog, setQcDialog] = useState<'inProcess' | 'final' | null>(null);
+  const userName = (() => { try { const u = JSON.parse(localStorage.getItem('seedflow_auth') ?? 'null') as { name?: string; email?: string } | null; return u?.name || u?.email || 'QC inspector'; } catch { return 'QC inspector'; } })();
+  const sendSample = () => {
+    if (!batch) return;
+    const sampleId = `SMP-${batch.id.replace(/^BT-/, '')}-${String(batch.labResults.length + 1).padStart(2, '0')}`;
+    update(batch.id, { labResults: [...batch.labResults, { sampleId, sentDate: new Date().toISOString().slice(0, 10), status: 'Pending' }] });
+    addToast(`Sample ${sampleId} sent to the laboratory`, 'success');
+  };
 
   const stepIndex = useMemo(() => {
     if (!batch) return 0;
@@ -94,6 +106,7 @@ export default function BatchDetailPage() {
 
   return (
     <ModuleLayout moduleName="Processing" moduleIcon={Factory} navItems={processingNav}>
+      <CustomFieldsPanel entityType="processing_batch" entityId={batch.id} lotId={batch.sourceLots?.[0]} />
       <div className={styles.pageHeader}>
         <div>
           <Button variant="ghost" leftIcon={ArrowLeft} onClick={() => navigate('/processing/batches')} style={{ marginBottom: '8px', padding: '0' }}>
@@ -119,16 +132,24 @@ export default function BatchDetailPage() {
             </Button>
           )}
           {batch.currentStage === 'Completed' && canApproveDispatch && (
-            <Button variant="primary" onClick={() => addToast('Finished lot approved for dispatch.', 'success')}>
+            <Button variant="primary" onClick={() => {
+              update(batch.id, { status: 'Completed', stageHistory: [...batch.stageHistory, { stage: 'Completed', timestamp: new Date().toISOString(), durationHours: 0, operator: userName, parameters: { dispatchApproved: 'yes' } }] });
+              addToast('Finished lot approved for dispatch.', 'success');
+            }}>
               Approve for Dispatch
             </Button>
           )}
           {canSendToLab && (
-            <Button variant="secondary" onClick={() => addToast('Lab sample request submitted.', 'success')}>
+            <Button variant="secondary" onClick={sendSample}>
               Send Sample to Lab
             </Button>
           )}
-          <Button variant="secondary" onClick={() => addToast('Batch report PDF triggered.', 'info')}>
+          <Button variant="secondary" onClick={() => printDocument(`Batch card ${batch.id}`, [
+            { fields: [['Crop / variety', `${batch.crop} — ${batch.variety}`], ['Plant', batch.plant], ['Operator', batch.operator], ['Source lots', batch.sourceLots.join(', ')], ['Stage', batch.currentStage], ['Status', batch.status], ['Target grade', batch.targetGrade], ['Input (kg)', batch.inputQuantity], ['Output (kg)', batch.outputQuantity ?? '—'], ['Recipe', batch.recipeId]] },
+            { heading: 'Losses (kg)', fields: Object.entries(batch.losses) as [string, unknown][] },
+            { heading: 'Stage history', table: { columns: ['Stage', 'Time', 'Hours', 'Operator'], rows: batch.stageHistory.map((s) => [s.stage, new Date(s.timestamp).toLocaleString('en-IN'), s.durationHours, s.operator]) } },
+            { heading: 'Lab results', table: { columns: ['Sample', 'Sent', 'Status', 'Germination %', 'Moisture %'], rows: batch.labResults.map((l) => [l.sampleId, l.sentDate, l.status, l.germination ?? '—', l.moisture ?? '—']) } },
+          ])}>
             Print Batch Card
           </Button>
         </div>
@@ -136,6 +157,7 @@ export default function BatchDetailPage() {
 
       <div className={styles.divider} />
 
+      <RecordAiPanel recordType="processing.batch" record={batch} label={batch.id} />
       {/* Stepper */}
       <div className={styles.stepperWrapper}>
         <Stepper steps={LIFECYCLE_STEPS} currentStep={stepIndex} />
@@ -333,7 +355,7 @@ export default function BatchDetailPage() {
                 <div>
                   <p style={{ fontSize: '13px', color: '#5A6E76' }}>No in-process check logged yet.</p>
                   {canInProcessQC && (
-                    <Button variant="secondary" size="sm" onClick={() => addToast('In-process QC check recorded.', 'success')} style={{ marginTop: '8px' }}>
+                    <Button variant="secondary" size="sm" onClick={() => setQcDialog('inProcess')} style={{ marginTop: '8px' }}>
                       + Record in-process check
                     </Button>
                   )}
@@ -344,10 +366,18 @@ export default function BatchDetailPage() {
             <div className={styles.infoCard}>
               <h3 className={styles.cardTitle}>Final QC</h3>
               <div>
-                <p style={{ fontSize: '13px', color: '#5A6E76' }}>No final inspection check logged yet.</p>
+                {batch.qualityCheckpoints.final ? (
+                  <>
+                    <div className={styles.specRow}><span className={styles.specLabel}>Inspector:</span><span className={styles.specVal}>{batch.qualityCheckpoints.final.inspectorName}</span></div>
+                    <div className={styles.specRow}><span className={styles.specLabel}>Moisture % / Purity %:</span><span className={styles.specVal}>{batch.qualityCheckpoints.final.moisture}% / {batch.qualityCheckpoints.final.purity}%</span></div>
+                    <div className={styles.specRow}><span className={styles.specLabel}>Decision:</span><span className={styles.specVal} style={{ fontWeight: 'bold', color: batch.qualityCheckpoints.final.decision === 'Fail' ? '#B3261E' : '#137333' }}>{batch.qualityCheckpoints.final.decision}</span></div>
+                  </>
+                ) : (
+                  <p style={{ fontSize: '13px', color: '#5A6E76' }}>No final inspection check logged yet.</p>
+                )}
                 {canFinalQC && (
-                  <Button variant="secondary" size="sm" onClick={() => addToast('Final QC inspection recorded.', 'success')} style={{ marginTop: '8px' }}>
-                    + Record final inspection
+                  <Button variant="secondary" size="sm" onClick={() => setQcDialog('final')} style={{ marginTop: '8px' }}>
+                    {batch.qualityCheckpoints.final ? 'Update final inspection' : '+ Record final inspection'}
                   </Button>
                 )}
               </div>
@@ -381,7 +411,7 @@ export default function BatchDetailPage() {
                 <FileText size={40} style={{ color: '#94A3AB', marginBottom: '8px' }} />
                 <p style={{ fontSize: '13px', color: '#5A6E76', margin: '0' }}>No lab results linked to this batch.</p>
                 {canSendToLab && (
-                  <Button variant="secondary" size="sm" onClick={() => addToast('Sample submitted to laboratory module.', 'success')} style={{ marginTop: '12px' }}>
+                  <Button variant="secondary" size="sm" onClick={sendSample} style={{ marginTop: '12px' }}>
                     Submit First Sample
                   </Button>
                 )}
@@ -426,6 +456,26 @@ export default function BatchDetailPage() {
         )}
 
       </div>
+      <RecordEditModal
+        isOpen={qcDialog !== null}
+        title={qcDialog === 'final' ? `Final QC inspection — ${batch.id}` : `In-process QC check — ${batch.id}`}
+        fields={[
+          { key: 'moisture', label: 'Moisture %', type: 'number', required: true },
+          { key: 'purity', label: 'Physical purity %', type: 'number', required: true },
+          { key: 'vigor', label: 'Vigour (e.g. High / Medium)' },
+          { key: 'decision', label: 'Decision', type: 'select', options: ['Pass', 'Partial', 'Fail'], required: true },
+          { key: 'visualNotes', label: 'Visual notes', type: 'textarea' },
+        ]}
+        values={{ decision: 'Pass' }}
+        onClose={() => setQcDialog(null)}
+        onSave={(v) => {
+          if (!qcDialog) return;
+          const check = { inspectorName: userName, timestamp: new Date().toISOString(), moisture: Number(v.moisture), purity: Number(v.purity), vigor: String(v.vigor) || undefined, visualNotes: String(v.visualNotes) || undefined, decision: v.decision as 'Pass' | 'Fail' | 'Partial' };
+          update(batch.id, { qualityCheckpoints: { ...batch.qualityCheckpoints, [qcDialog]: check }, ...(qcDialog === 'final' && check.decision === 'Fail' ? { status: 'Quality Hold' as const } : {}) });
+          addToast(`${qcDialog === 'final' ? 'Final' : 'In-process'} QC recorded: ${check.decision}`, check.decision === 'Fail' ? 'warning' : 'success');
+          setQcDialog(null);
+        }}
+      />
     </ModuleLayout>
   );
 }

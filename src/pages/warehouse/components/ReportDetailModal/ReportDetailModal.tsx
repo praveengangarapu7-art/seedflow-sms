@@ -22,6 +22,20 @@ import styles from './ReportDetailModal.module.css';
 import { inventoryItems } from '../../mockData/inventoryData';
 import { cycleCounts } from '../../mockData/cycleCountData';
 
+import { downloadCsv, printDocument } from '@/utils/fileExport';
+import { whRead, whUser } from '../../warehouseStore';
+import { setCollection } from '@/hooks/persistentCollections';
+import { scheduledReports } from '../../mockData/reportsData';
+import type { ScheduledReport } from '@/types/warehouse';
+function exportReportRows(title: string): { rows: Record<string, unknown>[]; name: string } {
+  const t = title.toLowerCase();
+  if (/movement|transfer/.test(t)) return { name: 'movements', rows: whRead('movements').map((m) => ({ id: m.id, category: m.category, type: m.subType, sku: m.sku, item: m.itemName, qty: m.quantity, uom: m.uom, from: m.fromLocation ?? '', to: m.toLocation ?? '', status: m.status, by: m.initiatedBy, at: m.initiatedAt })) };
+  if (/dispatch|outbound|order/.test(t)) return { name: 'dispatch', rows: whRead('dispatch').map((d) => ({ id: d.id, consignee: d.consignee.name, city: d.consignee.city, status: d.status, items: d.totalItems, qty: d.totalQuantity, value: d.totalValue, expected: d.expectedDispatchDate })) };
+  if (/adjust|variance|shrink/.test(t)) return { name: 'adjustments', rows: whRead('adjustments').map((a) => ({ id: a.id, sku: a.itemSku, item: a.itemName, variance: a.varianceQty, value: a.varianceValue, reason: a.reason, status: a.status, at: a.initiatedAt })) };
+  if (/return/.test(t)) return { name: 'returns', rows: whRead('returns').map((r) => ({ id: r.id, direction: r.direction, party: r.party, status: r.status, reason: r.reason, qty: r.totalQuantity, value: r.totalValue })) };
+  return { name: 'inventory', rows: whRead('items').map((i) => ({ sku: i.sku, item: i.name, category: i.category, qty: i.quantity, uom: i.uom, status: i.status, warehouse: i.location.warehouse, zone: i.location.zone, expiry: i.expiryDate, value: i.totalValue })) };
+}
+
 interface ReportDetailModalProps {
   report: ReportDefinition | null;
   isOpen: boolean;
@@ -49,7 +63,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
           This report's preview shows aggregate metrics. The full detail view with drill-down tables, charts, and insights is currently in development.
         </p>
         <div className={styles.placeholderActions}>
-          <Button variant="secondary" leftIcon={Download} onClick={() => { console.log('Export raw data', report.id); addToast({ type: 'success', message: `Raw data export started for ${report.title}` }); }}>
+          <Button variant="secondary" leftIcon={Download} onClick={() => { const { rows, name } = exportReportRows(report.title); downloadCsv(`${name}_${new Date().toISOString().slice(0, 10)}.csv`, rows); addToast({ type: 'success', message: `${rows.length} rows exported for ${report.title}` }); }}>
             Export raw data
           </Button>
         </div>
@@ -388,10 +402,10 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
             <Button variant="ghost" size="sm" leftIcon={Bookmark} onClick={() => onToggleSave(report.id)}>
               {report.saved ? 'Saved' : 'Save'}
             </Button>
-            <Button variant="ghost" size="sm" leftIcon={Share2} onClick={() => { console.log('share report', report.id); addToast({ message: `Share link copied for ${report.title}` }); }}>Share</Button>
-            <Button variant="ghost" size="sm" leftIcon={Clock} onClick={() => { console.log('schedule report', report.id); addToast({ message: `Open scheduler for ${report.title}` }); }}>Schedule</Button>
+            <Button variant="ghost" size="sm" leftIcon={Share2} onClick={() => { const url = `${window.location.origin}/warehouse/reports?report=${encodeURIComponent(report.id)}`; void navigator.clipboard?.writeText(url).catch(() => undefined); addToast({ message: `Link copied for ${report.title}` }); }}>Share</Button>
+            <Button variant="ghost" size="sm" leftIcon={Clock} onClick={() => { setCollection<ScheduledReport>('warehouse.scheduled', scheduledReports, (prev) => [{ id: `SCH-${Date.now().toString(36).toUpperCase()}`, reportId: report.id, reportTitle: report.title, frequency: 'Weekly', dayOfWeek: 1, timeOfDay: '09:00', recipients: [whUser()], format: 'PDF', active: true, nextRun: new Date(Date.now() + 7 * 86_400_000).toISOString(), createdBy: whUser(), createdAt: new Date().toISOString() } as ScheduledReport, ...prev]); addToast({ type: 'success', message: `${report.title} scheduled weekly (Mon 09:00) — edit it on the Scheduled tab` }); }}>Schedule</Button>
             <div className={styles.exportGroup}>
-              <Button variant="secondary" size="sm" leftIcon={Download} onClick={() => { console.log('export report', report.id); addToast({ type: 'success', message: `Export started — ${report.title}.pdf` }); }}>Export</Button>
+              <Button variant="secondary" size="sm" leftIcon={Download} onClick={() => { const { rows } = exportReportRows(report.title); const cols = Object.keys(rows[0] ?? {}); printDocument(report.title, [{ table: { columns: cols, rows: rows.map((r) => cols.map((c) => r[c])) } }]); }}>Export</Button>
             </div>
           </div>
         </div>

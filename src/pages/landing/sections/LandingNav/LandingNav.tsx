@@ -54,6 +54,7 @@ export default function LandingNav() {
           <a href="#modules" onClick={(e) => scrollToSection(e, 'modules')} className={styles.navLink}>Modules</a>
           <a href="#how-it-works" onClick={(e) => scrollToSection(e, 'how-it-works')} className={styles.navLink}>How it works</a>
           <a href="#industries" onClick={(e) => scrollToSection(e, 'industries')} className={styles.navLink}>Industries</a>
+          <a href="#featured" onClick={(e) => scrollToSection(e, 'featured')} className={styles.navLink}>Featured</a>
         </nav>
 
         {/* Right actions — product-wide search sits before the sign-in CTA.

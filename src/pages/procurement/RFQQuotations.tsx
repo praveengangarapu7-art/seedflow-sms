@@ -12,7 +12,7 @@ import { StatusBadge } from '@/components/common/StatusBadge/StatusBadge';
 import { useToast } from '@/components/common/Toast';
 import { RFQCreateModal } from './components/RFQCreateModal/RFQCreateModal';
 import { KpiStrip } from './components/KpiStrip/KpiStrip';
-import { mockRFQs } from './mockData/rfqsData';
+import { createRFQ, useRFQs } from './procurementStore';
 import { procurementNav } from '@/config/procurementNav';
 import type { RFQ, RFQStatus } from '@/types/procurement';
 import type { DataTableColumn } from '@/components/common/DataTable/DataTable';
@@ -123,13 +123,17 @@ export default function RFQQuotations() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  const [mockRFQs] = useRFQs();
+
   const handleCreateRFQ = (data: any) => {
+    const rfq = createRFQ(data);
+    navigate(`/procurement/rfq/${rfq.id}`);
     addToast(`RFQ "${data.title}" has been created and sent to ${data.invitedSuppliers.length} suppliers.`, 'success');
   };
 
   const periodFiltered = useMemo(
     () => mockRFQs.filter((r) => isDateInPeriod(r.createdDate, period)),
-    [period]
+    [period, mockRFQs]
   );
 
   const tabFiltered = useMemo(() => {

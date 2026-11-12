@@ -17,7 +17,7 @@ export function MapPreviewModal({ isOpen, onClose, warehouse }: MapPreviewModalP
 
   const handleOpenExternal = () => {
     const query = encodeURIComponent(`${warehouse.address.line1}, ${warehouse.address.city}`);
-    console.log('open in google maps', query);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank', 'noopener');
     addToast({ type: 'info', message: 'Opening in Google Maps...' });
   };
 

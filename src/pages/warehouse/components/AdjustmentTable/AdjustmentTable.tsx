@@ -34,6 +34,7 @@ function impactInfo(value: number): { tier: 'major' | 'moderate' | 'minor'; cls:
 
 import { usePermission } from '@/hooks/usePermission';
 
+import { whRemove } from '../../warehouseStore';
 export function AdjustmentTable({
   rows,
   selectedIds,
@@ -146,7 +147,7 @@ export function AdjustmentTable({
                         items={[
                           { label: 'View details', icon: Eye, onClick: () => onRowClick(r) },
                           ...(r.status === 'Draft' ? [
-                            { label: 'Cancel', icon: Ban, variant: 'danger' as const, onClick: () => console.log('cancel adj', r.id) }
+                            { label: 'Cancel', icon: Ban, variant: 'danger' as const, onClick: () => whRemove('adjustments', r.id) }
                           ] : []),
                         ]}
                       />

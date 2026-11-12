@@ -30,6 +30,8 @@ import { ObservationDetailModal } from './components/ObservationDetailModal/Obse
 
 import styles from './TrialDetail.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
+import { downloadCsv, printDocument } from '@/utils/fileExport';
 export default function TrialDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -53,8 +55,8 @@ export default function TrialDetail() {
   ], [canViewAnalysis]);
 
   // Stores
-  const { items: trialsList, update: updateTrial } = useRealtimeMockStore(initialTrials);
-  const { items: allObservations, add: addObservation, update: updateObservation } = useRealtimeMockStore(initialObservations);
+  const { items: trialsList, update: updateTrial } = useRealtimeMockStore(initialTrials, 'rd.trials');
+  const { items: allObservations, add: addObservation, update: updateObservation } = useRealtimeMockStore(initialObservations, 'rd.observations');
 
   // Find target trial
   const trial = useMemo(() => {
@@ -114,6 +116,30 @@ export default function TrialDetail() {
   const trialObservations = useMemo(() => {
     return allObservations.filter(obs => obs.trialId === trial.id);
   }, [allObservations, trial.id]);
+
+  // Long-format rows (one per measurement) used by every export on this page.
+  const measurementRows = () => trialObservations.flatMap((o) => o.measurements.map((m) => ({
+    trial: trial.id, location: trial.locations.find((l) => l.id === o.locationId)?.name ?? o.locationId, plot: o.plotNumber, entry: o.entryCode,
+    entryName: trial.entries.find((e) => e.code === o.entryCode)?.name ?? '', date: o.date, stage: o.growthStage, observer: o.observedBy, method: o.method,
+    trait: m.trait, value: m.value, unit: m.unit ?? '',
+  })));
+  // Mean of a numeric trait per entry (and per entry × location).
+  const traitMeans = (re: RegExp) => {
+    const acc = new Map<string, { entry: string; location: string; sum: number; n: number }>();
+    trialObservations.forEach((o) => o.measurements.forEach((m) => {
+      const v = Number(m.value);
+      if (!re.test(m.trait) || !Number.isFinite(v)) return;
+      const key = `${o.entryCode}|${o.locationId}`;
+      const r = acc.get(key) ?? { entry: o.entryCode, location: o.locationId, sum: 0, n: 0 };
+      r.sum += v; r.n += 1; acc.set(key, r);
+    }));
+    return [...acc.values()].map((r) => ({ entry: r.entry, location: trial.locations.find((l) => l.id === r.location)?.name ?? r.location, mean: Math.round((r.sum / r.n) * 100) / 100, n: r.n }));
+  };
+  const entryMeans = (re: RegExp) => {
+    const by = new Map<string, { sum: number; n: number }>();
+    traitMeans(re).forEach((r) => { const x = by.get(r.entry) ?? { sum: 0, n: 0 }; x.sum += r.mean; x.n += 1; by.set(r.entry, x); });
+    return [...by.entries()].map(([entry, x]) => ({ entry, name: trial.entries.find((e) => e.code === entry)?.name ?? '', type: trial.entries.find((e) => e.code === entry)?.type ?? '', mean: Math.round((x.sum / x.n) * 100) / 100, locations: x.n })).sort((a, b) => b.mean - a.mean);
+  };
 
   // Filtered observations based on search & method filters
   const filteredObservations = useMemo(() => {
@@ -300,7 +326,7 @@ export default function TrialDetail() {
             variant="primary" 
             size="sm" 
             leftIcon={Download}
-            onClick={() => addToast('Exporting trial dataset to CSV...', 'info')}
+            onClick={() => { const rows = measurementRows(); if (!rows.length) { addToast('No observations recorded for this trial yet', 'info'); return; } downloadCsv(`${trial.id}_observations.csv`, rows); addToast(`${rows.length} measurements exported`, 'success'); }}
           >
             Export Raw Data
           </Button>
@@ -309,6 +335,7 @@ export default function TrialDetail() {
 
       <div className={styles.divider} />
 
+      <RecordAiPanel recordType="rd.trial" record={trial} label={trial.id} />
       {/* 2. Tabs Strip */}
       <div className={styles.stickyTabs}>
         <Tabs tabs={visibleTabs} activeTab={activeTab} onChange={setActiveTab} />
@@ -610,7 +637,7 @@ export default function TrialDetail() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => addToast('Verifying observations...', 'success')}
+                  onClick={() => { const pending = trialObservations.filter((o) => !(o as { verifiedAt?: string }).verifiedAt); pending.forEach((o) => updateObservation(o.id, { verifiedAt: new Date().toISOString(), verifiedBy: 'You' } as never)); addToast(pending.length ? `${pending.length} observation(s) verified` : 'All observations are already verified', 'success'); }}
                 >
                   Verify observations
                 </Button>
@@ -619,7 +646,7 @@ export default function TrialDetail() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => addToast('Data issue flagged', 'warning')}
+                  onClick={() => { const note = window.prompt('Describe the data issue (plot, trait, what looks wrong)'); if (!note?.trim()) return; updateTrial(trial.id, { notes: [trial.notes, `[Data issue ${new Date().toLocaleDateString('en-IN')}] ${note.trim()}`].filter(Boolean).join('\n') }); addToast('Data issue flagged on the trial', 'warning'); }}
                 >
                   Flag data issue
                 </Button>
@@ -981,7 +1008,7 @@ export default function TrialDetail() {
                           variant="secondary"
                           size="sm"
                           leftIcon={CheckCircle2}
-                          onClick={() => addToast('Advancement recommendations pushed to breeding pipeline!', 'success')}
+                          onClick={() => { const checks = new Set(trial.entries.filter((e) => e.type !== 'Candidate').map((e) => e.code)); const means = entryMeans(/yield/i); const bestCheck = Math.max(0, ...means.filter((m) => checks.has(m.entry)).map((m) => m.mean)); const top = means.filter((m) => !checks.has(m.entry) && m.mean > bestCheck).slice(0, 3); if (!top.length) { addToast(means.length ? 'No candidate beats the best check on yield yet' : 'No yield observations to rank yet', 'info'); return; } updateTrial(trial.id, { notes: [trial.notes, `[Advanced ${new Date().toLocaleDateString('en-IN')}] ${top.map((t) => `${t.entry} (${t.mean})`).join(', ')} — above best check ${bestCheck}`].filter(Boolean).join('\n') }); addToast(`Advanced ${top.map((t) => t.entry).join(', ')} to the next stage`, 'success'); }}
                           style={{ width: '100%', marginTop: 8 }}
                         >
                           Advance Top Lines
@@ -989,7 +1016,7 @@ export default function TrialDetail() {
                         <Button
                           variant="secondary"
                           size="sm"
-                          onClick={() => addToast('Exporting to R / SAS format...', 'success')}
+                          onClick={() => { const rows = measurementRows(); downloadCsv(`${trial.id}_long_format.csv`, rows); addToast('Long-format CSV exported (read.csv in R / PROC IMPORT in SAS)', 'success'); }}
                           style={{ width: '100%', marginTop: 8 }}
                         >
                           Export to R / SAS
@@ -1050,7 +1077,7 @@ export default function TrialDetail() {
                   variant="secondary" 
                   size="sm" 
                   leftIcon={FileDown}
-                  onClick={() => addToast('Downloading Final Harvest Yield ANOVA PDF...', 'success')}
+                  onClick={() => { const m = entryMeans(/yield/i); printDocument(`${trial.name} — yield summary`, [{ fields: [['Trial', trial.id], ['Crop', trial.crop], ['Season', trial.season], ['Design', trial.design], ['Replications', trial.replications]] }, { heading: 'Entry means (yield)', table: { columns: ['Rank', 'Entry', 'Name', 'Type', 'Mean', 'Locations'], rows: m.map((r, i) => [i + 1, r.entry, r.name, r.type, r.mean, r.locations]) } }, { text: m.length ? 'Means across locations from recorded observations. Run a full ANOVA in R/SAS using the long-format export.' : 'No yield observations recorded yet.' }]); }}
                 >
                   Download PDF
                 </Button>
@@ -1067,7 +1094,7 @@ export default function TrialDetail() {
                   variant="secondary" 
                   size="sm" 
                   leftIcon={FileDown}
-                  onClick={() => addToast('Downloading Raw Plot Measurements Sheet...', 'success')}
+                  onClick={() => { const rows = measurementRows(); downloadCsv(`${trial.id}_raw_plot_measurements.csv`, rows); addToast(`${rows.length} rows exported (opens in Excel)`, 'success'); }}
                 >
                   Download Excel
                 </Button>
@@ -1084,7 +1111,7 @@ export default function TrialDetail() {
                   variant="secondary" 
                   size="sm" 
                   leftIcon={FileDown}
-                  onClick={() => addToast('Downloading GxE Stability Biplot Vector...', 'success')}
+                  onClick={() => { const rows = traitMeans(/yield/i); downloadCsv(`${trial.id}_gxe_entry_by_location.csv`, rows); addToast('Entry × location yield means exported for the GxE biplot', 'success'); }}
                 >
                   Download SVG
                 </Button>

@@ -28,7 +28,7 @@ const STEPPER_STEPS = [
 
 export default function RawIntakePage() {
   const { addToast } = useToast();
-  const { items: allIntakes, add, update } = useRealtimeMockStore<RawIntake>(mockIntakes);
+  const { items: allIntakes, add, update } = useRealtimeMockStore<RawIntake>(mockIntakes, 'processing.intakes');
   const [period, setPeriod] = useState<PeriodValue>('all');
 
   const items = useMemo(
@@ -252,7 +252,7 @@ export default function RawIntakePage() {
             </Button>
           )}
           {canInspect && (
-            <Button variant="secondary" leftIcon={ShieldCheck} onClick={() => addToast('Pre-processing inspection batch run started.', 'success')}>
+            <Button variant="secondary" leftIcon={ShieldCheck} onClick={() => { const pending = allIntakes.filter((i) => i.status === 'Pending QC'); setFilters((f) => ({ ...f, status: 'Pending QC' })); if (pending[0]) { setSelectedIntake(pending[0]); setIsDetailOpen(true); } addToast(pending.length ? `${pending.length} intake(s) waiting for inspection` : 'No intakes are waiting for inspection', pending.length ? 'info' : 'success'); }}>
               Start pre-processing inspection
             </Button>
           )}

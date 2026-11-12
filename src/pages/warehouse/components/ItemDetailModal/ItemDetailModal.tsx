@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { CustomFieldsPanel } from '@/components/customFields/CustomFieldsPanel';
 import { Package, MapPin, History, FileText, Layers } from 'lucide-react';
 import { Modal } from '@/components/common/Modal/Modal';
 import type { InventoryItem } from '@/types/warehouse';
 import { formatIndianNumber, formatRupees } from '@/utils/formatters';
 import styles from './ItemDetailModal.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
+import { useNavigate } from 'react-router-dom';
 interface ItemDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -39,6 +42,7 @@ function getStatusClass(status: string): string {
 
 export function ItemDetailModal({ isOpen, onClose, item }: ItemDetailModalProps) {
   const [tab, setTab] = useState<DetailTab>('overview');
+  const navigate = useNavigate();
 
   if (!item) return null;
 
@@ -51,6 +55,8 @@ export function ItemDetailModal({ isOpen, onClose, item }: ItemDetailModalProps)
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={item.name} size="xl">
+      <CustomFieldsPanel entityType="warehouse_item" entityId={item.id} lotId={item.lotNumber} />
+      <RecordAiPanel recordType="warehouse.item" record={item} label={item.sku} />
       <div className={styles.headerCard}>
         <div className={styles.headerIcon}><Package size={22} /></div>
         <div className={styles.headerBody}>
@@ -119,7 +125,7 @@ export function ItemDetailModal({ isOpen, onClose, item }: ItemDetailModalProps)
                 <div className={styles.dRow}>
                   <dt>GRN reference</dt>
                   <dd>
-                    <a href="#" className={styles.link} onClick={(e) => { e.preventDefault(); console.log('open grn', item.grnReference); }}>
+                    <a href="#" className={styles.link} onClick={(e) => { e.preventDefault(); onClose(); navigate(`/procurement/grn/${encodeURIComponent(item.grnReference ?? '')}`); }}>
                       {item.grnReference}
                     </a>
                   </dd>

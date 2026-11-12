@@ -53,6 +53,8 @@ const PAGE_SIZE = 10;
 
 import { usePermission } from '@/hooks/usePermission';
 
+import { queuePrint } from './warehouseStore';
+import { RecordEditModal } from '@/components/common/RecordEditModal/RecordEditModal';
 export default function StorageLocations() {
   const [warehouse, setWarehouse] = useState('Telangana Main');
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
@@ -69,7 +71,8 @@ export default function StorageLocations() {
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [isPrintLabelsOpen, setIsPrintLabelsOpen] = useState(false);
   const [isAddLocationOpen, setIsAddLocationOpen] = useState(false);
-  const { items: bins, add, update, bulkUpdate } = useRealtimeMockStore(initialBins);
+  const { items: bins, add, update, bulkUpdate } = useRealtimeMockStore(initialBins, 'warehouse.bins');
+  const [editBin, setEditBin] = useState<StorageLocation | null>(null);
   const { addToast } = useToast();
 
   const canPrintLabels = usePermission('print_barcode_labels');
@@ -197,7 +200,7 @@ export default function StorageLocations() {
               selectedCount={selectedIds.size}
               onClear={() => setSelectedIds(new Set())}
               actions={[
-                ...(canPrintLabels ? [{ label: 'Print Labels', icon: Printer, onClick: () => { console.log('Bulk print'); addToast({ type: 'success', message: `Printing ${selectedIds.size} labels` }); setSelectedIds(new Set()); } }] : []),
+                ...(canPrintLabels ? [{ label: 'Print Labels', icon: Printer, onClick: () => { queuePrint('Bin', selectedIds.size); addToast({ type: 'success', message: `${selectedIds.size} bin labels added to the print queue` }); setSelectedIds(new Set()); } }] : []),
                 ...(canDefineZones ? [{ label: 'Deactivate', icon: Ban, variant: 'danger' as const, onClick: () => { bulkUpdate(Array.from(selectedIds), { status: 'Blocked' }); setSelectedIds(new Set()); addToast({ type: 'success', message: 'Locations blocked' }); } }] : []),
               ]}
             />
@@ -296,8 +299,8 @@ export default function StorageLocations() {
                           {(() => {
                             const items = [
                               { label: 'View details', icon: MapPin, onClick: () => setDetailBin(b) },
-                              ...(canDefineZones ? [{ label: 'Edit', icon: Edit2, onClick: () => { console.log('Edit', b.id); addToast({ message: 'Edit bin clicked' }) } }] : []),
-                              ...(canPrintLabels ? [{ label: 'Print label', icon: Printer, onClick: () => addToast({ type: 'success', message: 'Label queued for printing' }) }] : []),
+                              ...(canDefineZones ? [{ label: 'Edit', icon: Edit2, onClick: () => setEditBin(b) }] : []),
+                              ...(canPrintLabels ? [{ label: 'Print label', icon: Printer, onClick: () => { queuePrint('Bin', 1); addToast({ type: 'success', message: `Label for ${b.id} queued for printing` }); } }] : []),
                               ...(canDefineZones ? [{ label: b.status === 'Blocked' ? 'Activate' : 'Deactivate', icon: Ban, variant: 'danger' as const, onClick: () => update(b.id, { status: b.status === 'Blocked' ? 'Available' : 'Blocked' }) }] : []),
                             ];
                             return items.length > 0 ? <ActionMenu items={items} /> : null;
@@ -351,6 +354,31 @@ export default function StorageLocations() {
 
       <PrintLabelsModal isOpen={isPrintLabelsOpen} onClose={() => setIsPrintLabelsOpen(false)} />
       <AddLocationModal isOpen={isAddLocationOpen} onClose={() => setIsAddLocationOpen(false)} />
+      <RecordEditModal
+        isOpen={editBin !== null}
+        title={`Edit bin ${editBin?.id ?? ''}`}
+        fields={[
+          { key: 'capacity', label: 'Capacity', type: 'number', required: true },
+          { key: 'status', label: 'Status', type: 'select', options: ['Available', 'Full', 'Reserved', 'Blocked'] },
+          { key: 'abcZone', label: 'ABC zone', type: 'select', options: ['A', 'B', 'C'] },
+          { key: 'zoneType', label: 'Zone type', type: 'select', options: ['ambient', 'cold', 'controlled', 'staging', 'quarantine', 'dispatch'] },
+        ]}
+        values={editBin ?? {}}
+        onClose={() => setEditBin(null)}
+        onSave={(v) => {
+          if (!editBin) return;
+          const capacity = Number(v.capacity) || editBin.capacity;
+          update(editBin.id, {
+            capacity,
+            occupancyPct: capacity ? Math.round((editBin.occupied / capacity) * 100) : 0,
+            status: (v.status || editBin.status) as StorageLocation['status'],
+            abcZone: (v.abcZone || editBin.abcZone) as StorageLocation['abcZone'],
+            zoneType: (v.zoneType || editBin.zoneType) as StorageLocation['zoneType'],
+          });
+          addToast({ type: 'success', message: `Bin ${editBin.id} updated` });
+          setEditBin(null);
+        }}
+      />
     </ModuleLayout>
   );
 }

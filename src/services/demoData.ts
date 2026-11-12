@@ -17,6 +17,12 @@
  *     real deployment's.
  */
 
+import { DEMO_AI_FORECASTS, DEMO_AI_LAB_RISK } from './aiDemoData';
+import { resolveCustomFieldsDemo } from './customFieldsDemo';
+import { knowledgeStatsDemo, searchKnowledgeDemo } from './aiKnowledgeDemo';
+import { resolveQualityDemo } from './qualityDemo';
+import aiModuleDemo from './aiModuleDemo.json';
+
 function isoDaysFromNow(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() + days);
@@ -644,7 +650,7 @@ function cite(label: string, module: string, path: string, count: number) {
  * (assistant.service.ts's ruleBasedAnswer) so the assistant reads identically
  * whether it is answering from the API or from this offline fixture.
  */
-function demoAssistantAnswer(question: string): unknown {
+function demoAssistantCore(question: string): { answer: string; intent: string; [k: string]: unknown } {
   const q = question.toLowerCase();
 
   if (q.includes('low') || q.includes('stock') || q.includes('running out') || q.includes('restock')) {
@@ -768,6 +774,27 @@ function demoAssistantAnswer(question: string): unknown {
   };
 }
 
+/**
+ * Offline assistant: the same two-part shape as the server — live-data answer
+ * from the rules, plus passages retrieved from the knowledge base (RAG) with
+ * their sources. History lets a short follow-up reuse the previous question.
+ */
+function demoAssistantAnswer(question: string, history: { role: string; text: string }[] = []): unknown {
+  const core = demoAssistantCore(question);
+  const lastUser = [...history].reverse().find((t) => t.role === 'user');
+  const query = question.split(/\s+/).length >= 6 || !lastUser ? question : `${lastUser.text} ${question}`;
+  const hits = searchKnowledgeDemo(query, 4);
+  const sources = hits.map((h) => ({ id: h.id, title: h.title, module: h.module, path: h.path, type: h.sourceType, excerpt: h.passage }));
+  if (hits.length === 0) return { ...core, sources };
+  if (core.intent === 'general') {
+    const asksData = /\b(overview|summary|status|picture|snapshot)\b/i.test(question);
+    if (!asksData) {
+      return { ...core, answer: `Here is what the SeedSphere knowledge base says:\n\n${hits.slice(0, 2).map((h) => `• ${h.title} (${h.module}) — ${h.passage}`).join('\n\n')}`, sources };
+    }
+  }
+  return { ...core, answer: `${core.answer}\n\nRelated guidance — ${hits[0].title}: ${hits[0].passage}`, sources };
+}
+
 // --- Path resolution -------------------------------------------------------
 
 /** Strips the querystring so a path with filters still matches its route. */
@@ -787,15 +814,55 @@ export function resolveDemoResponse(path: string, method: string, body?: string)
   if (p === '/auth/login') return { user: DEMO_USER, accessToken: DEMO_TOKEN };
   if (p === '/auth/me') return DEMO_USER;
 
+  // Custom fields: Admin-defined attributes shared across modules (localStorage-backed offline).
+  if (p.startsWith('/custom-fields')) return resolveCustomFieldsDemo(path, method, body);
+
+  // Quality module: SOPs, NCRs, CAPAs, complaints, holds, compliance register.
+  if (p.startsWith('/quality/') && method === 'GET') {
+    return resolveQualityDemo(p, new URLSearchParams(path.split('?')[1] ?? ''), (code) =>
+      DEMO_SEED_LOTS.find((l) => l.lot_code === code),
+    );
+  }
+
   if (p === '/assistant/status') return { modelConfigured: false, provider: 'demo', model: null };
   if (p === '/assistant/ask') {
     let question = '';
+    let history: { role: string; text: string }[] = [];
     try {
-      question = (JSON.parse(body ?? '{}') as { question?: string }).question ?? '';
+      const parsed = JSON.parse(body ?? '{}') as { question?: string; history?: { role: string; text: string }[] };
+      question = parsed.question ?? '';
+      history = Array.isArray(parsed.history) ? parsed.history : [];
     } catch {
       question = '';
     }
-    return demoAssistantAnswer(question);
+    return demoAssistantAnswer(question, history);
+  }
+
+  // AI Center: a snapshot of the real endpoints' output (see aiDemoData.ts).
+  if (p === '/ai/status') return { configured: false, model: null, provider: 'demo', models: null, knowledge: knowledgeStatsDemo() };
+  if (p === '/ai/knowledge/search') {
+    return searchKnowledgeDemo(new URLSearchParams(path.split('?')[1] ?? '').get('q') ?? '', 6);
+  }
+  if (p === '/ai/knowledge/reindex') return { ...knowledgeStatsDemo(), indexed: knowledgeStatsDemo().total, removed: 0, bySource: knowledgeStatsDemo().bySource };
+  if (p === '/ai/lab-risk') return { ...DEMO_AI_LAB_RISK, generatedAt: new Date().toISOString() };
+  if (p === '/ai/forecasts') return { ...DEMO_AI_FORECASTS, generatedAt: new Date().toISOString() };
+  if (p === '/ai/insights') return aiModuleDemo.all;
+  if (p.startsWith('/ai/insights/')) {
+    const snapshot = (aiModuleDemo.byModule as Record<string, object>)[p.split('/')[3]];
+    return snapshot ? { ...snapshot, generatedAt: new Date().toISOString() } : undefined;
+  }
+  if (p === '/ai/photo-analysis') {
+    return {
+      configured: false,
+      model: null,
+      subject: 'Photo',
+      cropGuess: null,
+      overallSeverity: 'none',
+      findings: [],
+      recommendations: ['Connect the SeedSphere server with an AI key (AI_API_KEY) to analyse photos.'],
+      followUpTests: [],
+      summary: 'Demo mode: the server is not reachable, so this photo was not analysed.',
+    };
   }
 
   if (p === '/organizations') return DEMO_ORGANIZATIONS;

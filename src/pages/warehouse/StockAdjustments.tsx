@@ -75,7 +75,7 @@ export default function StockAdjustments() {
   const [reversalAdj, setReversalAdj] = useState<StockAdjustment | null>(null);
   const [isPolicyOpen, setIsPolicyOpen] = useState(false);
 
-  const { items: allAdjustments, update } = useRealtimeMockStore(initialAdjustments);
+  const { items: allAdjustments, update } = useRealtimeMockStore(initialAdjustments, 'warehouse.adjustments');
 
   const adjustments = useMemo(
     () => allAdjustments.filter((a) => isDateInPeriod(a.initiatedAt, period)),

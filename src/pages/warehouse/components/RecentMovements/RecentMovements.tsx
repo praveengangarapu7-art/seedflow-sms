@@ -3,6 +3,7 @@ import type { StockMovement, MovementType } from '@/types/warehouse';
 import { formatIndianNumber } from '@/utils/formatters';
 import styles from './RecentMovements.module.css';
 
+import { useNavigate } from 'react-router-dom';
 interface RecentMovementsProps {
   data: StockMovement[];
   onViewAll?: () => void;
@@ -27,6 +28,7 @@ function locationLabel(m: StockMovement): string {
 }
 
 export function RecentMovements({ data, onViewAll }: RecentMovementsProps) {
+  const navigate = useNavigate();
   return (
     <div className={styles.card}>
       <div className={styles.cardHeader}>
@@ -34,7 +36,7 @@ export function RecentMovements({ data, onViewAll }: RecentMovementsProps) {
           <h3 className={styles.title}>Recent stock movements</h3>
           <span className={styles.subtitle}>Last 24 hours</span>
         </div>
-        <button className={styles.viewAll} onClick={onViewAll || (() => console.log('view all movements'))}>
+        <button className={styles.viewAll} onClick={onViewAll || (() => navigate('/warehouse/movements'))}>
           View all <ArrowRight size={13} />
         </button>
       </div>

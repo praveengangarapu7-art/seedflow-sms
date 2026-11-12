@@ -5,6 +5,8 @@ import { Button } from '@/components/common/Button/Button';
 import type { ASN } from '@/types/warehouse';
 import styles from './GrnReceiveModal.module.css';
 
+import { nowIso, whAdd, whNextId, whRead, whUpdate } from '../../warehouseStore';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface GrnReceiveModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -36,6 +38,7 @@ const EMPTY: FormState = {
 };
 
 export function GrnReceiveModal({ isOpen, onClose, asn }: GrnReceiveModalProps) {
+  const { addToast } = useToast();
   const [form, setForm] = useState<FormState>(EMPTY);
 
   useEffect(() => {
@@ -83,7 +86,27 @@ export function GrnReceiveModal({ isOpen, onClose, asn }: GrnReceiveModalProps) 
   }
 
   const submit = () => {
-    console.log('create grn for asn', asn.id, { ...form, netWeight, accepted });
+    const acc = Number(accepted) || 0;
+    const grnRef = `GRN-${asn.id}`;
+    whUpdate('asn', asn.id, { status: received < asn.totalQuantity ? 'Receiving' : 'Completed', vehicleNumber: form.vehicleNumber || asn.vehicleNumber, driverName: form.driverName || asn.driverName, driverPhone: form.driverPhone || asn.driverPhone, dockAssigned: form.dock, notes: [asn.notes, form.notes].filter(Boolean).join(' — ') || undefined });
+    if (acc > 0) {
+      const tasks = whRead('putaway');
+      whAdd('putaway', {
+        id: whNextId('PT', tasks.map((t) => t.id)),
+        grnReference: grnRef,
+        itemName: `${asn.supplier} receipt`,
+        sku: asn.poReference,
+        quantity: acc,
+        uom: asn.uom,
+        fromLocation: form.dock,
+        suggestedLocation: tasks[0]?.suggestedLocation ?? { warehouse: 'Main', zone: 'A', rack: '01', shelf: '1', bin: '01' },
+        priority: 'Medium',
+        status: 'Pending',
+        createdAt: nowIso(),
+        reasoning: 'Created from gate receipt',
+      });
+    }
+    addToast({ type: 'success', message: `${grnRef} recorded: ${acc} ${asn.uom} accepted${acc > 0 ? '; putaway task created' : ''}` });
     onClose();
   };
 

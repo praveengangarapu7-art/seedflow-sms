@@ -1,5 +1,5 @@
 .section {
-  padding: 72px 24px;
+  padding: 44px 24px;
   background-color: var(--landing-surface);
   position: relative;
   overflow: hidden;
@@ -14,7 +14,7 @@
 .header {
   text-align: center;
   max-width: 720px;
-  margin: 0 auto 64px auto;
+  margin: 0 auto 32px auto;
 }
 
 .label {
@@ -46,9 +46,9 @@
 .grid {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  gap: 64px;
+  gap: 40px;
   align-items: center;
-  margin-bottom: 96px;
+  margin-bottom: 48px;
 }
 
 @media (max-width: 991px) {

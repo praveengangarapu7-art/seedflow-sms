@@ -14,6 +14,7 @@ import {
 } from 'recharts';
 import { CheckCircle2, Clock, Map, RefreshCw, Sprout, Target, Users, XCircle } from 'lucide-react';
 import { KpiCard } from '@/components/common/KpiCard/KpiCard';
+import { ModuleAiStrip } from '@/components/ai/ModuleAiStrip/ModuleAiStrip';
 import { Button } from '@/components/common/Button/Button';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { analyticsApi, type ProductionDashboardData } from '@/services/api';
@@ -65,6 +66,7 @@ export default function ProductionDashboard() {
 
   return (
     <div className={styles.page}>
+      <ModuleAiStrip moduleKey="production" />
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Production Planning Dashboard</h1>

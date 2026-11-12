@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CustomFieldsPanel } from '@/components/customFields/CustomFieldsPanel';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, ChevronRight, Edit, Printer, X, Sparkles, Image as ImageIcon,
@@ -8,11 +9,15 @@ import { Button } from '@/components/common/Button/Button';
 import { Tabs } from '@/components/common/Tabs/Tabs';
 import { StatusBadge } from '@/components/common/StatusBadge/StatusBadge';
 import { ScoreRing } from '@/components/common/ScoreRing/ScoreRing';
-import { mockGRNs } from './mockData/grnsData';
+import { updateGRN, useGRNs } from './procurementStore';
 import { procurementNav } from '@/config/procurementNav';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './GRNDetail.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
+import { useToast } from '@/components/common/Toast';
+import { printDocument } from '@/utils/fileExport';
+import { RecordEditModal } from '@/components/common/RecordEditModal/RecordEditModal';
 type DetailTab = 'overview' | 'quality' | 'photos' | 'activity';
 
 const TABS: { key: DetailTab; label: string }[] = [
@@ -27,7 +32,12 @@ export default function GRNDetail() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<DetailTab>('overview');
 
-  const grn = mockGRNs.find((g) => g.id === id);
+  const { addToast } = useToast();
+  const [grns] = useGRNs();
+  const [dialog, setDialog] = useState<'edit' | 'reject' | null>(null);
+  const canEdit = usePermission('edit_grn');
+  const canApproveInspection = usePermission('approve_inspection');
+  const grn = grns.find((g) => g.id === id);
 
   if (!grn) {
     return (
@@ -42,18 +52,18 @@ export default function GRNDetail() {
     );
   }
 
-  const canEdit = usePermission('edit_grn');
-  const canApproveInspection = usePermission('approve_inspection');
   const isPending = grn.status === 'Pending Inspection';
 
   return (
     <ModuleLayout moduleName="Procurement" moduleIcon={ShoppingCart} navItems={procurementNav}>
+      <CustomFieldsPanel entityType="grn" entityId={grn.id} />
       <div className={styles.breadcrumb}>
         <button className={styles.breadcrumbLink} onClick={() => navigate('/procurement/grn')}>GRNs</button>
         <ChevronRight size={13} />
         <span>{grn.id}</span>
       </div>
 
+      <RecordAiPanel recordType="procurement.grn" record={grn} label={grn.id} />
       <div className={styles.headerCard}>
         <div className={styles.headerTop}>
           <div>
@@ -62,9 +72,13 @@ export default function GRNDetail() {
           </div>
           <div className={styles.headerActions}>
             <StatusBadge status={grn.status} type="grn" />
-            {canEdit && <Button variant="ghost" size="sm" leftIcon={Edit}>Edit</Button>}
-            <Button variant="ghost" size="sm" leftIcon={Printer}>Print</Button>
-            {isPending && canApproveInspection && <Button variant="ghost" size="sm" leftIcon={X}>Reject</Button>}
+            {canEdit && <Button variant="ghost" size="sm" leftIcon={Edit} onClick={() => setDialog('edit')}>Edit</Button>}
+            <Button variant="ghost" size="sm" leftIcon={Printer} onClick={() => printDocument(`Goods Receipt Note ${grn.id}`, [
+              { fields: [['PO reference', grn.poReference], ['Supplier', grn.supplier], ['Received', grn.receivedDate], ['Status', grn.status], ['Inspector', grn.inspector ?? '—'], ['Vehicle', grn.vehicleEntry.vehicleNumber], ['Driver', grn.vehicleEntry.driverName], ['Gross / tare / net (kg)', `${grn.vehicleEntry.grossWeight} / ${grn.vehicleEntry.tareWeight} / ${grn.vehicleEntry.netWeight}`]] },
+              { heading: 'Items', table: { columns: ['Description', 'Ordered', 'Received', 'Damaged', 'Accepted', 'Unit'], rows: grn.lineItems.map((l) => [l.description, l.orderedQty, l.receivedQty, l.damagedQty, l.acceptedQty, l.unit]) } },
+              ...(grn.notes ? [{ heading: 'Notes', text: grn.notes }] : []),
+            ])}>Print</Button>
+            {isPending && canApproveInspection && <Button variant="ghost" size="sm" leftIcon={X} onClick={() => setDialog('reject')}>Reject</Button>}
           </div>
         </div>
 
@@ -264,6 +278,37 @@ export default function GRNDetail() {
         )}
 
       </div>
+      <RecordEditModal
+        isOpen={dialog === 'edit'}
+        title={`Edit ${grn.id}`}
+        fields={[
+          { key: 'inspector', label: 'Inspector' },
+          { key: 'vehicleNumber', label: 'Vehicle number' },
+          { key: 'driverName', label: 'Driver name' },
+          { key: 'notes', label: 'Notes', type: 'textarea' },
+        ]}
+        values={{ inspector: grn.inspector, notes: grn.notes, ...grn.vehicleEntry }}
+        onClose={() => setDialog(null)}
+        onSave={(v) => {
+          updateGRN(grn.id, { inspector: String(v.inspector) || undefined, notes: String(v.notes), vehicleEntry: { ...grn.vehicleEntry, vehicleNumber: String(v.vehicleNumber), driverName: String(v.driverName) } }, 'GRN details edited');
+          addToast('GRN updated', 'success');
+          setDialog(null);
+        }}
+      />
+      <RecordEditModal
+        isOpen={dialog === 'reject'}
+        title={`Reject ${grn.id}`}
+        fields={[{ key: 'reason', label: 'Reason for rejection', type: 'textarea', required: true }]}
+        values={{}}
+        submitLabel="Reject GRN"
+        danger
+        onClose={() => setDialog(null)}
+        onSave={(v) => {
+          updateGRN(grn.id, { status: 'Rejected', notes: [grn.notes, `Rejected: ${v.reason}`].filter(Boolean).join(' — ') }, `Rejected: ${v.reason}`);
+          addToast(`${grn.id} rejected`, 'warning');
+          setDialog(null);
+        }}
+      />
     </ModuleLayout>
   );
 }

@@ -28,6 +28,7 @@ import {
 import { seedFieldInspections } from './fieldInspectionData';
 import styles from './production.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
 export default function CropPlanningDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -138,6 +139,14 @@ export default function CropPlanningDetail() {
           </Button>
         </div>
       </div>
+
+      {plan ? (
+        <RecordAiPanel
+          recordType="production.crop_plan"
+          record={{ ...plan, farm, variety, farmerName: farmer?.name, fieldInspections: fieldInspections.filter((i) => i.farmId === plan.farmId) }}
+          label={plan.planCode}
+        />
+      ) : null}
 
       <div className={styles.card}>
         {loading ? <div className={styles.emptyState}>Loading crop plan…</div> : null}

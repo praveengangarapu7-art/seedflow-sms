@@ -34,6 +34,9 @@ import { formatIndianNumber, formatRupees } from '@/utils/formatters';
 import { usePermission } from '@/hooks/usePermission';
 import styles from './Inventory.module.css';
 
+import { useNavigate } from 'react-router-dom';
+import { downloadCsv } from '@/utils/fileExport';
+import { logMovement, queuePrint } from './warehouseStore';
 const PAGE_SIZE = 10;
 
 const CATEGORIES: ItemCategory[] = ['Finished Seeds', 'Raw Material', 'Packaging', 'Chemicals', 'Lab Supplies', 'Equipment'];
@@ -74,7 +77,15 @@ export default function Inventory() {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [period, setPeriod] = useState<PeriodValue>('all');
 
-  const { items: allItems, add, bulkUpdate } = useRealtimeMockStore(initialItems);
+  const { items: allItems, add, bulkUpdate, update } = useRealtimeMockStore(initialItems, 'warehouse.items');
+  const navigate = useNavigate();
+  const exportItems = (rows: InventoryItem[], label: string) => {
+    downloadCsv(`inventory_${label}_${new Date().toISOString().slice(0, 10)}.csv`, rows.map((i) => ({
+      sku: i.sku, name: i.name, category: i.category, variety: i.variety ?? '', batch: i.batchNumber, lot: i.lotNumber,
+      quantity: i.quantity, uom: i.uom, warehouse: i.location.warehouse, zone: i.location.zone, bin: `${i.location.rack}-${i.location.shelf}-${i.location.bin}`,
+      status: i.status, expiry: i.expiryDate, received: i.receivedDate, unitCost: i.unitCost, totalValue: i.totalValue, abc: i.abcClass, supplier: i.supplier ?? '',
+    })));
+  };
 
   // Everything below — tab counts, the table and the KPI row — reads from the
   // period-filtered set, so the numbers always describe the same slice of time
@@ -193,7 +204,7 @@ export default function Inventory() {
         <div className={styles.headerActions}>
           <PeriodSelect value={period} onChange={(v) => { setPeriod(v); setPage(1); }} />
           {canUpdateInventory && <Button variant="secondary" size="sm" leftIcon={Upload} onClick={() => setIsImportOpen(true)}>Import</Button>}
-          <Button variant="secondary" size="sm" leftIcon={Download} onClick={() => { console.log('export inventory'); addToast({ type: 'success', message: 'Inventory exported' }) }}>Export</Button>
+          <Button variant="secondary" size="sm" leftIcon={Download} onClick={() => { exportItems(inventoryItems, 'all'); addToast({ type: 'success', message: `Exported ${inventoryItems.length} items to CSV` }) }}>Export</Button>
           {canUpdateInventory && <Button variant="primary" size="sm" leftIcon={Plus} onClick={() => setIsAddModalOpen(true)}>Add item</Button>}
         </div>
       </div>
@@ -257,9 +268,9 @@ export default function Inventory() {
           selectedCount={selectedIds.size}
           onClear={() => setSelectedIds(new Set())}
           actions={[
-            ...(canLogMovement ? [{ label: 'Transfer', icon: ArrowRightLeft, onClick: () => { console.log('Transfer'); addToast({ type: 'success', message: `Transfer initiated for ${selectedIds.size} items` }); setSelectedIds(new Set()); } }] : []),
-            ...(canProposeAdjustment ? [{ label: 'Adjust', icon: Edit3, onClick: () => { console.log('Adjust'); addToast({ message: 'Adjustment flow started' }); } }] : []),
-            { label: 'Export', icon: Download, onClick: () => { console.log('Export'); addToast({ type: 'success', message: 'Exported selected items' }); setSelectedIds(new Set()); } },
+            ...(canLogMovement ? [{ label: 'Transfer', icon: ArrowRightLeft, onClick: () => { addToast({ type: 'info', message: `Record the transfer for ${selectedIds.size} item(s) on Stock Movements` }); setSelectedIds(new Set()); navigate('/warehouse/movements'); } }] : []),
+            ...(canProposeAdjustment ? [{ label: 'Adjust', icon: Edit3, onClick: () => { setSelectedIds(new Set()); navigate('/warehouse/adjustments'); } }] : []),
+            { label: 'Export', icon: Download, onClick: () => { exportItems(allItems.filter((i) => selectedIds.has(i.id)), 'selected'); addToast({ type: 'success', message: `Exported ${selectedIds.size} selected items` }); setSelectedIds(new Set()); } },
             ...(canUpdateInventory ? [{ label: 'Update Status', icon: AlertTriangle, variant: 'secondary' as const, onClick: () => { bulkUpdate(Array.from(selectedIds), { status: 'Quarantine' }); setSelectedIds(new Set()); addToast({ type: 'success', message: 'Status updated to Quarantine' }); } }] : []),
           ]}
         />
@@ -337,8 +348,16 @@ export default function Inventory() {
                       {(() => {
                         const items = [
                           { label: 'View Timeline', icon: History, onClick: () => { setDetailItem(it) } },
-                          ...(canUpdateInventory ? [{ label: 'Update Stock', icon: Edit3, onClick: () => { console.log('Update stock', it.id); addToast({ message: 'Update stock dialog opened' }) } }] : []),
-                          ...(canPrintBarcode ? [{ label: 'Print Label', icon: Printer, onClick: () => addToast({ type: 'success', message: 'Label queued for printing' }) }] : []),
+                          ...(canUpdateInventory ? [{ label: 'Update Stock', icon: Edit3, onClick: () => {
+                            const v = window.prompt(`New quantity for ${it.name} (${it.uom}). Current: ${it.quantity}`, String(it.quantity));
+                            const qty = v === null ? NaN : Number(v);
+                            if (!Number.isFinite(qty) || qty < 0) return;
+                            const delta = qty - it.quantity;
+                            update(it.id, { quantity: qty, totalValue: Math.round(qty * it.unitCost) });
+                            if (delta !== 0) logMovement({ category: 'Adjustment', subType: delta > 0 ? 'Increase' : 'Decrease', itemName: it.name, sku: it.sku, batch: it.batchNumber, quantity: Math.abs(delta), uom: it.uom, fromLocation: `${it.location.zone}-${it.location.bin}`, reason: 'System correction', status: 'Completed', completedAt: new Date().toISOString() });
+                            addToast({ type: 'success', message: `${it.sku} stock set to ${qty} ${it.uom}` });
+                          } }] : []),
+                          ...(canPrintBarcode ? [{ label: 'Print Label', icon: Printer, onClick: () => { queuePrint('Item', 1); addToast({ type: 'success', message: `Label for ${it.sku} queued for printing` }); } }] : []),
                         ];
                         return items.length > 0 ? <ActionMenu items={items} /> : null;
                       })()}

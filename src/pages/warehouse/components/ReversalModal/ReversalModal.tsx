@@ -5,6 +5,8 @@ import { Button } from '@/components/common/Button/Button';
 import type { StockAdjustment } from '@/types/warehouse';
 import styles from './ReversalModal.module.css';
 
+import { adjustStock, nowIso, whUpdate } from '../../warehouseStore';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface ReversalModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,6 +14,7 @@ interface ReversalModalProps {
 }
 
 export function ReversalModal({ isOpen, onClose, adjustment }: ReversalModalProps) {
+  const { addToast } = useToast();
   const [reason, setReason] = useState('');
   useEffect(() => { if (isOpen) setReason(''); }, [isOpen]);
 
@@ -47,7 +50,12 @@ export function ReversalModal({ isOpen, onClose, adjustment }: ReversalModalProp
           variant="secondary"
           size="sm"
           disabled={!canSubmit}
-          onClick={() => { console.log('reverse adjustment', adjustment.id, reason); onClose(); }}
+          onClick={() => {
+            whUpdate('adjustments', adjustment.id, { reversedAt: nowIso(), reversalReason: reason });
+            if (adjustment.status === 'Posted') adjustStock(adjustment.itemSku, -adjustment.varianceQty);
+            addToast({ type: 'success', message: `${adjustment.id} reversed${adjustment.status === 'Posted' ? '; stock restored' : ''}` });
+            onClose();
+          }}
         >
           Reverse adjustment
         </Button>

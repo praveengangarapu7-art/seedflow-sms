@@ -38,6 +38,8 @@ import { type PeriodValue } from '@/utils/periodFilter';
 
 import styles from './RDReports.module.css';
 
+import { usePersistentCollection } from '@/hooks/persistentCollections';
+import { downloadCsv } from '@/utils/fileExport';
 export default function RDReports() {
   const { addToast } = useToast();
   
@@ -50,9 +52,9 @@ export default function RDReports() {
   const [insightSeverityFilter, setInsightSeverityFilter] = useState<'All' | 'Critical' | 'Warning' | 'Info' | 'Opportunity'>('All');
   const [showDismissed, setShowDismissed] = useState(false);
 
-  const [reports, setReports] = useState<ReportDefinition[]>(initialReports);
-  const [scheduled, setScheduled] = useState<ScheduledReport[]>(initialScheduled);
-  const [insights, setInsights] = useState<RDInsight[]>(initialInsights);
+  const [reports, setReports] = usePersistentCollection<ReportDefinition>('rd.reports', initialReports);
+  const [scheduled, setScheduled] = usePersistentCollection<ScheduledReport>('rd.scheduled', initialScheduled);
+  const [insights, setInsights] = usePersistentCollection<RDInsight>('rd.insights', initialInsights);
 
   // Modal triggers
   const [selectedReport, setSelectedReport] = useState<ReportDefinition | null>(null);
@@ -422,7 +424,7 @@ export default function RDReports() {
           <span className={styles.statValue} style={{ fontSize: '13px', fontWeight: '600' }}>Last checked 12 mins ago</span>
           <button 
             className={styles.refreshBtn}
-            onClick={() => addToast({ type: 'info', message: 'Agronomic telemetry inputs refreshed' })}
+            onClick={() => addToast({ type: 'info', message: `Insights recalculated from ${insights.length} saved insight(s); live telemetry needs the field sensor integration` })}
           >
             <RefreshCcw size={14} />
           </button>
@@ -533,7 +535,7 @@ export default function RDReports() {
           <Button 
             variant="secondary" 
             leftIcon={Download}
-            onClick={() => addToast({ type: 'info', message: 'Exporting report catalog index...' })}
+            onClick={() => { downloadCsv(`rd_report_library_${new Date().toISOString().slice(0, 10)}.csv`, reports.map((r) => { const flat: Record<string, unknown> = {}; Object.entries(r).forEach(([k, v]) => { if (v === null || typeof v !== 'object') flat[k] = v; }); return flat; })); addToast(`${reports.length} reports exported`, 'success'); }}
           >
             Export library
           </Button>

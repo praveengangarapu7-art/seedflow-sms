@@ -8,7 +8,7 @@ import { Button } from '@/components/common/Button/Button';
 import { Modal } from '@/components/common/Modal/Modal';
 import { useToast } from '@/components/common/Toast/ToastContext';
 import { procurementNav } from '@/config/procurementNav';
-import { mockApprovals } from './mockData/approvalsData';
+import { decideApproval, useApprovals } from './procurementStore';
 import { Approval } from '@/types/procurement';
 import { 
   ShoppingCart, Inbox, CheckCircle2, Timer, AlertTriangle, 
@@ -17,10 +17,13 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import styles from './Approvals.module.css';
 
+import { useNavigate } from 'react-router-dom';
 export default function Approvals() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('All');
-  const [approvals, setApprovals] = useState<Approval[]>(mockApprovals);
+  const navigate = useNavigate();
+  const [approvals, setApprovals] = useApprovals();
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const isPurchaseManager = user?.role === 'purchase_manager';
   const isFinanceManager = user?.role === 'finance_manager';
@@ -28,7 +31,8 @@ export default function Approvals() {
   const visibleApprovals = approvals.filter(item => {
     if (isPurchaseManager) return ['PR', 'PO', 'Supplier'].includes(item.type);
     if (isFinanceManager) return ['Invoice'].includes(item.type);
-    return false;
+    // Admins, procurement heads and every other approver see the whole queue.
+    return true;
   });
   
   // Modals state
@@ -97,14 +101,24 @@ export default function Approvals() {
     setSelectedIds(newSelected);
   };
 
+  const bulkDecide = (decision: 'approve' | 'reject') => {
+    const items = approvals.filter((a) => selectedIds.has(a.id));
+    items.forEach((a) => decideApproval(a, decision));
+    setSelectedIds(new Set());
+    addToast(`${items.length} item(s) ${decision === 'approve' ? 'approved' : 'rejected'}.`, decision === 'approve' ? 'success' : 'error');
+  };
+
   const submitAction = () => {
     if (!actionModal.item) return;
     
-    console.log(`${actionModal.type} action submitted for ${actionModal.item.id} with comment: ${comment}`);
-    
+    const item = actionModal.item;
     if (actionModal.type === 'approve' || actionModal.type === 'reject') {
-      setApprovals(approvals.filter(a => a.id !== actionModal.item!.id));
-      setSelectedIds(new Set([...selectedIds].filter(id => id !== actionModal.item!.id)));
+      decideApproval(item, actionModal.type, comment.trim() || undefined);
+      setSelectedIds(new Set([...selectedIds].filter(id => id !== item.id)));
+    } else {
+      setApprovals((prev) => prev.map((a) => a.id === item.id
+        ? { ...a, approvalChain: a.approvalChain.map((s) => s.status === 'current' ? { ...s, comment: `Information requested: ${comment.trim() || 'please add details'}` } : s) }
+        : a));
     }
     
     addToast(
@@ -138,8 +152,8 @@ export default function Approvals() {
             </div>
             <div className={styles.actionBarRight}>
               <Button variant="ghost" onClick={() => setSelectedIds(new Set())}>Clear</Button>
-              <Button variant="danger" icon={<X size={16} />}>Reject all</Button>
-              <Button variant="primary" icon={<Check size={16} />}>Approve all</Button>
+              <Button variant="danger" icon={<X size={16} />} onClick={() => bulkDecide('reject')}>Reject all</Button>
+              <Button variant="primary" icon={<Check size={16} />} onClick={() => bulkDecide('approve')}>Approve all</Button>
             </div>
           </div>
         )}
@@ -189,8 +203,13 @@ export default function Approvals() {
               </div>
 
               <div className={styles.justification}>
-                <p className={styles.justificationText}>"{approval.justification}"</p>
-                <button className={styles.showMoreBtn}>Show more →</button>
+                <p className={styles.justificationText} style={expanded.has(approval.id) ? { WebkitLineClamp: 'unset', display: 'block', overflow: 'visible' } : undefined}>"{approval.justification}"</p>
+                <button
+                  className={styles.showMoreBtn}
+                  onClick={() => setExpanded((prev) => { const n = new Set(prev); if (n.has(approval.id)) n.delete(approval.id); else n.add(approval.id); return n; })}
+                >
+                  {expanded.has(approval.id) ? 'Show less ←' : 'Show more →'}
+                </button>
               </div>
 
               <div className={styles.approvalFlow}>
@@ -238,7 +257,7 @@ export default function Approvals() {
                   Request info
                 </Button>
                 <div style={{ flex: 1 }}></div>
-                <Button variant="ghost" icon={<Eye size={16} />}>
+                <Button variant="ghost" icon={<Eye size={16} />} onClick={() => navigate(approvalLink(approval))}>
                   View details
                 </Button>
               </div>
@@ -303,4 +322,13 @@ export default function Approvals() {
 
     </ModuleLayout>
   );
+}
+
+function approvalLink(a: Approval): string {
+  switch (a.type) {
+    case 'PO': return `/procurement/orders/${encodeURIComponent(a.referenceId)}`;
+    case 'Supplier': return `/procurement/suppliers/${encodeURIComponent(a.referenceId)}`;
+    case 'Invoice': return '/procurement/invoices';
+    default: return '/procurement/requisitions';
+  }
 }

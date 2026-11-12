@@ -251,3 +251,81 @@
   font-weight: 800;
   color: var(--color-primary);
 }
+
+/* ---- v2: classic serif headline, crop rotator, seed journey ---- */
+.headline {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: clamp(38px, 4.8vw, 64px);
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+  margin-bottom: 18px;
+}
+
+.goldText {
+  font-style: normal;
+  color: #C9921A;
+}
+
+.underlinePath {
+  stroke-dasharray: 110;
+  stroke-dashoffset: 110;
+  animation: drawUnderline 1100ms 900ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@keyframes drawUnderline {
+  to { stroke-dashoffset: 0; }
+}
+
+.forLine {
+  font-size: clamp(18px, 1.7vw, 22px);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 991px) {
+  .forLine {
+    justify-content: center;
+  }
+}
+
+.rotator {
+  position: relative;
+  display: inline-block;
+  height: 1.35em;
+  overflow: hidden;
+  vertical-align: bottom;
+  border-bottom: 2px dashed rgba(201, 146, 26, 0.55);
+}
+
+.rotatorWord {
+  display: inline-block;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 700;
+  color: var(--color-primary);
+  animation: wordIn 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes wordIn {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.rightColumn {
+  flex: 1;
+  max-width: 540px;
+}
+
+/* On phones the message comes first, then the animated seed journey. */
+@media (max-width: 991px) {
+  .heroSection {
+    flex-direction: column;
+  }
+}

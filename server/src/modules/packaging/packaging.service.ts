@@ -7,6 +7,7 @@ import { broadcast } from '../../ws/server';
 import { insertAuditLog } from '../auditLogs/auditLogs.service';
 import { withAvailability, type SeedLot } from '../seedLots/seedLots.types';
 import type { CreatePackagingBatchInput, PackagingBatchRow, PackagingUnitRow, UnitLabelData } from './packaging.types';
+import { assertLotNotOnHold } from '../quality/quality.common';
 
 async function generateBatchCode(client: PoolClient): Promise<string> {
   const year = new Date().getFullYear();
@@ -49,6 +50,9 @@ export async function createPackagingBatch(
     if (lot.status !== 'active') {
       throw new ConflictError(`Seed lot ${lot.lot_code} is not active (status: ${lot.status})`);
     }
+
+    // Stop-sale: a lot under quality hold cannot be packaged.
+    await assertLotNotOnHold(client, input.seedLotId);
 
     const available = Number(lot.quantity_total) - Number(lot.quantity_allocated);
     if (totalQuantity > available) {

@@ -64,8 +64,8 @@ export default function Inbound() {
   const [isNewReceivingOpen, setIsNewReceivingOpen] = useState(false);
   const [detailAsn, setDetailAsn] = useState<ASN | null>(null);
 
-  const { items: allAsns, add: addAsn, update: updateAsn } = useRealtimeMockStore(initialAsnList);
-  const { items: allPutawayTasks, update: updatePutaway } = useRealtimeMockStore(initialPutawayTasks);
+  const { items: allAsns, add: addAsn, update: updateAsn } = useRealtimeMockStore(initialAsnList, 'warehouse.asn_list');
+  const { items: allPutawayTasks, update: updatePutaway } = useRealtimeMockStore(initialPutawayTasks, 'warehouse.putaway_tasks');
 
   // One period filter, applied to each of the three inbound lists against the
   // date that list is actually keyed on.

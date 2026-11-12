@@ -7,6 +7,7 @@ import type { CycleCount, CountLine } from '@/types/warehouse';
 import { formatIndianNumber } from '@/utils/formatters';
 import styles from './CountExecutionModal.module.css';
 
+import { whUpdate } from '../../warehouseStore';
 interface CountExecutionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -89,7 +90,6 @@ export function CountExecutionModal({ isOpen, onClose, count, onComplete }: Coun
         status: computeStatus(l)
       }))
     };
-    console.log('submit count for review', updated);
     onComplete?.(updated);
     onClose();
   };
@@ -205,7 +205,7 @@ export function CountExecutionModal({ isOpen, onClose, count, onComplete }: Coun
                 <button
                   className={styles.recountBtn}
                   title="Request recount"
-                  onClick={() => { console.log('recount', l.id); addToast({ type: 'warning', message: `Recount requested for ${l.itemSku}` }); }}
+                  onClick={() => { whUpdate('counts', count.id, (c) => ({ ...c, lines: c.lines.map((x) => (x.id === l.id ? { ...x, recountRequested: true, status: 'Recount needed' } : x)) })); setCounts((m) => { const n = { ...m }; delete n[l.id]; return n; }); addToast({ type: 'warning', message: `Recount requested for ${l.itemSku}` }); }}
                   aria-label="Request recount"
                 >
                   <RotateCw size={12} />
@@ -215,7 +215,7 @@ export function CountExecutionModal({ isOpen, onClose, count, onComplete }: Coun
                 className={styles.notesBtn}
                 title="Add note"
                 aria-label={`Add note for ${l.itemSku}`}
-                onClick={() => { console.log('open notes', l.id); addToast({ message: `Note editor opened for ${l.itemSku}` }); }}
+                onClick={() => { const note = window.prompt(`Note for ${l.itemSku}`, l.notes ?? ''); if (note !== null) { whUpdate('counts', count.id, (c) => ({ ...c, lines: c.lines.map((x) => (x.id === l.id ? { ...x, notes: note } : x)) })); addToast({ type: 'success', message: `Note saved for ${l.itemSku}` }); } }}
               >
                 <FileText size={12} />
               </button>

@@ -1,7 +1,27 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import OrbitalDiagram from '../OrbitalDiagram/OrbitalDiagram';
+import SeedJourney from '../../seed/SeedJourney';
 import styles from './LandingHero.module.css';
+
+/** Crops cycled in the headline, so the first line says who SeedSphere is for. */
+const CROP_WORDS = ['hybrid maize', 'paddy', 'cotton', 'soybean', 'wheat', 'vegetable', 'pulse'];
+
+function RotatingCrop() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const id = window.setInterval(() => setI((n) => (n + 1) % CROP_WORDS.length), 2200);
+    return () => window.clearInterval(id);
+  }, []);
+  return (
+    <span className={styles.rotator} aria-live="off">
+      <span key={i} className={styles.rotatorWord}>
+        {CROP_WORDS[i]}
+      </span>
+    </span>
+  );
+}
 
 export default function LandingHero() {
   const handleScrollToModules = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -24,38 +44,44 @@ export default function LandingHero() {
         {/* Animated Badge Pill */}
         <div className={`${styles.badgePill} ${styles.fadeInUp}`} style={{ animationDelay: '0ms' }}>
           <span className={styles.badgeDot} />
-          <span>AI-Powered Seed Industry Operating System</span>
+          <span>The operating system for the seed industry</span>
         </div>
 
-        {/* Serif-Feel Large Headline */}
+        {/* Classic serif headline */}
         <h1 className={styles.headline}>
           <span className={`${styles.line} ${styles.fadeInUp}`} style={{ animationDelay: '150ms' }}>
-            Seed-to-Sales Operations,
+            From breeder seed
           </span>
           <span className={`${styles.line} ${styles.fadeInUp}`} style={{ animationDelay: '270ms' }}>
-            Delivered with{' '}
+            to the farmer&apos;s{' '}
             <span className={styles.goldText}>
-              Intelligence.
+              field.
               <svg className={styles.underlineSvg} viewBox="0 0 100 12" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                <path 
-                  d="M4 8 C30 2, 70 2, 96 8" 
-                  stroke="var(--color-warning)" 
-                  strokeWidth="4" 
-                  strokeLinecap="round" 
+                <path
+                  className={styles.underlinePath}
+                  d="M4 8 C30 2, 70 2, 96 8"
+                  stroke="var(--color-warning)"
+                  strokeWidth="4"
+                  strokeLinecap="round"
                 />
               </svg>
             </span>
           </span>
         </h1>
 
-        {/* Decriptive Marketing copy */}
+        <p className={`${styles.forLine} ${styles.fadeInUp}`} style={{ animationDelay: '400ms' }}>
+          Built for <RotatingCrop /> seed companies.
+        </p>
+
+        {/* Description */}
         <p className={`${styles.description} ${styles.fadeInUp}`} style={{ animationDelay: '500ms' }}>
-          SeedSphere unifies <span className={styles.highlightText}>R&D</span>,{' '}
+          SeedSphere runs <span className={styles.highlightText}>R&amp;D</span>,{' '}
+          <span className={styles.highlightText}>production</span>,{' '}
           <span className={styles.highlightText}>procurement</span>,{' '}
-          <span className={styles.highlightText}>warehouse</span>,{' '}
-          <span className={styles.highlightText}>processing</span>, and{' '}
-          <span className={styles.highlightText}>laboratory</span> operations into one AI-augmented platform. 
-          From germplasm catalog to packed seed dispatch — every step visible, optimized, and audited.
+          <span className={styles.highlightText}>laboratory</span>,{' '}
+          <span className={styles.highlightText}>processing</span> and{' '}
+          <span className={styles.highlightText}>warehouse</span> on one seed-lot ID, with AI that flags
+          germination and quality risk before a single packet is dispatched.
         </p>
 
         {/* CTA Buttons */}
@@ -72,22 +98,22 @@ export default function LandingHero() {
         <div className={`${styles.featuresRow} ${styles.fadeInUp}`} style={{ animationDelay: '900ms' }}>
           <div className={styles.featureChip}>
             <span className={styles.checkmark}>✓</span>
-            <span>End-to-end traceability</span>
+            <span>Lot-level traceability</span>
           </div>
           <div className={styles.featureChip}>
             <span className={styles.checkmark}>✓</span>
-            <span>AI-driven insights</span>
+            <span>Certification-ready lab workflows</span>
           </div>
           <div className={styles.featureChip}>
             <span className={styles.checkmark}>✓</span>
-            <span>Built for Indian agriculture</span>
+            <span>AI quality forecasts</span>
           </div>
         </div>
       </div>
 
       {/* Right Visual centerpiece */}
       <div className={`${styles.rightColumn} ${styles.fadeInUp}`} style={{ animationDelay: '300ms' }}>
-        <OrbitalDiagram />
+        <SeedJourney />
       </div>
     </section>
   );

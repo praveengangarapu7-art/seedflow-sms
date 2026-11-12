@@ -99,7 +99,7 @@ export default function StockMovements() {
   const [detailRecord, setDetailRecord] = useState<MovementRecord | null>(null);
   const [approvalState, setApprovalState] = useState<{ record: MovementRecord; decision: 'approve' | 'reject' } | null>(null);
 
-  const { items: allMovementRecords, update } = useRealtimeMockStore(initialMovementRecords);
+  const { items: allMovementRecords, update } = useRealtimeMockStore(initialMovementRecords, 'warehouse.movement_records');
 
   const movementRecords = useMemo(
     () => allMovementRecords.filter((r) => isDateInPeriod(r.initiatedAt, period)),

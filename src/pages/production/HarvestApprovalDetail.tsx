@@ -45,6 +45,7 @@ import {
 import styles from './production.module.css';
 import harvestStyles from './harvest.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
 export default function HarvestApprovalDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -232,6 +233,8 @@ export default function HarvestApprovalDetail() {
           </Button>
         </div>
       </div>
+
+      <RecordAiPanel recordType="production.harvest_request" record={{ ...request, farm, inspections: inspections.filter((i) => i.farmId === request.farmId) }} label={request.requestCode} />
 
       {request.lotId ? (
         <div className={harvestStyles.lotBanner}>

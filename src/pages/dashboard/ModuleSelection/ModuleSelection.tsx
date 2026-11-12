@@ -7,8 +7,16 @@ import {
   TestTube,
   Sprout,
   ShieldCheck,
+  ClipboardCheck,
   ArrowRight,
+  Sparkles,
+  AlertTriangle,
+  CalendarClock,
+  PackageSearch,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useBackendSession } from '@/hooks/useBackendSession';
+import { fetchAiForecasts, fetchAiLabRisk } from '@/services/seedLotRealtimeClient';
 import { TopHeader } from '@/components/layout/TopHeader/TopHeader';
 import { Badge } from '@/components/common/Badge/Badge';
 import { useAuth } from '@/context/AuthContext';
@@ -62,6 +70,13 @@ const modules: ModuleCardData[] = [
     status: 'active',
   },
   {
+    name: 'Quality',
+    description: 'SOP register, non-conformances, CAPA, complaints and lot holds — the quality spine',
+    icon: ClipboardCheck,
+    path: '/quality/dashboard',
+    status: 'active',
+  },
+  {
     name: 'Administration',
     description: 'Users, roles, audit trail, system health, governance and privacy across every module',
     icon: ShieldCheck,
@@ -78,6 +93,7 @@ const MODULE_KEY_BY_NAME: Record<string, ModuleKey> = {
   Processing: 'processing',
   'Production Planning': 'production',
   Laboratory: 'lab',
+  Quality: 'quality',
   Administration: 'admin',
 };
 
@@ -92,6 +108,31 @@ export default function ModuleSelection() {
   const { user } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const { token } = useBackendSession();
+  const [pulse, setPulse] = useState<{ critical: number; high: number; expiring: number; short: number } | null>(null);
+
+  // Live AI pulse for the hero: the same deterministic scores the AI Center
+  // shows, so the numbers on the home page always match the drill-down.
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+    Promise.all([fetchAiLabRisk(token), fetchAiForecasts(token)])
+      .then(([risk, forecast]) => {
+        if (cancelled) return;
+        setPulse({
+          critical: risk.summary.critical,
+          high: risk.summary.high,
+          expiring: forecast.expiring.length,
+          short: forecast.crops.filter((c) => c.status === 'shortage' || c.status === 'tight').length,
+        });
+      })
+      .catch(() => {
+        /* The hero simply omits the pulse if the AI endpoints fail. */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
 
   // Two filters, for two different reasons. Module visibility is an
   // administrator's choice (Administration → Module registry). The
@@ -120,11 +161,42 @@ export default function ModuleSelection() {
     <div className={styles.root}>
       <TopHeader />
       <div className={styles.content}>
-        <h1 className={styles.greeting}>
-          {getGreeting()}, {user?.name ?? 'there'}
-        </h1>
-        <p className={styles.subtitle}>Seed lifecycle overview: variety registration → production → inspection → processing → certification → traceability</p>
+        <section className={styles.hero}>
+          <div className={styles.heroText}>
+            <span className={styles.heroEyebrow}>SeedSphere · Seed lifecycle platform</span>
+            <h1 className={styles.greeting}>
+              {getGreeting()}, {user?.name ?? 'there'}
+            </h1>
+            <p className={styles.subtitle}>
+              Variety registration → production → inspection → processing → certification → traceability, in one connected system.
+            </p>
+            <button type="button" className={styles.heroCta} onClick={() => navigate('/ai')}>
+              <Sparkles size={16} /> Open AI Center
+            </button>
+          </div>
+          <div className={styles.pulse} aria-label="Today's AI pulse">
+            <div className={styles.pulseTitle}>
+              <Sparkles size={14} /> Today&apos;s AI pulse
+            </div>
+            <button type="button" className={styles.pulseItem} onClick={() => navigate('/ai?tab=risk')}>
+              <AlertTriangle size={18} className={styles.pulseIconDanger} />
+              <span className={styles.pulseValue}>{pulse ? pulse.critical + pulse.high : '–'}</span>
+              <span className={styles.pulseLabel}>seed lots at high or critical quality risk</span>
+            </button>
+            <button type="button" className={styles.pulseItem} onClick={() => navigate('/ai?tab=forecast')}>
+              <CalendarClock size={18} className={styles.pulseIconWarn} />
+              <span className={styles.pulseValue}>{pulse ? pulse.expiring : '–'}</span>
+              <span className={styles.pulseLabel}>lots reaching label validity in 90 days</span>
+            </button>
+            <button type="button" className={styles.pulseItem} onClick={() => navigate('/ai?tab=forecast')}>
+              <PackageSearch size={18} className={styles.pulseIconInfo} />
+              <span className={styles.pulseValue}>{pulse ? pulse.short : '–'}</span>
+              <span className={styles.pulseLabel}>crops with short or tight stock cover</span>
+            </button>
+          </div>
+        </section>
 
+        <h2 className={styles.sectionTitle}>Modules</h2>
         <div className={styles.grid}>
           {visibleModules.map((mod) => {
             const Icon = mod.icon;

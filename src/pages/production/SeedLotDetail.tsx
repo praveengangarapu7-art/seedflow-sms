@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { CustomFieldsPanel } from '@/components/customFields/CustomFieldsPanel';
 import { AlertTriangle, ArrowLeft, CheckCircle2, FlaskConical, GitBranch, RefreshCw, Snowflake, Wifi, WifiOff, XCircle } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/common/Button/Button';
@@ -29,6 +30,7 @@ import {
 } from '@/services/seedLotRealtimeClient';
 import styles from './SeedLotDetail.module.css';
 
+import { RecordAiPanel } from '@/components/ai/RecordAiPanel/RecordAiPanel';
 const ALL_TEST_TYPES: LabTestType[] = ['germination', 'purity', 'vigor'];
 
 const METRIC_FIELDS: Record<LabTestType, { a: string; b: string; aLabel: string; bLabel: string }> = {
@@ -316,6 +318,20 @@ export default function SeedLotDetail() {
         <div className={styles.card}>
           <div className={styles.errorText}>{error}</div>
         </div>
+      ) : null}
+
+      {lot ? <CustomFieldsPanel entityType="seed_lot" entityId={lot.lot_code} lotId={lot.lot_code} /> : null}
+
+      {lot ? (
+        <RecordAiPanel
+          recordType="production.seed_lot"
+          record={{
+            ...lot,
+            germination: submissions.flatMap((sub) => sub.results).find((r) => r.test_type === 'germination')?.result_value ?? null,
+            openQualityFlags: qualityFlags.length,
+          }}
+          label={lot.lot_code}
+        />
       ) : null}
 
       {lot ? (

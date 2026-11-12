@@ -13,6 +13,8 @@ const FORMATS: BarcodeFormat[] = ['CODE128', 'QR', 'EAN13', 'CODE39'];
 
 import { usePermission } from '@/hooks/usePermission';
 
+import { printDocument } from '@/utils/fileExport';
+import { queuePrint } from '../../warehouseStore';
 export function QuickGeneratorCard() {
   const { addToast } = useToast();
   const [type, setType] = useState<LabelType>('Item');
@@ -135,9 +137,9 @@ export function QuickGeneratorCard() {
 
       {canPrint && (
         <div className={styles.actions}>
-          <Button variant="primary" size="sm" leftIcon={Printer} onClick={() => { console.log('print now', generatedCode, quantity); addToast({ type: 'success', message: `Printing ${quantity} label${quantity === '1' ? '' : 's'} to Printer-WH01` }); resetForm(); }} disabled={!generatedCode}>Print now</Button>
-          <Button variant="secondary" size="sm" leftIcon={ListPlus} onClick={() => { console.log('add to print queue', generatedCode, quantity); addToast({ type: 'success', message: `Added ${quantity} label${quantity === '1' ? '' : 's'} to print queue` }); resetForm(); }} disabled={!generatedCode}>Add to queue</Button>
-          <Button variant="ghost" size="sm" leftIcon={Download} onClick={() => { console.log('download pdf', generatedCode); addToast({ type: 'success', message: `PDF downloaded — labels-${generatedCode || 'codes'}.pdf` }); resetForm(); }} disabled={!generatedCode}>Download PDF</Button>
+          <Button variant="primary" size="sm" leftIcon={Printer} onClick={() => { queuePrint(type, Number(quantity) || 1, format); printDocument(`Label ${generatedCode}`, [{ fields: [['Code', generatedCode], ['Type', type], ['Linked to', linkedTo || '—'], ['Copies', quantity]] }], String(format)); addToast({ type: 'success', message: `Printing ${quantity} label${quantity === '1' ? '' : 's'} to Printer-WH01` }); resetForm(); }} disabled={!generatedCode}>Print now</Button>
+          <Button variant="secondary" size="sm" leftIcon={ListPlus} onClick={() => { queuePrint(type, Number(quantity) || 1, format); addToast({ type: 'success', message: `Added ${quantity} label${quantity === '1' ? '' : 's'} to print queue` }); resetForm(); }} disabled={!generatedCode}>Add to queue</Button>
+          <Button variant="ghost" size="sm" leftIcon={Download} onClick={() => { printDocument(`Label ${generatedCode}`, [{ fields: [['Code', generatedCode], ['Type', type], ['Linked to', linkedTo || '—'], ['Copies', quantity]] }], String(format)); addToast({ type: 'success', message: 'Label sheet opened — choose “Save as PDF” in the print dialog' }); resetForm(); }} disabled={!generatedCode}>Download PDF</Button>
         </div>
       )}
     </div>

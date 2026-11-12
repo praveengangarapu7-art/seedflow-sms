@@ -4,7 +4,8 @@ import { Modal } from '@/components/common/Modal/Modal';
 import { Button } from '@/components/common/Button/Button';
 import { Stepper } from '@/components/common/Stepper/Stepper';
 import { useToast } from '@/components/common/Toast/ToastContext';
-import { inventoryItems } from '../../mockData/inventoryData';
+import { adjustStock, logMovement, nowIso, useWh, whUser } from '../../warehouseStore';
+import { pickFile } from '@/utils/fileExport';
 import type { MovementCategory, AdjustmentReason } from '@/types/warehouse';
 import { formatIndianNumber } from '@/utils/formatters';
 import { buildBinCode } from '../../mockData/storageData';
@@ -61,6 +62,8 @@ const STEPS_BY_TYPE: Record<NewMovementType, Array<{ key: string; label: string 
 
 export function NewMovementModal({ isOpen, onClose, type }: NewMovementModalProps) {
   const { addToast } = useToast();
+  const [inventoryItems] = useWh('items');
+  const [photos, setPhotos] = useState<string[]>([]);
   const [step, setStep] = useState(0);
 
   const [sku, setSku] = useState('');
@@ -104,8 +107,44 @@ export function NewMovementModal({ isOpen, onClose, type }: NewMovementModalProp
   const varianceValue = item ? Math.abs(variance) * item.unitCost : 0;
   const requiresApprovalForAdjustment = varianceValue > 10_000;
 
+  const record = (draft: boolean) => {
+    if (!item) {
+      addToast({ type: 'warning', message: 'Select an item first' });
+      return null;
+    }
+    const category = meta.category;
+    const target = toBin.zone ? `${toBin.zone}-${toBin.rack}-${toBin.shelf}-${toBin.bin}` : undefined;
+    const needsApproval = draft || type === 'Inter-warehouse' || (type === 'Adjustment' && requiresApprovalForAdjustment);
+    const quantity = type === 'Adjustment' ? Math.abs(variance) : qty;
+    const rec = logMovement({
+      category,
+      subType: draft ? `${type} (draft)` : type === 'Return' ? returnType : type,
+      itemName: item.name, sku: item.sku, batch: item.batchNumber, quantity, uom: item.uom,
+      fromLocation: currentBin,
+      toLocation: type === 'Inter-warehouse' ? toWarehouse : type === 'Material issue' ? 'Processing' : target,
+      reason: type === 'Adjustment' ? reason : undefined,
+      reasonNotes: reasonNotes || transferNotes || undefined,
+      reference: returnReference || mrReference || undefined,
+      status: needsApproval ? 'Pending approval' : 'Completed',
+      completedAt: needsApproval ? undefined : nowIso(),
+      approvalChain: needsApproval ? [{ approver: 'Warehouse manager', role: 'Warehouse manager', status: 'pending' }] : undefined,
+      varianceValue: type === 'Adjustment' ? varianceValue : undefined,
+      hasPhotoEvidence: photos.length > 0,
+      initiatedBy: whUser(),
+    });
+    if (!needsApproval) {
+      if (type === 'Adjustment') adjustStock(item.sku, variance);
+      else if (type === 'Material issue') adjustStock(item.sku, -qty);
+      else if (type === 'Return' && returnAction === 'Restock') adjustStock(item.sku, qty);
+      else if (type === 'Return' && returnAction === 'Dispose') adjustStock(item.sku, -qty);
+    }
+    return { rec, needsApproval };
+  };
+
   const submit = () => {
-    console.log('submit movement', type, { sku, qty, toWarehouse, toBin, adjustType, reason, reasonNotes, returnType, returnReference, returnAction, mrReference, transferNotes });
+    const out = record(false);
+    if (!out) return;
+    addToast({ type: 'success', message: out.needsApproval ? `${out.rec.id} submitted for approval` : `${out.rec.id} completed; stock updated` });
     onClose();
   };
 
@@ -261,7 +300,7 @@ export function NewMovementModal({ isOpen, onClose, type }: NewMovementModalProp
       </label>
       <div className={styles.field}>
         <span>Photo evidence (optional)</span>
-        <button className={styles.uploadBtn} onClick={() => { console.log('upload movement photos'); addToast({ type: 'success', message: 'Photo evidence uploaded' }); }}>
+        <button className={styles.uploadBtn} onClick={async () => { const f = await pickFile('image/*'); if (f) { setPhotos((p) => [...p, f.name]); addToast({ type: 'success', message: `${f.name} attached as evidence` }); } }}>
           <Camera size={14} /> Upload photos <Upload size={12} />
         </button>
       </div>
@@ -397,7 +436,7 @@ export function NewMovementModal({ isOpen, onClose, type }: NewMovementModalProp
       <div className={styles.footer}>
         <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
         <div className={styles.footerRight}>
-          <Button variant="secondary" size="sm" onClick={() => { console.log('save movement draft'); addToast({ type: 'success', message: 'Movement saved as draft' }); onClose(); }}>Save as draft</Button>
+          <Button variant="secondary" size="sm" onClick={() => { const out = record(true); if (out) { addToast({ type: 'success', message: `${out.rec.id} saved as draft` }); onClose(); } }}>Save as draft</Button>
           {step > 0 && steps.length > 1 && (
             <Button variant="ghost" size="sm" onClick={() => setStep((s) => Math.max(0, s - 1))}>← Back</Button>
           )}

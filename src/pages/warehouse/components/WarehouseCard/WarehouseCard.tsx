@@ -29,7 +29,7 @@ export const WarehouseCard: React.FC<WarehouseCardProps> = ({ warehouse, onEdit,
           <div className={`${styles.toggle} ${warehouse.active ? styles.active : ''}`} onClick={() => onDeactivate(warehouse.id)}>
             <div className={styles.toggleHandle} />
           </div>
-          <button className={styles.moreBtn}><MoreVertical size={16} /></button>
+          <button className={styles.moreBtn} aria-label={`Edit ${warehouse.name}`} title="Edit warehouse" onClick={() => onEdit(warehouse)}><MoreVertical size={16} /></button>
         </div>
       </div>
 
@@ -79,7 +79,7 @@ export const WarehouseCard: React.FC<WarehouseCardProps> = ({ warehouse, onEdit,
           <Edit2 size={14} />
           <span>Edit</span>
         </button>
-        <button className={styles.footerBtn} onClick={() => { if (onViewMap) { onViewMap(warehouse); } else { console.log('View on map', warehouse.id); addToast({ message: `Map view opened for ${warehouse.name}` }); } }}>
+        <button className={styles.footerBtn} onClick={() => { if (onViewMap) { onViewMap(warehouse); } else { window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${warehouse.name} ${warehouse.address?.city ?? ''}`)}`, '_blank', 'noopener'); addToast({ message: `Map view opened for ${warehouse.name}` }); } }}>
           <Map size={14} />
           <span>Map</span>
         </button>

@@ -16,8 +16,15 @@ import {
 import { PERIOD_OPTIONS, periodLabel, type PeriodValue } from '@/utils/periodFilter';
 import styles from './ProcurementReports.module.css';
 
+import { downloadCsv, printDocument } from '@/utils/fileExport';
+import { useInvoices, usePOs, useSuppliers } from './procurementStore';
+import { useToast } from '@/components/common/Toast';
 export default function ProcurementReports() {
   const [activeReport, setActiveReport] = useState<any>(null);
+  const { addToast } = useToast();
+  const [livePOs] = usePOs();
+  const [liveSuppliers] = useSuppliers();
+  const [liveInvoices] = useInvoices();
   const [period, setPeriod] = useState<PeriodValue>('month');
   const [department, setDepartment] = useState('All Departments');
   const [category, setCategory] = useState('All Categories');
@@ -156,7 +163,28 @@ export default function ProcurementReports() {
   };
 
   const handleExport = (format: string) => {
-    console.log(`Exporting ${activeReport?.title} as ${format}`);
+    if (!activeReport) return;
+    const id: string = activeReport.id;
+    let rows: Record<string, unknown>[];
+    if (id.includes('supplier')) {
+      rows = liveSuppliers.map((s) => ({ supplier: s.name, code: s.code, category: s.category, classification: s.classification, quality: s.qualityScore, delivery: s.deliveryScore, cost: s.costScore, overall: s.overallScore, totalPOs: s.totalPOs, totalSpend: s.totalSpend }));
+    } else if (id.includes('invoice') || id.includes('payment')) {
+      rows = liveInvoices.map((i) => ({ invoice: i.id, supplier: i.supplier, po: i.poReference, grn: i.grnReference, date: i.invoiceDate, total: i.total, match: i.matchStatus, payment: i.paymentStatus, due: i.dueDate }));
+    } else if (id.includes('spend')) {
+      const by = new Map<string, { supplier: string; orders: number; amount: number }>();
+      livePOs.forEach((p) => { const r = by.get(p.supplier) ?? { supplier: p.supplier, orders: 0, amount: 0 }; r.orders += 1; r.amount += p.totalAmount; by.set(p.supplier, r); });
+      rows = [...by.values()].sort((a, b) => b.amount - a.amount);
+    } else {
+      rows = livePOs.map((p) => ({ po: p.id, supplier: p.supplier, status: p.status, created: p.createdDate, expected: p.expectedDelivery, amount: p.totalAmount, requisition: p.prReference ?? '' }));
+    }
+    const base = `${activeReport.title.replace(/[^\w]+/g, '_')}_${new Date().toISOString().slice(0, 10)}`;
+    if (/pdf/i.test(format)) {
+      const cols = Object.keys(rows[0] ?? {});
+      printDocument(activeReport.title, [{ table: { columns: cols, rows: rows.map((r) => cols.map((c) => r[c])) } }]);
+    } else {
+      downloadCsv(`${base}.csv`, rows);
+    }
+    addToast(`${activeReport.title} exported (${rows.length} rows)`, 'success');
   };
 
   const renderMiniPreview = (report: any) => {

@@ -33,6 +33,8 @@ type RTab = 'all' | ReturnStatus;
 
 import { usePermission } from '@/hooks/usePermission';
 
+import { Modal } from '@/components/common/Modal/Modal';
+import { whUser } from './warehouseStore';
 export default function ReturnsManagement() {
   const [activeTab, setActiveTab] = useState<RTab>('all');
   const [period, setPeriod] = useState<PeriodValue>('all');
@@ -45,7 +47,7 @@ export default function ReturnsManagement() {
   const [inspectingRecord, setInspectingRecord] = useState<ReturnRecord | null>(null);
   const [resolvingRecord, setResolvingRecord] = useState<ReturnRecord | null>(null);
 
-  const { items: allReturnRecords, update, add } = useRealtimeMockStore(initialReturnRecords);
+  const { items: allReturnRecords, update, add } = useRealtimeMockStore(initialReturnRecords, 'warehouse.return_records');
 
   const returnRecords = useMemo(
     () => allReturnRecords.filter((r) => isDateInPeriod(r.initiatedDate, period)),
@@ -86,12 +88,18 @@ export default function ReturnsManagement() {
     });
   }, [activeTab, directionFilter, reasonFilter, dispositionFilter, search, returnRecords]);
 
+  const [viewRecord, setViewRecord] = useState<ReturnRecord | null>(null);
+
   const handleAction = (record: ReturnRecord, action: 'inspect' | 'resolve' | 'transit' | 'received' | 'view') => {
     if (action === 'inspect') setInspectingRecord(record);
     else if (action === 'resolve') setResolvingRecord(record);
-    else if (action === 'transit') console.log('mark in transit', record.id);
-    else if (action === 'received') console.log('mark received', record.id);
-    else console.log('view return', record.id);
+    else if (action === 'transit') {
+      update(record.id, { status: 'In transit', resolutionTimeline: [...record.resolutionTimeline, { stage: 'In transit', timestamp: new Date().toISOString(), user: whUser() }] });
+      addToast({ type: 'success', message: `${record.id} marked in transit` });
+    } else if (action === 'received') {
+      update(record.id, { status: 'Received', receivedDate: new Date().toISOString().slice(0, 10), resolutionTimeline: [...record.resolutionTimeline, { stage: 'Received', timestamp: new Date().toISOString(), user: whUser() }] });
+      addToast({ type: 'success', message: `${record.id} received at the warehouse` });
+    } else setViewRecord(record);
   };
 
   const handleInspectionComplete = (updated: ReturnRecord) => {
@@ -188,6 +196,23 @@ export default function ReturnsManagement() {
       </div>
 
       <NewReturnModal isOpen={isNewOpen} onClose={() => setIsNewOpen(false)} defaultDirection={directionFilter !== 'all' ? directionFilter : 'Customer return'} onSave={(data) => { add(data as ReturnRecord); addToast({ type: 'success', message: 'New return created' }); }} />
+      <Modal isOpen={viewRecord !== null} onClose={() => setViewRecord(null)} title={`Return ${viewRecord?.id ?? ''}`} size="lg">
+        {viewRecord && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <dl style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '6px 12px', margin: 0 }}>
+              {([['Direction', viewRecord.direction], ['Party', viewRecord.party], ['Reference', viewRecord.reference], ['Status', viewRecord.status], ['Reason', `${viewRecord.reason}${viewRecord.reasonNotes ? ` — ${viewRecord.reasonNotes}` : ''}`], ['Quantity', `${viewRecord.totalQuantity} ${viewRecord.uom}`], ['Value', `₹${viewRecord.totalValue.toLocaleString('en-IN')}`], ['Disposition', viewRecord.disposition]] as [string, string][]).map(([k, v]) => (
+                <div key={k} style={{ display: 'contents' }}><dt style={{ color: 'var(--color-text-secondary)' }}>{k}</dt><dd style={{ margin: 0, fontWeight: 600 }}>{v}</dd></div>
+              ))}
+            </dl>
+            <div>
+              <strong>Timeline</strong>
+              <ul style={{ margin: '6px 0 0', paddingLeft: 18 }}>
+                {viewRecord.resolutionTimeline.map((t, i) => <li key={i}>{t.stage} · {new Date(t.timestamp).toLocaleString('en-IN')} · {t.user}{t.comment ? ` — ${t.comment}` : ''}</li>)}
+              </ul>
+            </div>
+          </div>
+        )}
+      </Modal>
       <ReturnInspectionModal isOpen={inspectingRecord !== null} onClose={() => setInspectingRecord(null)} record={inspectingRecord} onComplete={handleInspectionComplete} />
       <ReturnResolutionModal isOpen={resolvingRecord !== null} onClose={() => setResolvingRecord(null)} record={resolvingRecord} onResolve={(updated) => { update(updated.id, updated); addToast({ type: 'success', message: 'Return resolved' }); }} />
     </ModuleLayout>

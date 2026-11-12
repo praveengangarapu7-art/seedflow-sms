@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, LayoutGrid, User, Settings, LogOut } from 'lucide-react';
+import { Bell, ChevronDown, LayoutGrid, User, Settings, LogOut, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { GlobalSearch } from '@/components/common/GlobalSearch';
 import { BackButton } from '@/components/common/BackButton/BackButton';
@@ -70,7 +70,11 @@ export function TopHeader({ moduleName }: TopHeaderProps) {
       </div>
 
       <div className={styles.right}>
-        <button className={styles.iconBtn} aria-label="Notifications">
+        <button className={styles.aiBtn} onClick={() => navigate('/ai')} aria-label="Open AI Center">
+          <Sparkles size={15} />
+          <span>AI Center</span>
+        </button>
+        <button className={styles.iconBtn} aria-label="Notifications" title="Notifications" onClick={() => navigate('/admin/notifications')}>
           <Bell size={18} />
         </button>
 

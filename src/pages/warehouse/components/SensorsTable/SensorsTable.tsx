@@ -105,7 +105,7 @@ export const SensorsTable: React.FC<SensorsTableProps> = ({ sensors, onRowClick 
     { 
       key: 'actions', 
       label: '', 
-      render: () => <button className={styles.moreBtn}><MoreVertical size={16} /></button> 
+      render: (s: IoTSensor) => <button className={styles.moreBtn} aria-label={`Open ${s.id}`} title="Open sensor details" onClick={(e) => { e.stopPropagation(); onRowClick(s); }}><MoreVertical size={16} /></button> 
     }
   ];
 

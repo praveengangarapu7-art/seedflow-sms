@@ -6,6 +6,8 @@ import type { DispatchOrder } from '@/types/warehouse';
 import { formatIndianCurrency, formatIndianNumber } from '@/utils/formatters';
 import styles from './PackingValidationModal.module.css';
 
+import { whUpdate, whUser } from '../../warehouseStore';
+import { useToast } from '@/components/common/Toast/ToastContext';
 interface PackingValidationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,6 +21,7 @@ interface DocChecklist {
 }
 
 export function PackingValidationModal({ isOpen, onClose, order }: PackingValidationModalProps) {
+  const { addToast } = useToast();
   const [scanInput, setScanInput] = useState('');
   const [scannedSet, setScannedSet] = useState<Set<string>>(new Set());
   const [docs, setDocs] = useState<DocChecklist>({ invoice: false, challan: false, eWayBill: false });
@@ -64,7 +67,18 @@ export function PackingValidationModal({ isOpen, onClose, order }: PackingValida
   const canPack = allScanned && requiredDocs;
 
   const submit = () => {
-    console.log('mark as packed', order.id, { scanned: Array.from(scannedSet), docs, boxes, weight, notes });
+    whUpdate('dispatch', order.id, (o) => ({
+      ...o,
+      status: 'Packed',
+      packerAssigned: o.packerAssigned ?? whUser(),
+      documents: {
+        invoice: docs.invoice ? o.documents.invoice ?? `INV-${o.id}` : o.documents.invoice,
+        deliveryChallan: docs.challan ? o.documents.deliveryChallan ?? `DC-${o.id}` : o.documents.deliveryChallan,
+        eWayBill: docs.eWayBill ? o.documents.eWayBill ?? `EWB-${o.id}` : o.documents.eWayBill,
+      },
+      lineItems: o.lineItems.map((li) => ({ ...li, packedQty: scannedSet.has(li.sku) ? li.pickedQty || li.orderedQty : li.packedQty })),
+    }));
+    addToast({ type: 'success', message: `${order.id} packed${boxes ? ` in ${boxes} box(es)` : ''}${weight ? `, ${weight} kg` : ''}${notes ? ' — notes saved' : ''}` });
     onClose();
   };
 
